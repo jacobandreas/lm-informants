@@ -37,6 +37,10 @@ class HWInformant:
         #return self.scorer.cost(seq) < 3
         return self.scorer.cost(seq) == 0
 
+    def cost(self, seq):
+        #return self.scorer.cost(seq) < 3
+        return self.scorer.cost(seq)
+
 class DummyInformant:
     def __init__(self, dataset):
         self.dataset = dataset

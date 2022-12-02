@@ -115,7 +115,8 @@ class VBLearner(Learner):
 
     def full_nll(self, data):
         if len(data) == 0:
-            return np.nan
+            #return np.nan
+            return 0
         else:
             return sum(self.hypotheses[0].logprob(s, j) for s, j in data)
 
@@ -259,7 +260,8 @@ class LogisticLearner(Learner):
             else:
                 nll += np.log1p(np.exp(-cost))
         if len(data) == 0:
-            return np.nan
+            # return np.nan
+            return 0
         else:
             assert nll > 0, nll
             return nll / len(data)
@@ -513,7 +515,8 @@ class FilterHWLearner(Learner):
                 #nll += np.log1p(np.exp(-cost))
                 nll += int(cost == 0)
         if len(data) == 0:
-            return np.nan
+            # return np.nan
+            return 0
         assert nll >= 0, nll
         return nll / len(data)
 

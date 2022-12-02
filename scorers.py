@@ -47,7 +47,7 @@ class BilinearScorer:
 class MeanFieldScorer:
     def __init__(self, dataset):
         self.ORDER = 2
-        self.LOG_LOG_ALPHA_RATIO = 45
+        self.LOG_LOG_ALPHA_RATIO = 500 # 45 is what Jacob set
         self.dataset = dataset
         self.phoneme_features, self.feature_vocab = _load_phoneme_features(dataset)
         self.ngram_features = {}

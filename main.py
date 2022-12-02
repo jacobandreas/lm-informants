@@ -79,10 +79,11 @@ def evaluate_with_external_data(good_data, bad_data, informant, learner):
 def read_in_blicks(path_to_wugs):
     intext = open(path_to_wugs,"r",encoding='utf8').read().strip().split('\n')
     return [item.split(' ') for item in intext]
+
 #@profile
 def main():
 
-    dataset = datasets.load_cmu_onsets()
+    dataset = datasets.load_cmu()
 
     dataset_to_judge_t = read_in_blicks("./data/Blicks/WordsToBeScored.csv")
     dataset_to_judge = []
@@ -125,10 +126,12 @@ def main():
     #informant = informants.InteractiveInformant(dataset)
     logs = {}
     out = open("HumanEvalLogs.csv","w",encoding="utf8")
-    out.write("Step,Run,Strategy,N_INIT,Item,Cost\n")
-    for N_INIT in [0]:
+    out.write("Step,Run,Strategy,N_INIT,Item,Cost,Source\n")
+    eval_metrics = open("ModelEvalLogs.csv","w",encoding="utf8")
+    eval_metrics.write("ent,good,bad,diff,acc,rej,Step,Run,Strategy,N_Init\n")
+    for N_INIT in [0,32,64,128,256]:
         for run in range(3):
-            for strategy in ["train"]:
+            for strategy in ["train","entropy","max","unif","interleave","diff","std"]:
                 index_of_next_item = 0
                 #print(dataset.data[0])
 
@@ -157,7 +160,15 @@ def main():
                 for k, v in scores.items():
                     print(f"{k:8s} {v:.4f}")
                 print()
-                for i in range(32):
+
+                for item, encoded_word in dataset_to_judge:
+                    #c = learner.cost(encoded_word)
+                    j = informant.cost(encoded_word)
+                    # corral_of_judged_human_forms.append((item,c))
+                    out.write(str(N_INIT) + ',' + str(run) + ',' + str(strategy) + ',' + str(N_INIT) + "," + str(
+                        " ".join(item)) + "," + str(j) + "," + str("JUDGE") + '\n')
+                    out.flush()
+                for i in range(500-N_INIT):
                     print(strategy, run, N_INIT + i)
                     candidate = learner.propose(n_candidates=10)
                     judgment = informant.judge(candidate)
@@ -169,19 +180,25 @@ def main():
                     print("ent", (p * np.log(p) + (1-p) * np.log(1-p)).mean())
                     #scores = evaluate_with_external_data(good_dataset,bad_dataset, eval_informant, learner)
                     scores = evaluate(dataset, eval_informant, learner)
-
+                    eval_metrics.write(str((p * np.log(p) + (1-p) * np.log(1-p)).mean())+",")
                     for k, v in scores.items():
                         print(f"{k:8s} {v:.4f}")
+                        eval_metrics.write(str(v)+',')
+                    eval_metrics.write(str(N_INIT+i)+','+str(run)+','+str(strategy)+','+str(N_INIT)+'\n')
+                    eval_metrics.flush()
+
                     for feat, cost in learner.top_features():
                         print(feat, cost)
                     print()
+                    # "ent,good,bad,diff,acc,rej,Step,Run,Strategy,N_Init\n"
 
                     #print("Judging human forms...")
                     #corral_of_judged_human_forms = []
                     for item, encoded_word in dataset_to_judge:
                         c = learner.cost(encoded_word)
+                        #j = informant.cost(encoded_word)
                         #corral_of_judged_human_forms.append((item,c))
-                        out.write(str(N_INIT+i)+','+str(run)+','+str(strategy)+','+str(N_INIT)+","+str(" ".join(item))+","+str(c)+'\n')
+                        out.write(str(N_INIT+i)+','+str(run)+','+str(strategy)+','+str(N_INIT)+","+str(" ".join(item))+","+str(c)+","+str("LEARNER")+'\n')
                         out.flush()
 
                     #scores["external_wugs"] = corral_of_judged_human_forms
