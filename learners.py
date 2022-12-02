@@ -10,8 +10,11 @@ import torch
 from torch import nn, optim
 
 class Learner:
-    def __init__(self, dataset, strategy):
+    def __init__(self, dataset, strategy, linear_train_dataset, index_of_next_item):
         self.dataset = dataset
+        self.linear_train_dataset = linear_train_dataset
+        self.index_of_next_item = index_of_next_item
+        #self.next_token_button = next_token_button
 
         self.propose_train = 0
         if strategy == "diff":
@@ -73,7 +76,11 @@ class Learner:
         obs_set = set(s for s, j in self.observations)
         if np.random.random() < self.propose_train:
             while True:
-                seq = self.dataset.random_example()
+                #seq = self.dataset.random_example()
+                seq = self.linear_train_dataset[self.index_of_next_item]
+                print("proposing item",seq,"with index",self.index_of_next_item)
+
+                self.index_of_next_item += 1
                 if seq not in obs_set:
                     return seq
         candidates = []
@@ -91,8 +98,8 @@ class Learner:
 
 
 class VBLearner(Learner):
-    def __init__(self, dataset, strategy):
-        super().__init__(dataset, strategy)
+    def __init__(self, dataset, strategy, linear_train_dataset,index_of_next_item):
+        super().__init__(dataset, strategy, linear_train_dataset, index_of_next_item )
 
     def initialize_hyp(self):
         return scorers.MeanFieldScorer(self.dataset)
@@ -144,7 +151,10 @@ class VBLearner(Learner):
         obs_set = set(s for s, j in self.observations)
         if np.random.random() < self.propose_train:
             while True:
-                seq = self.dataset.random_example()
+                seq = self.linear_train_dataset[self.index_of_next_item]
+                print("proposing item",seq,"with index",self.index_of_next_item)
+                self.index_of_next_item += 1
+                #seq = self.dataset.random_example()
                 if seq not in obs_set:
                     return seq
         candidates = []
