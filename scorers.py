@@ -47,7 +47,7 @@ class BilinearScorer:
 class MeanFieldScorer:
     def __init__(self, dataset):
         self.ORDER = 2
-        self.LOG_LOG_ALPHA_RATIO = 500 # 45 is what Jacob set
+        self.LOG_LOG_ALPHA_RATIO = 45 # 45 is what Jacob set # was 500
         self.dataset = dataset
         self.phoneme_features, self.feature_vocab = _load_phoneme_features(dataset)
         self.ngram_features = {}
@@ -90,12 +90,12 @@ class MeanFieldScorer:
 
         return new_probs
 
-    def _featurize(self, seq):
+    def _featurize(self, seq): # Canaan edit to do long distance
         features = np.zeros(len(self.ngram_features))
         for i in range(len(seq) - self.ORDER + 1):
             features_here = [self.phoneme_features[seq[j]].nonzero()[0] for j in range(i, i+self.ORDER)]
             for ff in it.product(*features_here):
-                    features[self.ngram_features[ff]] += 1
+                features[self.ngram_features[ff]] += 1
         return features
 
     def cost(self, seq):
@@ -465,7 +465,7 @@ def _load_phoneme_features(dataset):
     phoneme_features = {}
     feature_vocab = Vocab()
 
-    with open("data/hw/phoneme_features.txt") as reader:
+    with open("data/hw/atr_harmony_features.txt") as reader:
         header = next(reader)
         feat_names = header.strip().split("\t")
         feat_names.append("word_boundary")
@@ -494,7 +494,7 @@ def _load_phoneme_features(dataset):
 
 def _load_ngram_features(feature_vocab):
     ngram_features = {2: [], 3: []}
-    with open("data/hw/feature_weights.txt") as reader:
+    with open("data/hw/atr_feature_weights.txt") as reader:
         for line in reader:
             line = line.strip().split("\t")
             features = re.findall(r"\[([^\[\]]+)\]", line[0])

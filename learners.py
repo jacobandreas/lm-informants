@@ -148,6 +148,14 @@ class VBLearner(Learner):
             feats.append((hyp.probs[i].item(), parts))
         return sorted(feats)[-5:]
 
+    def all_features(self):
+        feats = []
+        hyp = self.hypotheses[0]
+        for i, ngram_feat in enumerate(hyp.ngram_features.keys()):
+            parts = " :: ".join(hyp.feature_vocab.get_rev(f) for f in ngram_feat)
+            feats.append((hyp.probs[i].item(), parts))
+        return sorted(feats)
+
     def propose(self, n_candidates):
         obs_set = set(s for s, j in self.observations)
         if np.random.random() < self.propose_train:

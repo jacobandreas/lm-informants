@@ -82,38 +82,42 @@ def read_in_blicks(path_to_wugs):
 
 #@profile
 def main():
+    eval_humans = False
+    write_out_feat_probs = True
+    dataset = datasets.load_atr_harmony()
 
-    dataset = datasets.load_cmu()
+    if write_out_feat_probs:
+        feat_evals = open("FeatureProbs.csv","w",encoding="utf8")
+    if eval_humans:
+        dataset_to_judge_t = read_in_blicks("./data/Blicks/WordsToBeScored.csv")
+        dataset_to_judge = []
+        for item in dataset_to_judge_t:
+            phonemes = [BOUNDARY] + item + [BOUNDARY]
+            # print(phonemes,"is phonemes")
+            encoded_word = dataset.vocab.encode(phonemes)  # expects a list of arpabet chars
+            dataset_to_judge.append((item, encoded_word))
 
-    dataset_to_judge_t = read_in_blicks("./data/Blicks/WordsToBeScored.csv")
-    dataset_to_judge = []
-    for item in dataset_to_judge_t:
-        phonemes = [BOUNDARY] + item + [BOUNDARY]
-        # print(phonemes,"is phonemes")
-        encoded_word = dataset.vocab.encode(phonemes)  # expects a list of arpabet chars
-        dataset_to_judge.append((item, encoded_word))
+        good_dataset_t = read_in_blicks("./data/Blicks/hw_holdout_good.txt")
+        good_dataset = []
+        for item in good_dataset_t:
+            # print()
+            phonemes = [BOUNDARY] + item + [BOUNDARY]
+            # print(phonemes,"is phonemes")
+            encoded_word = dataset.vocab.encode(phonemes)  # expects a list of arpabet chars
+            # print(item,encoded_word,c)
+            good_dataset.append((encoded_word, True))
+        bad_dataset_t = read_in_blicks("./data/Blicks/hw_holdout_bad.txt")
 
-    good_dataset_t = read_in_blicks("./data/Blicks/hw_holdout_good.txt")
-    good_dataset = []
-    for item in good_dataset_t:
-        # print()
-        phonemes = [BOUNDARY] + item + [BOUNDARY]
-        # print(phonemes,"is phonemes")
-        encoded_word = dataset.vocab.encode(phonemes)  # expects a list of arpabet chars
-        # print(item,encoded_word,c)
-        good_dataset.append((encoded_word, True))
-    bad_dataset_t = read_in_blicks("./data/Blicks/hw_holdout_bad.txt")
-
-    bad_dataset = []
-    for item in bad_dataset_t:
-        # print()
-        phonemes = [BOUNDARY] + item + [BOUNDARY]
-        # print(phonemes,"is phonemes")
-        encoded_word = dataset.vocab.encode(phonemes)  # expects a list of arpabet chars
-        # print(item,encoded_word,c)
-        good_dataset.append((encoded_word,True))
-    #print(dataset_to_judge)
-    #assert False
+        bad_dataset = []
+        for item in bad_dataset_t:
+            # print()
+            phonemes = [BOUNDARY] + item + [BOUNDARY]
+            # print(phonemes,"is phonemes")
+            encoded_word = dataset.vocab.encode(phonemes)  # expects a list of arpabet chars
+            # print(item,encoded_word,c)
+            good_dataset.append((encoded_word,True))
+        #print(dataset_to_judge)
+        #assert False
     linear_train_dataset = dataset.data
     np.random.shuffle(linear_train_dataset)
     print(linear_train_dataset)
@@ -125,13 +129,14 @@ def main():
     informant = eval_informant
     #informant = informants.InteractiveInformant(dataset)
     logs = {}
-    out = open("HumanEvalLogs.csv","w",encoding="utf8")
-    out.write("Step,Run,Strategy,N_INIT,Item,Cost,Source\n")
+    if eval_humans:
+        out = open("HumanEvalLogs.csv","w",encoding="utf8")
+        out.write("Step,Run,Strategy,N_INIT,Item,Cost,Source\n")
     eval_metrics = open("ModelEvalLogs.csv","w",encoding="utf8")
     eval_metrics.write("ent,good,bad,diff,acc,rej,Step,Run,Strategy,N_Init\n")
-    for N_INIT in [0,32,64,128,256]:
-        for run in range(3):
-            for strategy in ["train","entropy","max","unif","interleave","diff","std"]:
+    for N_INIT in [0,10,]:
+        for run in range(1):
+            for strategy in ["train","entropy","unif","max"]: # ,"max","unif","interleave","diff","std"
                 index_of_next_item = 0
                 #print(dataset.data[0])
 
@@ -160,19 +165,20 @@ def main():
                 for k, v in scores.items():
                     print(f"{k:8s} {v:.4f}")
                 print()
-
-                for item, encoded_word in dataset_to_judge:
-                    #c = learner.cost(encoded_word)
-                    j = informant.cost(encoded_word)
-                    # corral_of_judged_human_forms.append((item,c))
-                    out.write(str(N_INIT) + ',' + str(run) + ',' + str(strategy) + ',' + str(N_INIT) + "," + str(
-                        " ".join(item)) + "," + str(j) + "," + str("JUDGE") + '\n')
-                    out.flush()
+                if eval_humans:
+                    for item, encoded_word in dataset_to_judge:
+                        #c = learner.cost(encoded_word)
+                        j = informant.cost(encoded_word)
+                        # corral_of_judged_human_forms.append((item,c))
+                        out.write(str(N_INIT) + ',' + str(run) + ',' + str(strategy) + ',' + str(N_INIT) + "," + str(
+                            " ".join(item)) + "," + str(j) + "," + str("JUDGE") + '\n')
+                        out.flush()
                 for i in range(500-N_INIT):
                     print(strategy, run, N_INIT + i)
                     candidate = learner.propose(n_candidates=10)
                     judgment = informant.judge(candidate)
-                    print(" ".join(dataset.vocab.decode(candidate)), judgment)
+                    #print("candidate is", dataset.vocab.decode(candidate),"which was judged",judgment)
+                    #print(" ".join(dataset.vocab.decode(candidate)), judgment)
                     #print(learner.hypotheses[0].entropy(candidate, debug=True))
                     learner.observe(candidate, judgment)
                     #print(learner.hypotheses[0].entropy(candidate, debug=True))
@@ -190,16 +196,21 @@ def main():
                     for feat, cost in learner.top_features():
                         print(feat, cost)
                     print()
+                    if write_out_feat_probs:
+                        for feat, cost in learner.all_features():
+                            feat_evals.write(str(N_INIT)+","+str(feat)+','+str(cost)+","+str(N_INIT+i)+","+str(dataset.vocab.decode(candidate)).replace(",","")+","+str(judgment)+","+str(strategy)+ '\n')
+                            feat_evals.flush()
                     # "ent,good,bad,diff,acc,rej,Step,Run,Strategy,N_Init\n"
 
                     #print("Judging human forms...")
                     #corral_of_judged_human_forms = []
-                    for item, encoded_word in dataset_to_judge:
-                        c = learner.cost(encoded_word)
-                        #j = informant.cost(encoded_word)
-                        #corral_of_judged_human_forms.append((item,c))
-                        out.write(str(N_INIT+i)+','+str(run)+','+str(strategy)+','+str(N_INIT)+","+str(" ".join(item))+","+str(c)+","+str("LEARNER")+'\n')
-                        out.flush()
+                    if eval_humans:
+                        for item, encoded_word in dataset_to_judge:
+                            c = learner.cost(encoded_word)
+                            #j = informant.cost(encoded_word)
+                            #corral_of_judged_human_forms.append((item,c))
+                            out.write(str(N_INIT+i)+','+str(run)+','+str(strategy)+','+str(N_INIT)+","+str(" ".join(item))+","+str(c)+","+str("LEARNER")+'\n')
+                            out.flush()
 
                     #scores["external_wugs"] = corral_of_judged_human_forms
                     scores["step"] = N_INIT + i
