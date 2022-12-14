@@ -28,3 +28,9 @@ for word_full in indat:
         else:
             out.write("NONE"+','+word_full+","+"okay\n")
 
+atr_harmony_scores = open("./data/Blicks/WordsToBeScored_atr.csv","w",encoding='utf8')
+vowels = ['i','a','e','E','I']
+for v1 in vowels:
+    for v2 in vowels:
+        for v3 in vowels:
+            atr_harmony_scores.write("p"+v1+" p"+v2+" p"+v3+'\n')

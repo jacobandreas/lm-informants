@@ -1,0 +1,530 @@
+﻿Word,JudgeScore,OkUnderTransparentHarmony,OkUnderOpaqueHarmony
+pi pi pi,0,TRUE,TRUE
+pi pi pa,0,TRUE,TRUE
+pi pi pe,0,TRUE,TRUE
+pi pi pE,10,FALSE,FALSE
+pi pi pI,10,FALSE,FALSE
+pi pa pi,0,TRUE,TRUE
+pi pa pa,0,TRUE,TRUE
+pi pa pe,0,TRUE,TRUE
+pi pa pE,0,FALSE,TRUE
+pi pa pI,0,FALSE,TRUE
+pi pe pi,0,TRUE,TRUE
+pi pe pa,0,TRUE,TRUE
+pi pe pe,0,TRUE,TRUE
+pi pe pE,10,FALSE,FALSE
+pi pe pI,10,FALSE,FALSE
+pi pE pi,20,FALSE,FALSE
+pi pE pa,10,FALSE,FALSE
+pi pE pe,20,FALSE,FALSE
+pi pE pE,10,FALSE,FALSE
+pi pE pI,10,FALSE,FALSE
+pi pI pi,20,FALSE,FALSE
+pi pI pa,10,FALSE,FALSE
+pi pI pe,20,FALSE,FALSE
+pi pI pE,10,FALSE,FALSE
+pi pI pI,10,FALSE,FALSE
+pa pi pi,0,TRUE,TRUE
+pa pi pa,0,TRUE,TRUE
+pa pi pe,0,TRUE,TRUE
+pa pi pE,10,FALSE,FALSE
+pa pi pI,10,FALSE,FALSE
+pa pa pi,0,TRUE,TRUE
+pa pa pa,0,TRUE,TRUE
+pa pa pe,0,TRUE,TRUE
+pa pa pE,0,TRUE,TRUE
+pa pa pI,0,TRUE,TRUE
+pa pe pi,0,TRUE,TRUE
+pa pe pa,0,TRUE,TRUE
+pa pe pe,0,TRUE,TRUE
+pa pe pE,10,FALSE,FALSE
+pa pe pI,10,FALSE,FALSE
+pa pE pi,10,FALSE,FALSE
+pa pE pa,0,TRUE,TRUE
+pa pE pe,10,FALSE,FALSE
+pa pE pE,0,TRUE,TRUE
+pa pE pI,0,TRUE,TRUE
+pa pI pi,10,FALSE,FALSE
+pa pI pa,0,TRUE,TRUE
+pa pI pe,10,FALSE,FALSE
+pa pI pE,0,TRUE,TRUE
+pa pI pI,0,TRUE,TRUE
+pe pi pi,0,TRUE,TRUE
+pe pi pa,0,TRUE,TRUE
+pe pi pe,0,TRUE,TRUE
+pe pi pE,10,FALSE,FALSE
+pe pi pI,10,FALSE,FALSE
+pe pa pi,0,TRUE,TRUE
+pe pa pa,0,TRUE,TRUE
+pe pa pe,0,TRUE,TRUE
+pe pa pE,0,FALSE,TRUE
+pe pa pI,0,FALSE,TRUE
+pe pe pi,0,TRUE,TRUE
+pe pe pa,0,TRUE,TRUE
+pe pe pe,0,TRUE,TRUE
+pe pe pE,10,FALSE,FALSE
+pe pe pI,10,FALSE,FALSE
+pe pE pi,20,FALSE,FALSE
+pe pE pa,10,FALSE,FALSE
+pe pE pe,20,FALSE,FALSE
+pe pE pE,10,FALSE,FALSE
+pe pE pI,10,FALSE,FALSE
+pe pI pi,20,FALSE,FALSE
+pe pI pa,10,FALSE,FALSE
+pe pI pe,20,FALSE,FALSE
+pe pI pE,10,FALSE,FALSE
+pe pI pI,10,FALSE,FALSE
+pE pi pi,10,FALSE,FALSE
+pE pi pa,10,FALSE,FALSE
+pE pi pe,10,FALSE,FALSE
+pE pi pE,20,FALSE,FALSE
+pE pi pI,20,FALSE,FALSE
+pE pa pi,0,FALSE,TRUE
+pE pa pa,0,TRUE,TRUE
+pE pa pe,0,FALSE,TRUE
+pE pa pE,0,TRUE,TRUE
+pE pa pI,0,TRUE,TRUE
+pE pe pi,10,FALSE,FALSE
+pE pe pa,10,FALSE,FALSE
+pE pe pe,10,FALSE,FALSE
+pE pe pE,20,FALSE,FALSE
+pE pe pI,20,FALSE,FALSE
+pE pE pi,10,FALSE,FALSE
+pE pE pa,0,TRUE,TRUE
+pE pE pe,10,FALSE,FALSE
+pE pE pE,0,TRUE,TRUE
+pE pE pI,0,TRUE,TRUE
+pE pI pi,10,FALSE,FALSE
+pE pI pa,0,TRUE,TRUE
+pE pI pe,10,FALSE,FALSE
+pE pI pE,0,TRUE,TRUE
+pE pI pI,0,TRUE,TRUE
+pI pi pi,10,FALSE,FALSE
+pI pi pa,10,FALSE,FALSE
+pI pi pe,10,FALSE,FALSE
+pI pi pE,20,FALSE,FALSE
+pI pi pI,20,FALSE,FALSE
+pI pa pi,0,FALSE,TRUE
+pI pa pa,0,TRUE,TRUE
+pI pa pe,0,FALSE,TRUE
+pI pa pE,0,TRUE,TRUE
+pI pa pI,0,TRUE,TRUE
+pI pe pi,10,FALSE,FALSE
+pI pe pa,10,FALSE,FALSE
+pI pe pe,10,FALSE,FALSE
+pI pe pE,20,FALSE,FALSE
+pI pe pI,20,FALSE,FALSE
+pI pE pi,10,FALSE,FALSE
+pI pE pa,0,TRUE,TRUE
+pI pE pe,10,FALSE,FALSE
+pI pE pE,0,TRUE,TRUE
+pI pE pI,0,TRUE,TRUE
+pI pI pi,10,FALSE,FALSE
+pI pI pa,0,TRUE,TRUE
+pI pI pe,10,FALSE,FALSE
+pI pI pE,0,TRUE,TRUE
+pI pI pI,0,TRUE,TRUE
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
