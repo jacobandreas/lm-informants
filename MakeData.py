@@ -47,13 +47,14 @@ def make_a_syllable(plus_atr_vowels,minus_atr_vowels, a, consonants, atr_status_
     print("my incoming atr status was",atr_status_of_preceding_syllable,"and i made a syllable",syllable,"and I'm returing an atr status of",atr_status_of_this_syllable)
     return syllable, atr_status_of_this_syllable
 
-def make_a_word(plus_atr_vowels,minus_atr_vowels,a, consonants, length_in_sylls):
+def make_a_word(plus_atr_vowels,minus_atr_vowels,a, consonants, length_in_sylls,follow_atr_rules):
     word = ""
     atr_status_of_preceding_syllable = None
     print("starting a new word!")
     for _ in range(length_in_sylls):
         syll, atr_status_of_current_syllable = make_a_syllable(plus_atr_vowels,minus_atr_vowels, a, consonants, atr_status_of_preceding_syllable)
-        atr_status_of_preceding_syllable = atr_status_of_current_syllable
+        if follow_atr_rules:
+            atr_status_of_preceding_syllable = atr_status_of_current_syllable
         print(atr_status_of_preceding_syllable,syll,atr_status_of_current_syllable)
         word += " "+syll
     #syll, atr_status_of_current_syllable = make_a_syllable(plus_atr_vowels,minus_atr_vowels,a,consonants,atr_status_of_preceding_syllable)
@@ -62,7 +63,28 @@ def make_a_word(plus_atr_vowels,minus_atr_vowels,a, consonants, length_in_sylls)
     return word.strip()
 
 def main(vocab_size, plus_atr_vowels,minus_atr_vowels, a,consonants, λ):
-    lexicon = []
+    training_lexicon = []
+    for _ in range(int(round(vocab_size/10))):
+        length_in_sylls = 0
+        while length_in_sylls == 0:
+            possible_length = int(np.random.poisson(λ, 1))
+            length_in_sylls = possible_length
+
+        print(length_in_sylls, type(length_in_sylls))
+        follow_atr_rules = True
+        word = make_a_word(plus_atr_vowels,minus_atr_vowels,a,consonants,length_in_sylls,follow_atr_rules)
+        if word not in training_lexicon:
+            training_lexicon.append(word)
+
+    out_lexicon = open("./data/hw/atr_harmony_lexicon.txt", "w", encoding='utf8')
+    #print(lexicon)
+    #print(len(lexicon))
+
+    for item in training_lexicon:
+        out_lexicon.write(item + '\n')
+    out_lexicon.close()
+
+    test_set = []
     for _ in range(vocab_size):
         length_in_sylls = 0
         while length_in_sylls == 0:
@@ -70,14 +92,19 @@ def main(vocab_size, plus_atr_vowels,minus_atr_vowels, a,consonants, λ):
             length_in_sylls = possible_length
 
         print(length_in_sylls, type(length_in_sylls))
-        word = make_a_word(plus_atr_vowels,minus_atr_vowels,a,consonants,length_in_sylls)
-        if word not in lexicon:
-            lexicon.append(word)
-    return lexicon
+        follow_atr_rules = False
+        word = make_a_word(plus_atr_vowels, minus_atr_vowels, a, consonants, length_in_sylls, follow_atr_rules)
+        if word not in test_set and word not in training_lexicon:
+            test_set.append(word)
+    out_test = open("test_set.csv", "w", encoding='utf8')
+    for item in test_set:
+        out_test.write(item + '\n')
+
+    #return lexicon
 
 
 
-# +ATR vowels are i, e; -ATR are ɪ, ɛ; a is -ATR with no pair.
+# +ATR vowels are i, e; -ATR are ɪ, ɛ; a is 0ATR.
 # ATR harmony is left-to-right progressive,
 # a is either opaque to or is transparent to harmony
 # we could live in a world where a has a pair too, and either is targeted or not, or triggers or not, or is invisible to or not, harmony
@@ -89,15 +116,15 @@ a = ["a"]
 consonants = ["p","t","k"]
 λ =  2
 
-vocab_size = 10000
+vocab_size = 100000
 
 
-lexicon = main(vocab_size,plus_atr_vowels,minus_atr_vowels,a,consonants,λ)
-out = open("./data/hw/atr_harmony_lexicon.txt","w",encoding='utf8')
-print(lexicon)
-print(len(lexicon))
-for item in lexicon:
-    out.write(item+'\n')
+main(vocab_size,plus_atr_vowels,minus_atr_vowels,a,consonants,λ)
+# out = open("./data/hw/atr_harmony_lexicon.txt","w",encoding='utf8')
+# print(lexicon)
+# print(len(lexicon))
+# for item in lexicon:
+#     out.write(item+'\n')
 # v_tier = []
 # for item in lexicon:
 #     print(item)
