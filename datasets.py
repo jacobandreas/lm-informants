@@ -48,13 +48,14 @@ class Dataset:
     data: list
     vocab: Vocab
     onset: bool = False
+    random: np.random.RandomState = np.random.RandomState(0)
 
     def random_seq(self):
-        length = np.random.randint(2, 5)
+        length = self.random.randint(2, 5)
         #length = 2
         seq = []
         for i in range(length):
-            seq.append(np.random.randint(1, len(self.vocab)))
+            seq.append(self.random.randint(1, len(self.vocab)))
             #seq.append(np.random.choice([
             #    self.vocab.get("D"),
             #    self.vocab.get("AA")
@@ -72,7 +73,8 @@ class Dataset:
             return (0,) + tuple(random.permutation(seq[1:-1])) + (0,)
 
     def random_example(self):
-        return self.data[np.random.randint(len(self.data))]
+        #return self.data[np.random.randint(len(self.data))]
+        return self.data[self.random.randint(len(self.data))]
 
 
 def load_cmu():

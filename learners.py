@@ -31,6 +31,7 @@ class Learner:
             self.strategy = fn
         elif strategy == "unif":
             def fn(costs):
+                assert False, "unreachable"
                 return 0
             self.strategy = fn
         elif strategy == "std":
@@ -170,10 +171,16 @@ class VBLearner(Learner):
         while len(candidates) == 0:
             candidates = [self.dataset.random_seq() for _ in range(n_candidates)]
             candidates = [c for c in candidates if c not in obs_set]
-        scores = [
-            self.hypotheses[0].entropy(c)
-            for c in candidates
-        ]
+        #import ipdb; ipdb.set_trace()
+        if self.strategy_name == "entropy":
+            scores = [
+                self.hypotheses[0].entropy(c)
+                for c in candidates
+            ]
+        elif self.strategy_name == "unif" or self.propose_train > 0:
+            scores = [0 for c in candidates]
+        else:
+            raise NotImplementedError(f"strategy {self.strategy_name} not implemented")
         scored_candidates = list(zip(candidates, scores))
         best = max(scored_candidates, key=lambda p: p[1])
         #print(be, self.strategy(best[1]))

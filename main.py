@@ -15,7 +15,7 @@ from AnalyzeSyntheticData import is_ti
 N_EVAL = 50
 BOUNDARY = "$"
 
-np.random.RandomState(0)
+np.random.seed(0)
 
 #@profile
 
@@ -79,7 +79,7 @@ def evaluate_with_external_data(good_data, bad_data, informant, learner):
 
 def read_in_blicks(path_to_wugs):
     intext = open(path_to_wugs,"r",encoding='utf8').read().strip().split('\n')
-    print("returning blicks", intext,"from path",path_to_wugs)
+    #print("returning blicks", intext,"from path",path_to_wugs)
     return [item.split(' ') for item in intext]
 
 #@profile
@@ -87,6 +87,8 @@ def main():
     eval_humans = True
     write_out_feat_probs = True
     dataset = datasets.load_atr_harmony()
+
+    random = np.random.RandomState(0)
 
     if write_out_feat_probs:
         feat_evals = open("FeatureProbs.csv","w",encoding="utf8")
@@ -128,7 +130,7 @@ def main():
         #print(dataset_to_judge)
         #assert False
     linear_train_dataset = dataset.data
-    np.random.shuffle(linear_train_dataset)
+    random.shuffle(linear_train_dataset)
     #print(linear_train_dataset)
     #dataset = datasets.load_cmu_onsets()
     #dataset = datasets.load_dummy()
@@ -145,7 +147,8 @@ def main():
     eval_metrics.write("ent,good,bad,diff,acc,rej,Step,Run,Strategy,N_Init,IsTI,judgement,proposed_form\n") # including things it queried about
     for N_INIT in [0,16,32,64]:
         for run in range(1):
-            for strategy in ["train","entropy","unif","max","std","diff"]: # ,"max","unif","interleave","diff","std"
+            #for strategy in ["train","entropy","unif","max","std","diff"]: # ,"max","unif","interleave","diff","std"
+            for strategy in ["unif"]:
                 index_of_next_item = 0
                 #print(dataset.data[0])
 
@@ -183,6 +186,13 @@ def main():
                 #             " ".join(item)) + "," + str(j) + "," + str("JUDGE") + '\n')
                 #         out.flush()
                 for i in range(100-N_INIT):
+
+                    candidate = learner.propose(n_candidates=10)
+                    judgment = informant.judge(candidate)
+                    # print("candidate is", dataset.vocab.decode(candidate),"which was judged",judgment)
+                    # print(" ".join(dataset.vocab.decode(candidate)), judgment)
+                    # print(learner.hypotheses[0].entropy(candidate, debug=True))
+                    learner.observe(candidate, judgment)
 
                     p = learner.hypotheses[0].probs
                     print("ent", (p * np.log(p) + (1-p) * np.log(1-p)).mean())
@@ -228,12 +238,6 @@ def main():
                     #assert False
                     log.append(scores)
                     print(strategy, run, N_INIT + i)
-                    candidate = learner.propose(n_candidates=10)
-                    judgment = informant.judge(candidate)
-                    # print("candidate is", dataset.vocab.decode(candidate),"which was judged",judgment)
-                    # print(" ".join(dataset.vocab.decode(candidate)), judgment)
-                    # print(learner.hypotheses[0].entropy(candidate, debug=True))
-                    learner.observe(candidate, judgment)
                     # print(learner.hypotheses[0].entropy(candidate, debug=True))
                 logs[strategy].append(log)
 
