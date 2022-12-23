@@ -183,14 +183,7 @@ def main():
                 #             " ".join(item)) + "," + str(j) + "," + str("JUDGE") + '\n')
                 #         out.flush()
                 for i in range(100-N_INIT):
-                    print(strategy, run, N_INIT + i)
-                    candidate = learner.propose(n_candidates=10)
-                    judgment = informant.judge(candidate)
-                    #print("candidate is", dataset.vocab.decode(candidate),"which was judged",judgment)
-                    #print(" ".join(dataset.vocab.decode(candidate)), judgment)
-                    #print(learner.hypotheses[0].entropy(candidate, debug=True))
-                    learner.observe(candidate, judgment)
-                    #print(learner.hypotheses[0].entropy(candidate, debug=True))
+
                     p = learner.hypotheses[0].probs
                     print("ent", (p * np.log(p) + (1-p) * np.log(1-p)).mean())
                     #scores = evaluate_with_external_data(good_dataset,bad_dataset, eval_informant, learner)
@@ -234,6 +227,14 @@ def main():
                     #print(t)
                     #assert False
                     log.append(scores)
+                    print(strategy, run, N_INIT + i)
+                    candidate = learner.propose(n_candidates=10)
+                    judgment = informant.judge(candidate)
+                    # print("candidate is", dataset.vocab.decode(candidate),"which was judged",judgment)
+                    # print(" ".join(dataset.vocab.decode(candidate)), judgment)
+                    # print(learner.hypotheses[0].entropy(candidate, debug=True))
+                    learner.observe(candidate, judgment)
+                    # print(learner.hypotheses[0].entropy(candidate, debug=True))
                 logs[strategy].append(log)
 
                 with open(f"results_{strategy}.json", "w") as writer:
