@@ -45,11 +45,12 @@ class BilinearScorer:
 
 
 class MeanFieldScorer:
-    def __init__(self, dataset):
+    def __init__(self, dataset, phoneme_features, feature_vocab):
         self.ORDER = 2
         self.LOG_LOG_ALPHA_RATIO = 45 # 45 is what Jacob set # was 500
         self.dataset = dataset
-        self.phoneme_features, self.feature_vocab = _load_phoneme_features(dataset)
+        self.phoneme_features = phoneme_features
+        self.feature_vocab = feature_vocab
         self.ngram_features = {}
         for ff in it.product(range(len(self.feature_vocab)), repeat=self.ORDER):
             self.ngram_features[ff] = len(self.ngram_features)
@@ -83,8 +84,6 @@ class MeanFieldScorer:
 
             posterior = 1 / (1 + np.exp(-log_score))
             new_probs[features[i]] = posterior = np.clip(posterior, 0.01, 0.99)
-
-        #print("extrema", new_probs.max(), new_probs.min(), new_probs.mean())
 
         self.probs = new_probs
 
@@ -341,12 +340,20 @@ class VotingScorer:
 
 
 class HWScorer:
-    def __init__(self, dataset, ngram_features=None):
+    def __init__(self, dataset, source, ngram_features=None):
         self.dataset = dataset
+        self.source = source
 
-        self.phoneme_features, self.feature_vocab = _load_phoneme_features(dataset)
+        if source == "hw":
+            phoneme_feature_path = "data/hw/phoneme_features.txt"
+            ngram_feature_path = "data/hw/feature_weights.txt"
+        elif source == "atr":
+            phoneme_feature_path = "data/hw/atr_harmony_features.txt"
+            ngram_feature_path = "data/hw/atr_feature_weights.txt"
+
+        self.phoneme_features, self.feature_vocab = _load_phoneme_features(dataset, phoneme_feature_path)
         if ngram_features is None:
-            self.ngram_features = _load_ngram_features(self.feature_vocab)
+            self.ngram_features = _load_ngram_features(self.feature_vocab, ngram_feature_path)
         else:
             self.ngram_features = ngram_features
 
@@ -374,7 +381,7 @@ class HWScorer:
     def add(self, feature, cost):
         new_features = copy.deepcopy(self.ngram_features)
         new_features[len(new_features)].append((feature, cost))
-        return HWScorer(self.dataset, new_features)
+        return HWScorer(self.dataset, self.source, new_features)
 
 
     def pp_feature(self, ngram_feature):
@@ -461,11 +468,11 @@ class HWScorer:
         #    print(self.penalty(), new.penalty())
         return new
 
-def _load_phoneme_features(dataset):
+def _load_phoneme_features(dataset, path):
     phoneme_features = {}
     feature_vocab = Vocab()
 
-    with open("data/hw/atr_harmony_features.txt") as reader:
+    with open(path) as reader:
         header = next(reader)
         feat_names = header.strip().split("\t")
         feat_names.append("word_boundary")
@@ -492,9 +499,9 @@ def _load_phoneme_features(dataset):
     return phoneme_features, feature_vocab
 
 
-def _load_ngram_features(feature_vocab):
+def _load_ngram_features(feature_vocab, path):
     ngram_features = {2: [], 3: []}
-    with open("data/hw/atr_feature_weights.txt") as reader:
+    with open(path) as reader:
         for line in reader:
             line = line.strip().split("\t")
             features = re.findall(r"\[([^\[\]]+)\]", line[0])
