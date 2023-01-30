@@ -7,6 +7,7 @@ import scorers
 
 import json
 import numpy as np
+import itertools as it
 from tqdm import tqdm
 from AnalyzeSyntheticData import is_ti
 #global linear_train_dataset
@@ -84,20 +85,25 @@ def read_in_blicks(path_to_wugs):
 
 #@profile
 def main():
-    eval_humans = True
+    write_out_all_features_first_time = False # don't touch this
+    eval_humans = False
     write_out_feat_probs = True
+    feature_query_log = open("feature_query_log.csv","w",encoding='utf8')
+    feature_query_log.write("Feature,Candidate,Step,N_Init,Strategy,Run\n")
+    alL_features_log = open("all_features_log.csv","w",encoding='utf8')
     dataset = datasets.load_atr_harmony()
 
     random = np.random.RandomState(0)
 
     if write_out_feat_probs:
         feat_evals = open("FeatureProbs.csv","w",encoding="utf8")
+        feat_evals.write("N_Init, feature, cost, Step, Candidate, Judgment, Strategy, IsTI, Run\n")
     if eval_humans:
         narrow_test_set_t = read_in_blicks("TI_test.csv")
         narrow_test_set = []
         for item in narrow_test_set_t:
             phonemes = [BOUNDARY] + item + [BOUNDARY]
-            print(phonemes,"is phonemes")
+            #print(phonemes,"is phonemes")
             encoded_word = dataset.vocab.encode(phonemes)  # expects a list of arpabet chars
             narrow_test_set.append((item, encoded_word))
 
@@ -139,6 +145,7 @@ def main():
     #eval_informant = informants.DummyInformant(dataset)
     informant = eval_informant
     #informant = informants.InteractiveInformant(dataset)
+
     logs = {}
     if eval_humans:
         out_human_evals = open("HoldoutEvals.csv","w",encoding="utf8")
@@ -146,9 +153,11 @@ def main():
     eval_metrics = open("ModelEvalLogs.csv","w",encoding="utf8")
     eval_metrics.write("ent,good,bad,diff,acc,rej,Step,Run,Strategy,N_Init,IsTI,judgement,proposed_form\n") # including things it queried about
     for N_INIT in [0,16,32,64]:
-        for run in range(1):
+        for run in range(50):
             #for strategy in ["train","entropy","unif","max","std","diff"]: # ,"max","unif","interleave","diff","std"
-            for strategy in ["unif"]:
+            for strategy in ["entropy","unif","train"]: # only train, entropy, and unif are well-defined here
+                #if strategy == "train":
+                #    run = 19
                 index_of_next_item = 0
                 #print(dataset.data[0])
 
@@ -174,8 +183,8 @@ def main():
                 #scores = evaluate_with_external_data(good_dataset,bad_dataset, eval_informant, learner)
                 scores = evaluate(dataset, eval_informant, learner)
 
-                for k, v in scores.items():
-                    print(f"{k:8s} {v:.4f}")
+                #for k, v in scores.items():
+                    #print(f"{k:8s} {v:.4f}")
                 print()
                 # if eval_humans:
                 #     for item, encoded_word in dataset_to_judge:
@@ -185,35 +194,70 @@ def main():
                 #         out.write(str(N_INIT) + ',' + str(run) + ',' + str(strategy) + ',' + str(N_INIT) + "," + str(
                 #             " ".join(item)) + "," + str(j) + "," + str("JUDGE") + '\n')
                 #         out.flush()
-                for i in range(100-N_INIT):
+                for i in range(128-N_INIT):
+                    candidate = learner.propose(n_candidates=100)
 
-                    candidate = learner.propose(n_candidates=10)
                     judgment = informant.judge(candidate)
-                    # print("candidate is", dataset.vocab.decode(candidate),"which was judged",judgment)
-                    # print(" ".join(dataset.vocab.decode(candidate)), judgment)
-                    # print(learner.hypotheses[0].entropy(candidate, debug=True))
                     learner.observe(candidate, judgment)
 
                     p = learner.hypotheses[0].probs
-                    print("ent", (p * np.log(p) + (1-p) * np.log(1-p)).mean())
+
+                    #print("ent", (p * np.log(p) + (1-p) * np.log(1-p)).mean())
                     #scores = evaluate_with_external_data(good_dataset,bad_dataset, eval_informant, learner)
                     scores = evaluate(dataset, eval_informant, learner)
+                    #print(dataset.vocab.decode(candidate))
+                    total_features = []
+                    total_features_2 = []
+                    mean_field_scorer = learner.hypotheses[0]
+                    features2 = mean_field_scorer._featurize(candidate).nonzero()[0]
+                    #print("feat specific locally",features2)
+                    #features = np.zeros(len(mean_field_scorer.ngram_features))
+                    for z in range(len(candidate) - mean_field_scorer.ORDER + 1):
+                        features_here = [mean_field_scorer.phoneme_features[candidate[j]].nonzero()[0] for j in range(z, z + mean_field_scorer.ORDER)]
+                        for ff in it.product(*features_here):
+                            #features[mean_field_scorer.ngram_features[ff]] += 1
+                            parts = " :: ".join(mean_field_scorer.feature_vocab.get_rev(f) for f in ff)
+                            total_features_2.append(parts)
+                    #print(features)
+
+                    #h2 = learner.hypotheses[0]._featurize(candidate)
+                    #h3 = learner.hypotheses[0]._featurize(candidate).nonzero()
+
+                    #h = learner.hypotheses[0]._featurize(candidate).nonzero()[0]
+                    for q, ngram_feat in enumerate(mean_field_scorer.ngram_features.keys()):
+                        parts = " :: ".join(mean_field_scorer.feature_vocab.get_rev(f) for f in ngram_feat)
+                        total_features.append((mean_field_scorer.probs[q].item(), parts))
+                    #for ngram_feat in features2:
+                    #    parts = " :: ".join(mean_field_scorer.feature_vocab.get_rev(f) for f in ngram_feat)
+                    #    total_features_2.append((mean_field_scorer.probs[i].item(), parts))
+                    #print("here are the features active in ",dataset.vocab.decode(candidate))
+                    #print(len(total_features_2),total_features_2)
+                    #print("here are all the features")
+                    for thing in total_features_2:
+                        feature_query_log.write(str(thing)+','+str(dataset.vocab.decode(candidate))+","+str(N_INIT+i)+","+str(N_INIT)+","+str(strategy)+","+str(run)+"\n")
+                    if write_out_all_features_first_time == False:
+                        for thing in total_features:
+                            alL_features_log.write(str(thing)+"\n")
+                            write_out_all_features_first_time = True
+
+                    #print(len(total_features),total_features)
+                    #print("____________")
                     eval_metrics.write(str((p * np.log(p) + (1-p) * np.log(1-p)).mean())+",")
                     for k, v in scores.items():
-                        print(f"{k:8s} {v:.4f}")
+                        #print(f"{k:8s} {v:.4f}")
                         eval_metrics.write(str(v)+',')
                     eval_metrics.write(str(N_INIT+i)+','+str(run)+','+str(strategy)+','+str(N_INIT)+","+str(is_ti(str(dataset.vocab.decode(candidate)).replace(",","")))+","+str(judgment)+","+str(dataset.vocab.decode(candidate)).replace(",","")+'\n')
                     eval_metrics.flush()
 
-                    for feat, cost in learner.top_features():
-                        print(feat, cost)
-                    print()
+                    #for feat, cost in learner.top_features():
+                    #    print(feat, cost)
+                    #print()
                     if write_out_feat_probs:
-                        for feat, cost in learner.all_features():
-                            feat_evals.write(str(N_INIT)+","+str(feat)+','+str(cost)+","+str(N_INIT+i)+","+str(dataset.vocab.decode(candidate)).replace(",","")+","+str(judgment)+","+str(strategy)+","+str(is_ti(str(dataset.vocab.decode(candidate)).replace(",","")))+ '\n')
+                        for cost, feat in learner.all_features():
+                            feat_evals.write(str(N_INIT)+","+str(feat)+','+str(cost)+","+str(N_INIT+i)+","+str(dataset.vocab.decode(candidate)).replace(",","")+","+str(judgment)+","+str(strategy)+","+str(is_ti(str(dataset.vocab.decode(candidate)).replace(",","")))+','+str(run)+ '\n')
                             feat_evals.flush()
                     # "ent,good,bad,diff,acc,rej,Step,Run,Strategy,N_Init\n"
-
+#
                     #print("Judging human forms...")
                     #corral_of_judged_human_forms = []
                     if eval_humans:
@@ -238,6 +282,9 @@ def main():
                     #assert False
                     log.append(scores)
                     print(strategy, run, N_INIT + i)
+                    print()
+
+
                     # print(learner.hypotheses[0].entropy(candidate, debug=True))
                 logs[strategy].append(log)
 

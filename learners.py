@@ -79,7 +79,7 @@ class Learner:
             while True:
                 #seq = self.dataset.random_example()
                 seq = self.linear_train_dataset[self.index_of_next_item]
-                print("proposing item",seq,"with index",self.index_of_next_item)
+                #print("proposing item",seq,"with index",self.index_of_next_item)
 
                 self.index_of_next_item += 1
                 if seq not in obs_set:
@@ -162,7 +162,7 @@ class VBLearner(Learner):
         if np.random.random() < self.propose_train:
             while True:
                 seq = self.linear_train_dataset[self.index_of_next_item]
-                print("proposing item",seq,"with index",self.index_of_next_item)
+                #print("proposing item",seq,"with index",self.index_of_next_item)
                 self.index_of_next_item += 1
                 #seq = self.dataset.random_example()
                 if seq not in obs_set:

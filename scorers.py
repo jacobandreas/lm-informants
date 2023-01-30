@@ -44,10 +44,10 @@ class BilinearScorer:
         return BilinearScorer(self.vocab, self.dim, new_embeddings, new_weights)
 
 
-class MeanFieldScorer:
+class MeanFieldScorer: # this is us
     def __init__(self, dataset):
         self.ORDER = 2
-        self.LOG_LOG_ALPHA_RATIO = 45 # 45 is what Jacob set # was 500
+        self.LOG_LOG_ALPHA_RATIO = 500 # 45 is what Jacob set # was 500
         self.dataset = dataset
         self.phoneme_features, self.feature_vocab = _load_phoneme_features(dataset)
         self.ngram_features = {}
@@ -55,8 +55,9 @@ class MeanFieldScorer:
             self.ngram_features[ff] = len(self.ngram_features)
         self.probs = 0.5 * np.ones(len(self.ngram_features))
 
-    def update(self, seq, judgment):
+    def update_one_step(self, seq, judgment): # was originally called update
         features = self._featurize(seq).nonzero()[0]
+        #print(features,"are the features in ",seq)
         constraint_probs = self.probs[features]
         new_probs = self.probs.copy()
 
@@ -89,6 +90,65 @@ class MeanFieldScorer:
         self.probs = new_probs
 
         return new_probs
+
+    def update(self, seq, judgment):
+        #   print("updating!")
+        old_probs = self.probs.copy()
+        new_probs = self.update_one_step(seq, judgment)
+        #print(new_probs.shape)
+        #print(old_probs.shape)
+        difference_vector = np.subtract(new_probs, old_probs)
+        #print(difference_vector)
+        #print(difference_vector.shape)
+        error = difference_vector.sum()
+        #print(error)
+        tolerance = 0.001
+        while error > tolerance:
+            #print(error)
+            #print(old_probs)
+            old_probs = new_probs
+            new_probs = self.update_one_step(seq, judgment)
+            difference_vector = np.absolute(np.subtract(new_probs, old_probs))
+            error = difference_vector.sum()
+            #print(error)
+            #print(new_probs)
+        return new_probs
+
+        #
+        # features = self._featurize(seq).nonzero()[0]
+        # # print(features,"are the features in ",seq)
+        # constraint_probs = self.probs[features]
+        # new_probs = self.probs.copy()
+        #
+        # for i in range(len(features)):
+        #     this_prob = constraint_probs[i]
+        #     other_probs = np.concatenate([constraint_probs[:i], constraint_probs[i + 1:]])
+        #     log_p_others = np.log(1 - other_probs).sum()
+        #     if judgment:
+        #         # frac satisfying if off is prob that the others are all off
+        #         # frac satisfying if on is 0
+        #         log_score = (
+        #                 np.log(this_prob) - np.log(1 - this_prob)
+        #                 - np.exp(min(log_p_others + self.LOG_LOG_ALPHA_RATIO, 10))
+        #         )
+        #
+        #     else:
+        #         # frac satifying if off is prob that any other is on
+        #         # frac satisfying if on is 1
+        #         log_score = (
+        #                 np.log(this_prob) - np.log(1 - this_prob)
+        #                 + np.exp(min(log_p_others + self.LOG_LOG_ALPHA_RATIO, 10))
+        #         )
+        #     log_score = np.clip(log_score, -3, 3)
+        #
+        #     posterior = 1 / (1 + np.exp(-log_score))
+        #     new_probs[features[i]] = posterior = np.clip(posterior, 0.01, 0.99)
+        #
+        # # print("extrema", new_probs.max(), new_probs.min(), new_probs.mean())
+        #
+        # self.probs = new_probs
+        #
+        # return new_probs
 
     def _featurize(self, seq): # Canaan edit to do long distance
         features = np.zeros(len(self.ngram_features))
