@@ -46,8 +46,8 @@ class BilinearScorer:
 
 class MeanFieldScorer: # this is us
     def __init__(self, dataset):
-        self.ORDER = 2
-        self.LOG_LOG_ALPHA_RATIO = 500 # 45 is what Jacob set # was 500
+        self.ORDER = 3
+        self.LOG_LOG_ALPHA_RATIO = 45 # 45 is what Jacob set # was 500
         self.dataset = dataset
         self.phoneme_features, self.feature_vocab = _load_phoneme_features(dataset)
         self.ngram_features = {}
@@ -103,15 +103,16 @@ class MeanFieldScorer: # this is us
         error = difference_vector.sum()
         #print(error)
         tolerance = 0.001
-        while error > tolerance:
-            #print(error)
-            #print(old_probs)
-            old_probs = new_probs
-            new_probs = self.update_one_step(seq, judgment)
-            difference_vector = np.absolute(np.subtract(new_probs, old_probs))
-            error = difference_vector.sum()
-            #print(error)
-            #print(new_probs)
+        if judgment:
+            while error > tolerance:
+                #print(error)
+                #print(old_probs)
+                old_probs = new_probs
+                new_probs = self.update_one_step(seq, judgment)
+                difference_vector = np.absolute(np.subtract(new_probs, old_probs))
+                error = difference_vector.sum()
+                #print(error)
+                #print(new_probs)
         return new_probs
 
         #
@@ -161,15 +162,22 @@ class MeanFieldScorer: # this is us
     def cost(self, seq):
         return -self.logprob(seq, True)
 
-    def logprob(self, seq, judgment):
+    def logprob(self, seq, judgment, length_norm = False):
         features = self._featurize(seq).nonzero()[0]
+        num_features_active = len(features)
         constraint_probs = self.probs[features]
 
         logprob_ok = np.log(1 - constraint_probs).sum()
         if judgment:
-            return logprob_ok
+            if length_norm:
+                return logprob_ok/num_features_active
+            else:
+                return logprob_ok
         else:
-            return np.log1p(-torch.exp(logprob_ok))
+            if length_norm:
+                return np.log1p(-torch.exp(logprob_ok))/num_features_active
+            else:
+                return np.log1p(-torch.exp(logprob_ok))
 
     def entropy(self, seq, debug=False):
         features = self._featurize(seq).nonzero()[0]

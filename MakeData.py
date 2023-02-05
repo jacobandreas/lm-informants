@@ -113,10 +113,10 @@ vowels = ["i","I","e","E","a"]
 plus_atr_vowels = ["i","e"]
 minus_atr_vowels = ["I","E"]
 a = ["a"]
-consonants = ["p","t","k"]
+consonants = ["p","t","k","q"]
 λ =  2
 
-vocab_size = 100000
+vocab_size = 1000
 
 
 main(vocab_size,plus_atr_vowels,minus_atr_vowels,a,consonants,λ)

@@ -86,7 +86,7 @@ def read_in_blicks(path_to_wugs):
 #@profile
 def main():
     write_out_all_features_first_time = False # don't touch this
-    eval_humans = False
+    eval_humans = True
     write_out_feat_probs = True
     feature_query_log = open("feature_query_log.csv","w",encoding='utf8')
     feature_query_log.write("Feature,Candidate,Step,N_Init,Strategy,Run\n")
@@ -135,6 +135,7 @@ def main():
         #     good_dataset.append((encoded_word,True))
         #print(dataset_to_judge)
         #assert False
+    forbidden_data_that_cannot_be_queried_about = [item[1] for item in broad_test_set] + [item[1] for item in narrow_test_set] #broad_test_set+narrow_test_set
     linear_train_dataset = dataset.data
     random.shuffle(linear_train_dataset)
     #print(linear_train_dataset)
@@ -152,14 +153,15 @@ def main():
         out_human_evals.write("Step,Run,Strategy,N_INIT,Item,Cost,Source,TestType\n")
     eval_metrics = open("ModelEvalLogs.csv","w",encoding="utf8")
     eval_metrics.write("ent,good,bad,diff,acc,rej,Step,Run,Strategy,N_Init,IsTI,judgement,proposed_form\n") # including things it queried about
-    for N_INIT in [0,16,32,64]:
-        for run in range(50):
+    for N_INIT in [0]:
+        for run in range(10):
             #for strategy in ["train","entropy","unif","max","std","diff"]: # ,"max","unif","interleave","diff","std"
             for strategy in ["entropy","unif","train"]: # only train, entropy, and unif are well-defined here
                 #if strategy == "train":
                 #    run = 19
                 index_of_next_item = 0
                 #print(dataset.data[0])
+                random.shuffle(linear_train_dataset) # turn this off if you want to have train be always the same order.
 
                 #print(len(dataset.data))
                 init_examples = []
@@ -194,8 +196,8 @@ def main():
                 #         out.write(str(N_INIT) + ',' + str(run) + ',' + str(strategy) + ',' + str(N_INIT) + "," + str(
                 #             " ".join(item)) + "," + str(j) + "," + str("JUDGE") + '\n')
                 #         out.flush()
-                for i in range(128-N_INIT):
-                    candidate = learner.propose(n_candidates=100)
+                for i in range(75-N_INIT):
+                    candidate = learner.propose(n_candidates=100, forbidden_data = forbidden_data_that_cannot_be_queried_about)
 
                     judgment = informant.judge(candidate)
                     learner.observe(candidate, judgment)

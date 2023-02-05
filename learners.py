@@ -157,8 +157,9 @@ class VBLearner(Learner):
             feats.append((hyp.probs[i].item(), parts))
         return sorted(feats)
 
-    def propose(self, n_candidates):
-        obs_set = set(s for s, j in self.observations)
+    def propose(self, n_candidates, forbidden_data, length_norm):
+        obs_set_a = set(s for s, j in self.observations)
+        obs_set = set(s for s in (forbidden_data+list(obs_set_a)))
         if np.random.random() < self.propose_train:
             while True:
                 seq = self.linear_train_dataset[self.index_of_next_item]
