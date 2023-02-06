@@ -156,7 +156,7 @@ def main():
     for N_INIT in [0]:
         for run in range(10):
             #for strategy in ["train","entropy","unif","max","std","diff"]: # ,"max","unif","interleave","diff","std"
-            for strategy in ["entropy","unif","train"]: # only train, entropy, and unif are well-defined here
+            for strategy in ["eig","entropy","unif","train"]: # only train, entropy, and unif are well-defined here
                 #if strategy == "train":
                 #    run = 19
                 index_of_next_item = 0
@@ -197,8 +197,7 @@ def main():
                 #             " ".join(item)) + "," + str(j) + "," + str("JUDGE") + '\n')
                 #         out.flush()
                 for i in range(75-N_INIT):
-                    candidate = learner.propose(n_candidates=100, forbidden_data = forbidden_data_that_cannot_be_queried_about)
-
+                    candidate = learner.propose(n_candidates=100, forbidden_data = forbidden_data_that_cannot_be_queried_about, length_norm=True)
                     judgment = informant.judge(candidate)
                     learner.observe(candidate, judgment)
 

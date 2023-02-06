@@ -93,26 +93,45 @@ class MeanFieldScorer: # this is us
 
     def update(self, seq, judgment):
         #   print("updating!")
-        old_probs = self.probs.copy()
-        new_probs = self.update_one_step(seq, judgment)
-        #print(new_probs.shape)
-        #print(old_probs.shape)
-        difference_vector = np.subtract(new_probs, old_probs)
-        #print(difference_vector)
-        #print(difference_vector.shape)
-        error = difference_vector.sum()
+        target_item = True
+        if not target_item:
+            old_probs = self.probs.copy()
+            new_probs = self.update_one_step(seq, judgment)
+            difference_vector = np.subtract(new_probs, old_probs)
+        else:
+            old_cost = self.logprob(seq, judgment)
+            new_probs = self.update_one_step(seq, judgment)
+            new_cost = self.logprob(seq, judgment)
+
+
+            difference_vector = np.subtract(new_cost, old_cost)
+            #print(old_cost,new_cost,"cost thing",difference_vector)
+
+
+        error = abs(difference_vector).sum()
         #print(error)
         tolerance = 0.001
         if judgment:
             while error > tolerance:
+                if not target_item:
                 #print(error)
                 #print(old_probs)
-                old_probs = new_probs
-                new_probs = self.update_one_step(seq, judgment)
-                difference_vector = np.absolute(np.subtract(new_probs, old_probs))
-                error = difference_vector.sum()
-                #print(error)
-                #print(new_probs)
+                    old_probs = new_probs
+                    new_probs = self.update_one_step(seq, judgment)
+                    difference_vector = np.absolute(np.subtract(new_probs, old_probs))
+                    error = abs(difference_vector).sum()
+                    #print(error)
+                    #print(new_probs)
+                else:
+                    old_cost = new_cost
+                    new_probs = self.update_one_step(seq, judgment)
+                    new_cost = self.logprob(seq, judgment)
+
+                    difference_vector = np.subtract(new_cost, old_cost)
+                    error = abs(difference_vector).sum()
+                    #print(old_cost, new_cost, "cost thing", difference_vector)
+
+        #print("converged!",error)
         return new_probs
 
         #
@@ -177,16 +196,23 @@ class MeanFieldScorer: # this is us
             if length_norm:
                 return np.log1p(-torch.exp(logprob_ok))/num_features_active
             else:
+                #print(type(logprob_ok))
+                logprob_ok = torch.from_numpy(np.array(logprob_ok))
+                #print(type(logprob_ok))
+
                 return np.log1p(-torch.exp(logprob_ok))
 
-    def entropy(self, seq, debug=False):
+    def entropy(self, seq, debug=False, length_norm=False):
         features = self._featurize(seq).nonzero()[0]
         constraint_probs = self.probs[features]
         feat_entropies = (
             -constraint_probs * np.log(constraint_probs) 
             -(1-constraint_probs) * np.log(1-constraint_probs)
         )
-        return feat_entropies.sum()
+        if length_norm:
+            return feat_entropies.sum()/len(constraint_probs)
+        else:
+            return feat_entropies.sum()
 
 class LogisticSeqScorer(nn.Module):
     _feature_cache = {}
