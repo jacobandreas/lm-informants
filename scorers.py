@@ -93,7 +93,7 @@ class MeanFieldScorer: # this is us
 
     def update(self, seq, judgment):
         #   print("updating!")
-        target_item = True
+        target_item = False
         if not target_item:
             old_probs = self.probs.copy()
             new_probs = self.update_one_step(seq, judgment)

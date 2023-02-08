@@ -125,16 +125,16 @@ class VBLearner(Learner):
 
         # entropy over features before seeing
         p = self.hypotheses[0].probs
-        entropy_over_features_before_observing_item = abs((p * np.log(p) + (1 - p) * np.log(1 - p)).sum())
+        entropy_over_features_before_observing_item = ((p * np.log(p) + (1 - p) * np.log(1 - p)).sum())
         # entropy over features after seeing if positive
 
         p = self.hypotheses[0].update(seq, True)
-        entropy_over_features_after_observing_item_positive = abs((p * np.log(p) + (1 - p) * np.log(1 - p)).sum())
+        entropy_over_features_after_observing_item_positive = ((p * np.log(p) + (1 - p) * np.log(1 - p)).sum())
         self.hypotheses[0] = learner_before_fussing_around
         # reset learner
         # entropy over features after seeing if negative
         p = self.hypotheses[0].update(seq, False)
-        entropy_over_features_after_observing_item_negative = abs((p * np.log(p) + (1 - p) * np.log(1 - p)).sum())
+        entropy_over_features_after_observing_item_negative = ((p * np.log(p) + (1 - p) * np.log(1 - p)).sum())
         self.hypotheses[0] = learner_before_fussing_around
         # reset learner
 
@@ -216,7 +216,7 @@ class VBLearner(Learner):
         elif self.strategy_name == "unif" or self.propose_train > 0:
             scores = [0 for c in candidates]
         elif self.strategy_name == "eig":
-            scores = [-self.get_eig(c) for c in candidates]
+            scores = [self.get_eig(c) for c in candidates]
         else:
             raise NotImplementedError(f"strategy {self.strategy_name} not implemented")
         scored_candidates = list(zip(candidates, scores))
