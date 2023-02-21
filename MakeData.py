@@ -119,20 +119,37 @@ consonants = ["p","t","k","q"]
 vocab_size = 1000
 
 
-main(vocab_size,plus_atr_vowels,minus_atr_vowels,a,consonants,λ)
-# out = open("./data/hw/atr_harmony_lexicon.txt","w",encoding='utf8')
-# print(lexicon)
-# print(len(lexicon))
-# for item in lexicon:
-#     out.write(item+'\n')
-# v_tier = []
-# for item in lexicon:
-#     print(item)
-#     t = item
-#     for c in consonants:
-#         t = t.replace(c,"")
-#     t = t.replace(' ',"")
-#     #print(t)
-#     v_tier.append(t)
-# #vset = print(set(v_tier))
-#
+
+# main(vocab_size,plus_atr_vowels,minus_atr_vowels,a,consonants,λ)
+
+o = open("all_sylls.csv",'w',encoding='utf8')
+
+length_one_sylls = []
+length_two_sylls = []
+length_three_sylls = []
+
+for v1 in vowels:
+    cv = "p"+v1
+    print(cv)
+    length_one_sylls.append(cv)
+
+
+for v1 in vowels:
+    for v2 in vowels:
+        cvcv ="p"+v1+" p"+v2
+        print(cvcv)
+        length_two_sylls.append(cvcv)
+
+for v1 in vowels:
+    for v2 in vowels:
+        for v3 in vowels:
+            cvcvcv="p"+v1+" p"+v2+" p"+v3
+            print(cvcvcv)
+            length_three_sylls.append(cvcvcv)
+
+print(len(length_one_sylls))
+print(len(length_two_sylls))
+print(len(length_three_sylls))
+
+for word in length_one_sylls+length_two_sylls+length_three_sylls:
+    o.write(word+'\n')

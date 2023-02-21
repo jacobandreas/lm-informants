@@ -10,8 +10,7 @@ import numpy as np
 import itertools as it
 from tqdm import tqdm
 from AnalyzeSyntheticData import is_ti
-#global linear_train_dataset
-#global index_of_train_data_seen
+
 
 N_EVAL = 50
 BOUNDARY = "$"
@@ -85,16 +84,23 @@ def read_in_blicks(path_to_wugs):
 
 #@profile
 def main():
+    list_of_words_to_get_features_from = open("all_sylls.csv","r").read().split('\n')
+    list_of_words_to_get_features_from = [i for i in list_of_words_to_get_features_from if i]
+    print(list_of_words_to_get_features_from)
+    #assert False
     write_out_all_features_first_time = False # don't touch this
     eval_humans = True
     write_out_feat_probs = True
+    get_prior_prob_of_test_set = True
     feature_query_log = open("feature_query_log.csv","w",encoding='utf8')
     feature_query_log.write("Feature,Candidate,Step,N_Init,Strategy,Run\n")
     alL_features_log = open("all_features_log.csv","w",encoding='utf8')
     dataset = datasets.load_atr_harmony()
 
     random = np.random.RandomState(0)
-
+    if get_prior_prob_of_test_set:
+        prior_probs = open("prior_probabilities_of_test_set_items.csv","w",encoding="utf8")
+        prior_probs.write("Word,ProbAcceptable\n")
     if write_out_feat_probs:
         feat_evals = open("FeatureProbs.csv","w",encoding="utf8")
         feat_evals.write("N_Init, feature, cost, Step, Candidate, Judgment, Strategy, IsTI, Run\n")
@@ -156,7 +162,7 @@ def main():
     for N_INIT in [0]:
         for run in range(10):
             #for strategy in ["train","entropy","unif","max","std","diff"]: # ,"max","unif","interleave","diff","std"
-            for strategy in ["eig","entropy","unif","train"]: # only train, entropy, and unif are well-defined here
+            for strategy in ["eig","entropy","unif","train"]: # only train, entropy, eig, and unif are well-defined here
                 #if strategy == "train":
                 #    run = 19
                 index_of_next_item = 0
@@ -196,9 +202,25 @@ def main():
                 #         out.write(str(N_INIT) + ',' + str(run) + ',' + str(strategy) + ',' + str(N_INIT) + "," + str(
                 #             " ".join(item)) + "," + str(j) + "," + str("JUDGE") + '\n')
                 #         out.flush()
+
+                # get prior prob of item in heldout dataset
+                if get_prior_prob_of_test_set:
+                    for i in range(len(broad_test_set)):
+                        #print(broad_test_set[i])# encoded item
+                        #print(broad_test_set_t[i])# human readible item
+                        c = np.exp(learner.hypotheses[0].logprob(broad_test_set[i][1],True,length_norm=False))
+# this can't be, b/c we're interested in the actual prob
+                        prior_probs.write(str(broad_test_set_t[i]).replace(","," ")+','+str(c)+'\n')
+                    get_prior_prob_of_test_set = False
+                #assert False
+
+
                 for i in range(75-N_INIT):
+                    #learner.cost()
                     candidate = learner.propose(n_candidates=100, forbidden_data = forbidden_data_that_cannot_be_queried_about, length_norm=True)
                     judgment = informant.judge(candidate)
+                    #prior_probability_of_accept = learner.cost(candidate)
+
                     learner.observe(candidate, judgment)
 
                     p = learner.hypotheses[0].probs
@@ -207,10 +229,31 @@ def main():
                     #scores = evaluate_with_external_data(good_dataset,bad_dataset, eval_informant, learner)
                     scores = evaluate(dataset, eval_informant, learner)
                     #print(dataset.vocab.decode(candidate))
+
+
                     total_features = []
                     total_features_2 = []
                     mean_field_scorer = learner.hypotheses[0]
                     features2 = mean_field_scorer._featurize(candidate).nonzero()[0]
+
+                    # UNCOMMENT UNTIL ASSERT FALSE TO FIND OUT HOW MANY FEATURES THERE ARE IN THE DATA!!
+                    # a = open("all_feats_in_data.csv","w")
+                    # for cand in list_of_words_to_get_features_from:
+                    #     phonemes = [BOUNDARY] + cand.split(" ") + [BOUNDARY]
+                    #     # print(phonemes,"is phonemes")
+                    #     encoded_word = dataset.vocab.encode(phonemes)
+                    #     for z in range(len(encoded_word) - mean_field_scorer.ORDER + 1):
+                    #         features_here = [mean_field_scorer.phoneme_features[encoded_word[j]].nonzero()[0] for j in
+                    #                          range(z, z + mean_field_scorer.ORDER)]
+                    #         for ff in it.product(*features_here):
+                    #             # features[mean_field_scorer.ngram_features[ff]] += 1
+                    #             parts = " :: ".join(mean_field_scorer.feature_vocab.get_rev(f) for f in ff)
+                    #
+                    #             print(parts)
+                    #
+                    #             a.write(parts+"\n")
+                    #
+                    # assert False
                     #print("feat specific locally",features2)
                     #features = np.zeros(len(mean_field_scorer.ngram_features))
                     for z in range(len(candidate) - mean_field_scorer.ORDER + 1):

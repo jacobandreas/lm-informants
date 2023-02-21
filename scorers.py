@@ -53,7 +53,7 @@ class MeanFieldScorer: # this is us
         self.ngram_features = {}
         for ff in it.product(range(len(self.feature_vocab)), repeat=self.ORDER):
             self.ngram_features[ff] = len(self.ngram_features)
-        self.probs = 0.5 * np.ones(len(self.ngram_features))
+        self.probs = 0.2 * np.ones(len(self.ngram_features))
 
     def update_one_step(self, seq, judgment): # was originally called update
         features = self._featurize(seq).nonzero()[0]
@@ -80,10 +80,10 @@ class MeanFieldScorer: # this is us
                     np.log(this_prob) - np.log(1-this_prob)
                     + np.exp(min(log_p_others + self.LOG_LOG_ALPHA_RATIO, 10))
                 )
-            log_score = np.clip(log_score, -3, 3)
+            log_score = np.clip(log_score, -10, 10)
 
             posterior = 1 / (1 + np.exp(-log_score))
-            new_probs[features[i]] = posterior = np.clip(posterior, 0.01, 0.99)
+            new_probs[features[i]] = posterior = np.clip(posterior, 0.000001, 0.999999)
 
         #print("extrema", new_probs.max(), new_probs.min(), new_probs.mean())
 
@@ -111,7 +111,7 @@ class MeanFieldScorer: # this is us
         error = abs(difference_vector).sum()
         #print(error)
         tolerance = 0.001
-        if judgment:
+        if judgment == True or judgment == False:
             while error > tolerance:
                 if not target_item:
                 #print(error)
@@ -189,7 +189,9 @@ class MeanFieldScorer: # this is us
         logprob_ok = np.log(1 - constraint_probs).sum()
         if judgment:
             if length_norm:
-                return logprob_ok/num_features_active
+                #print("ok!")
+                #print(logprob_ok/num_features_active)
+                return (logprob_ok/num_features_active)
             else:
                 return logprob_ok
         else:

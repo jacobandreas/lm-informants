@@ -126,6 +126,7 @@ class VBLearner(Learner):
         # entropy over features before seeing
         p = self.hypotheses[0].probs
         entropy_over_features_before_observing_item = ((p * np.log(p) + (1 - p) * np.log(1 - p)).sum())
+
         # entropy over features after seeing if positive
 
         p = self.hypotheses[0].update(seq, True)
@@ -138,13 +139,50 @@ class VBLearner(Learner):
         self.hypotheses[0] = learner_before_fussing_around
         # reset learner
 
-        # (ent_before-ent_after_positive)*prob_positive + (ent_before-ent_after_negative)*prob_negative
-        eig = (abs(entropy_over_features_before_observing_item-entropy_over_features_after_observing_item_positive)*prob_being_positive + \
-        abs(entropy_over_features_before_observing_item-entropy_over_features_after_observing_item_negative)*prob_being_negative)
+        # either:
+        delta_positive = entropy_over_features_before_observing_item-entropy_over_features_after_observing_item_positive
+        delta_negative = entropy_over_features_before_observing_item-entropy_over_features_after_observing_item_negative
+        eig = delta_positive*prob_being_positive + delta_negative*prob_being_negative # reduce my entropy
 
-        #print("eig is",eig)
+        # OR
 
+        # the kl-divergence between posteriors before --> observe yes*p(yes) + before --> observe no * p(no)
         return eig
+
+    def get_kl(self, seq):
+        learner_before_fussing_around = self.hypotheses[0]
+
+        # prob of the thing being positive or negative
+        prob_being_positive_a = np.exp(self.hypotheses[0].logprob(seq, True))
+        prob_being_negative_a = np.exp(self.hypotheses[0].logprob(seq, False))
+        prob_being_positive = prob_being_positive_a/(prob_being_positive_a+prob_being_negative_a)
+        prob_being_negative = 1-prob_being_positive
+        assert prob_being_positive + prob_being_negative == 1
+
+        # entropy over features before seeing
+        p = self.hypotheses[0].probs
+        entropy_over_features_before_observing_item = ((p * np.log(p) + (1 - p) * np.log(1 - p)).sum())
+
+        # entropy over features after seeing if positive
+
+        p = self.hypotheses[0].update(seq, True)
+        entropy_over_features_after_observing_item_positive = ((p * np.log(p) + (1 - p) * np.log(1 - p)).sum())
+        self.hypotheses[0] = learner_before_fussing_around
+        # reset learner
+        # entropy over features after seeing if negative
+        p = self.hypotheses[0].update(seq, False)
+        entropy_over_features_after_observing_item_negative = ((p * np.log(p) + (1 - p) * np.log(1 - p)).sum())
+        self.hypotheses[0] = learner_before_fussing_around
+        # reset learner
+
+        # either:
+
+        kl = entropy_over_features_after_observing_item_positive*prob_being_positive + entropy_over_features_after_observing_item_negative*prob_being_negative # reduce my entropy
+
+        # OR
+
+        # the kl-divergence between posteriors before --> observe yes*p(yes) + before --> observe no * p(no)
+        return kl
 
     def cost(self, seq):
         return self.hypotheses[0].cost(seq)
