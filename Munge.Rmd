@@ -3,182 +3,308 @@ title: "FussWithJacobOutput"
 author: "Canaan"
 date: "`r Sys.Date()`"
 output: html_document
+#root_dir: G:/My Drive/MIT/Research/Active Learning with Roger and Jacob Andreas/JacobCode/GridSearch/A
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
-library(tidylog)
+#library(tidylog)
 library(jsonlite)
 library(cowplot)
-setwd("G:/My Drive/MIT/Research/Active Learning with Roger and Jacob Andreas/JacobCode")
+library(ggbeeswarm)
+library(janitor)
+library(tidyfast)
+
+setwd("G:/My Drive/MIT/Research/Active Learning with Roger and Jacob Andreas/JacobCode/GridSearch/A")
 
 ```
 
 
 
-```{r}
-words <- read_csv("WordsAndScores.csv")
-scores <- read_csv("HumanEvalLogs.csv") %>% 
-  rename(Word = Item)
+<!-- ```{r} -->
+<!-- words <- read_csv("WordsAndScores.csv") -->
+<!-- scores <- read_csv("HumanEvalLogs.csv") %>%  -->
+<!--   rename(Word = Item) -->
 
-oracle <- scores %>% 
-  filter(Source == "JUDGE") 
+<!-- oracle <- scores %>%  -->
+<!--   filter(Source == "JUDGE")  -->
 
-learner <- scores %>% 
-  filter(Source == "LEARNER")
+<!-- learner <- scores %>%  -->
+<!--   filter(Source == "LEARNER") -->
 
-full <- left_join(words,learner, by = "Word") %>% 
-  distinct() %>% 
-  rename(Source = Source.x)
+<!-- full <- left_join(words,learner, by = "Word") %>%  -->
+<!--   distinct() %>%  -->
+<!--   rename(Source = Source.x) -->
 
-oracles <- left_join(words,oracle,by = "Word") %>% 
-  distinct() %>% 
-  rename(Source = Source.x) %>% 
-  group_by(Source,Step,Strategy,N_INIT) %>% 
-  summarise(r=cor(Score,Cost)) %>% 
-  ungroup() %>% 
-  select(Source, r) %>% 
-  distinct()
+<!-- oracles <- left_join(words,oracle,by = "Word") %>%  -->
+<!--   distinct() %>%  -->
+<!--   rename(Source = Source.x) %>%  -->
+<!--   group_by(Source,Step,Strategy,N_INIT) %>%  -->
+<!--   summarise(r=cor(Score,Cost)) %>%  -->
+<!--   ungroup() %>%  -->
+<!--   select(Source, r) %>%  -->
+<!--   distinct() -->
 
-a <- full %>% 
-  group_by(Source,Step,Strategy,N_INIT) %>% 
-  summarise(r=cor(Score,Cost))
+<!-- a <- full %>%  -->
+<!--   group_by(Source,Step,Strategy,N_INIT) %>%  -->
+<!--   summarise(r=cor(Score,Cost)) -->
 
-a %>% 
-  ggplot(aes(x=Step,y=r, group=Strategy, color = Strategy))+
-  geom_smooth()+
-  theme_bw()+
-  facet_wrap(~N_INIT*Source,ncol = 3)
+<!-- a %>%  -->
+<!--   ggplot(aes(x=Step,y=r, group=Strategy, color = Strategy))+ -->
+<!--   geom_smooth()+ -->
+<!--   theme_bw()+ -->
+<!--   facet_wrap(~N_INIT*Source,ncol = 3) -->
 
-ggsave("EvalJudgments.jpeg",height=10,width=10)
+<!-- ggsave("EvalJudgments.jpeg",height=10,width=10) -->
 
 
-ah <- a %>% 
-  filter(Source == "AH_2003",
-  #       Strategy == "train"
-  ) %>% 
-  ggplot(aes(x=Step,y=r, group=Strategy, color = Strategy))+
-  geom_hline(yintercept = as.numeric(oracles[1,2])*-1, linetype = "dashed", color = "red")+
-  geom_smooth()+
-  ylim(-1,1)+
-  theme_bw()+
-  theme(legend.position = "none")+
-  facet_wrap(~Source)
-ah
-jlhw <- a %>% 
-  filter(Source == "JLHW_Canaan",
-  #       Strategy == "train"
-  ) %>% 
-  ggplot(aes(x=Step,y=r, group=Strategy, color = Strategy))+
-  geom_hline(yintercept = as.numeric(oracles[2,2])*-1, linetype = "dashed", color = "red")+
-  geom_smooth()+
-  ylim(-1,1)+
-  theme_bw()+
-  theme(legend.position = "none")+
-  facet_wrap(~Source)
-jlhw
-scholes <- a %>% 
-  filter(Source == "Scholes",
-  #       Strategy == "train"
-  ) %>% 
-  ggplot(aes(x=Step,y=r, group=Strategy, color = Strategy))+
-  geom_hline(yintercept = as.numeric(oracles[3,2])*-1, linetype = "dashed", color = "red")+
-  geom_smooth()+
-  ylim(-1,1)+
-  theme_bw()+
-  theme(legend.position = "right")+
-  facet_wrap(~Source)
-scholes
+<!-- ah <- a %>%  -->
+<!--   filter(Source == "AH_2003", -->
+<!--   #       Strategy == "train" -->
+<!--   ) %>%  -->
+<!--   ggplot(aes(x=Step,y=r, group=Strategy, color = Strategy))+ -->
+<!--   geom_hline(yintercept = as.numeric(oracles[1,2])*-1, linetype = "dashed", color = "red")+ -->
+<!--   geom_smooth()+ -->
+<!--   ylim(-1,1)+ -->
+<!--   theme_bw()+ -->
+<!--   theme(legend.position = "none")+ -->
+<!--   facet_wrap(~Source) -->
+<!-- ah -->
+<!-- jlhw <- a %>%  -->
+<!--   filter(Source == "JLHW_Canaan", -->
+<!--   #       Strategy == "train" -->
+<!--   ) %>%  -->
+<!--   ggplot(aes(x=Step,y=r, group=Strategy, color = Strategy))+ -->
+<!--   geom_hline(yintercept = as.numeric(oracles[2,2])*-1, linetype = "dashed", color = "red")+ -->
+<!--   geom_smooth()+ -->
+<!--   ylim(-1,1)+ -->
+<!--   theme_bw()+ -->
+<!--   theme(legend.position = "none")+ -->
+<!--   facet_wrap(~Source) -->
+<!-- jlhw -->
+<!-- scholes <- a %>%  -->
+<!--   filter(Source == "Scholes", -->
+<!--   #       Strategy == "train" -->
+<!--   ) %>%  -->
+<!--   ggplot(aes(x=Step,y=r, group=Strategy, color = Strategy))+ -->
+<!--   geom_hline(yintercept = as.numeric(oracles[3,2])*-1, linetype = "dashed", color = "red")+ -->
+<!--   geom_smooth()+ -->
+<!--   ylim(-1,1)+ -->
+<!--   theme_bw()+ -->
+<!--   theme(legend.position = "right")+ -->
+<!--   facet_wrap(~Source) -->
+<!-- scholes -->
 
-p <- plot_grid(ah,jlhw,scholes, nrow = 1, rel_widths = c(1,1,1.5))
-p
+<!-- p <- plot_grid(ah,jlhw,scholes, nrow = 1, rel_widths = c(1,1,1.5)) -->
+<!-- p -->
 
-ggsave("EvalJudgments_WithInformant.jpeg",height=7,width=10)
+<!-- ggsave("EvalJudgments_WithInformant.jpeg",height=7,width=10) -->
 
-```
+<!-- ``` -->
 
 # now do model evals
 
 ```{r}
 
-eval_metrics <- read_csv("ModelEvalLogs.csv")
+eval_metrics_ur <- read_csv("./GridSearch/D/ModelEvalLogs.csv") %>% 
+  mutate(vowel_skeleton = str_replace_all(proposed_form, "[$\' ()ptkq]","")) %>% 
+  mutate(clean_vowels = case_when(
+    str_detect(vowel_skeleton, "iI") ~ 0,
+    str_detect(vowel_skeleton, "iE") ~ 0,
+    str_detect(vowel_skeleton, "eI") ~ 0,
+    str_detect(vowel_skeleton, "eE") ~ 0,
+    str_detect(vowel_skeleton, "Ii") ~ 0,
+    str_detect(vowel_skeleton, "Ie") ~ 0,
+    str_detect(vowel_skeleton, "Ei") ~ 0,
+    str_detect(vowel_skeleton, "Ee") ~ 0,
+    T ~ 1
+  )) %>% 
+  mutate(IsNotSpuriousTI = if_else(IsTI == TRUE & clean_vowels == 1, 1,0))#
 
-eval_metrics_long <- eval_metrics %>% 
-  pivot_longer(cols = c(ent:rej), names_to = "name",values_to = "vals") %>% 
-  group_by(name) %>% 
-  mutate(vals_scaled = scale(vals)) %>% 
-  #group_by(Source,Step,Strategy,N_INIT) %>% 
-  #summarise(r=cor(Score,Cost)) %>% 
-  #ungroup() %>% 
-  #select(Source, r) %>% 
-  distinct()
+eval_metrics <- eval_metrics_ur %>% 
+  filter(IsNotSpuriousTI == 1)
 
-eval_metrics_long %>% 
-  filter(name == "diff") %>% 
-  ggplot(aes(x=Step,y = vals, group = N_Init, color = as.factor(N_Init)))+
-  geom_smooth()+
-  facet_wrap(~Strategy*name, ncol = 6)+
-  theme_bw()
-
-ggsave("EvalMetrics.jpeg",width=14, height = 10)
-
-```
-
-# check whether you get a tipping-point datapoint
-```{r}
-feat_probs <- read_csv("FeatureProbs.csv", col_names = F) %>% 
-  rename(N_INIT = X1,
-    FeatProb = X2,
-         Feature = X3,
-         Step = X4,
-         Candidate = X5,
-         Judgement = X6,
-         Strategy = X7)
-```
-
-over time the features where we know nothing should diminish; so x1=.5 should go down.
-
-```{r}
-feat_probs %>% 
-  #filter()
-  select(FeatProb,Step,Candidate,Feature,Strategy,N_INIT) %>% 
-  mutate(Direction = case_when(FeatProb == 0.5 ~ "Uninformed",
-                               FeatProb > 0.5 ~ "Higher",
-                               FeatProb < 0.5 ~ "Lower"
-           ))%>% 
-  group_by(Step, Strategy,Direction,N_INIT) %>% 
-  summarise(n = n()) %>% 
-  distinct() %>% 
-  ggplot(aes(x=Step, y = n, group = Direction, color = Direction))+
-  geom_smooth()+
-  facet_wrap(~Strategy*N_INIT, ncol = 4)+
-  theme_bw()
-
-# so the features should sum to 64 at each step
-
-feat_probs %>% 
-  select(Feature) %>% 
-  distinct() %>% 
-  count()
-```
-
-the features that we know are good (low) are +atr+atr, -atr-atr; the ones we know should be bad (high) are -atr+atr,+atr-atr.
+eval_metrics %>% 
+  filter(Strategy != "train") %>% 
+  ggplot(aes(x=Step, fill = Strategy))+
+  #geom_density(aes(alpha=0.4))+
+  geom_histogram()+
+  theme_bw()+
+facet_wrap(~N_Init, scales = "free_x")
 
 
-```{r}
-feat_probs %>% 
-  mutate(FeatureType = if_else(Feature %in% c("+atr :: -atr", "-atr :: +atr"), "ShouldBeHigh_Bad","ShouldBeLow_Good")) %>% 
-  group_by(FeatureType,Strategy,Step,N_INIT) %>% 
-  summarise(AverageFeatProb = mean(FeatProb)) %>% 
+ggsave("./GridSearch/D_firsts.jpeg")
+# so it looks like the entropy measures is asking about discerning forms first.
+
+# what is the distribution of average firsts like across runs?
+
+s <- eval_metrics %>% 
+  filter(Strategy != "train") %>% 
+  group_by(Run,Strategy,N_Init) %>% 
+  summarise(t = min(Step-N_Init)) %>% 
   ungroup() %>% 
-  distinct() %>% 
-  ggplot(aes(x=Step, y = AverageFeatProb, group = FeatureType,color = FeatureType))+
-  geom_smooth()+
-  ylim(0,1)+
-  facet_wrap(~Strategy*N_INIT,ncol = 4)+
-  theme_bw()
+  group_by(Strategy,N_Init) %>% 
+  summarise(mean_queries_before_critical = mean(t)) 
+
+write_csv(s,"./GridSearch/D_average_first.csv")
+
 ```
+
+match points in feature evolution with cases in classifier
+
+```{r}
+
+t <- read_csv("./GridSearch/A/FeatureProbs.csv", col_names = T )
+
+points_to_get_features_for <- eval_metrics %>%
+  filter(Strategy != "train") %>% 
+  group_by(Run,Strategy,N_Init) %>% 
+  summarise(first_occurrence = min(Step)) #%>% 
+
+d <- c()
+
+for (i in 1:nrow(points_to_get_features_for)){
+  
+  current_row <- points_to_get_features_for[i,]
+  
+  current_row$Relation <- "Current"
+  doctored_before <- current_row
+    doctored_before$first_occurrence <- current_row$first_occurrence-1
+doctored_before$Relation <- "Before"
+  doctored_after <- current_row
+  
+  doctored_after$first_occurrence <- current_row$first_occurrence+1
+  doctored_after$Relation <- "After"
+
+    d[[length(d)+1]] <- doctored_before
+  d[[length(d)+1]] <- current_row
+
+  d[[length(d)+1]] <- doctored_after
+}
+  
+rows_to_get_full_data_for <- d %>% bind_rows() %>% 
+  rename(Step = first_occurrence)
+
+rows_with_accuracy_data <- rows_to_get_full_data_for %>% 
+  left_join(eval_metrics_ur) %>% 
+  left_join(t) %>% 
+  mutate(Relation = fct_relevel(Relation, c("Before","Current","After")))
+
+# now we have the metrics for the step before the first time seeing the most informative token by each strategy, run, and N_Init
+
+
+```
+
+now do forest plots of parameter values
+
+```{r}
+step_1_2 <- t %>% 
+  filter(Step < 5,
+         Run == 0,
+         #Strategy == "eig",
+  
+         )
+
+step_1_2 %>% 
+  ggplot(aes(x=cost, y = feature, color = Judgment))+
+  geom_point()+
+  facet_wrap(~Strategy*Step, nrow = 4)+
+  theme_bw()+
+  xlim(0,1)
+```
+
+
+now plot some of this
+
+```{r}
+rows_with_accuracy_data %>% 
+  select(Run,Strategy,N_Init,Step,Relation,diff) %>% 
+  distinct() %>% 
+  ggplot(aes(x = Relation, y = diff, color = Strategy, group = Strategy))+
+  geom_point()+
+  #geom_smooth()+
+  theme_bw()+
+  facet_wrap(~N_Init)
+
+
+
+rows_with_accuracy_data %>% 
+  select(Run,Strategy,N_Init,Relation,feature,cost) %>% 
+  group_by(Strategy,N_Init,Relation,feature) %>% 
+  summarise(mean_cost = mean(cost)) %>% 
+  #arrange(mean_cost) %>% 
+  ggplot(aes(x = Relation, y = feature, fill = mean_cost))+
+  #geom_jitter()+
+  geom_tile()+
+  theme_bw()+
+  facet_wrap(~N_Init*Strategy)
+
+rows_with_accuracy_data %>% 
+  filter(feature %in% c("+atr :: +low :: -atr", "-atr :: +low :: +atr")) %>% 
+  select(Run,Strategy,N_Init,Relation,feature,cost)%>% 
+  group_by(Strategy,N_Init,Relation,feature) %>% 
+  summarise(mean_cost = mean(cost)) %>% 
+  #arrange(mean_cost) %>% 
+  ggplot(aes(x = Relation, y = feature, fill = mean_cost))+
+  #geom_jitter()+
+  geom_tile()+
+  theme_bw()+
+  facet_wrap(~N_Init*Strategy, nrow = 4)
+```
+
+
+
+<!-- ```{r} -->
+
+<!-- u <- read_csv("HoldoutEvals.csv") %>%  -->
+<!--   rename(N_Init = N_INIT) -->
+
+<!-- narrow_test <- u %>%  -->
+<!--   filter(TestType == "NarrowTest") %>%  -->
+<!--   group_by(Strategy,Run,Step,N_Init) %>%  -->
+<!--   summarise(mean_cost = mean(Cost)) -->
+
+
+<!-- broad_test <- u %>%  -->
+<!--   filter(TestType == "BroadTest") %>%  -->
+<!--   group_by(Strategy,Run,Step,N_Init) %>%  -->
+<!--   summarise(mean_cost = mean(Cost)) -->
+
+<!-- rows_with_narrow_holdout_data <- rows_to_get_full_data_for %>%  -->
+<!--   left_join(narrow_test) %>%  -->
+<!--   mutate(Relation = fct_relevel(Relation, c("Before","Current","After"))) -->
+
+
+<!-- rows_with_broad_holdout_data <- rows_to_get_full_data_for %>%  -->
+<!--   left_join(broad_test) %>%  -->
+<!--   mutate(Relation = fct_relevel(Relation, c("Before","Current","After"))) -->
+
+<!-- rows_with_narrow_holdout_data %>%  -->
+<!--   ggplot(aes(x=Relation, y = mean_cost, group = Strategy, color = as.factor(Strategy)))+ -->
+<!--   geom_smooth()+ -->
+<!--   theme_bw()+ -->
+<!--   facet_wrap(~N_Init) -->
+
+
+<!-- rows_with_broad_holdout_data %>%  -->
+<!--   ggplot(aes(x=Relation, y = mean_cost, group = Strategy, color = as.factor(Strategy)))+ -->
+<!--   geom_beeswarm()+ -->
+<!--   theme_bw()+ -->
+<!--   facet_wrap(~Strategy) -->
+
+
+
+<!-- eval_metrics_ur %>%  -->
+<!--   filter(Strategy != "train") %>%  -->
+<!--   select(Step,Run,proposed_form,N_Init,Strategy) %>%  -->
+<!--   group_by(Strategy,N_Init) %>%  -->
+<!--   summarise(diversity_of_proposed_forms = n_distinct(proposed_form)) -->
+
+<!-- ``` -->
+
+
+
 
 okay, so, broadly true if we get negative judgments, but it doesn't change under non-informativeness.
 
@@ -187,91 +313,30 @@ so the learner *should*, as soon as we have evidence for the licensed feature co
 
 it seems like there's the issue of rejections not being bumped up enough (or at all)
 
-ALSO, in the train-only, we should see the same sequence over runs, right? 
-
-```{r}
-a <- feat_probs %>% 
-  filter(Strategy=="train") %>% 
-  select(Candidate,Step) %>% 
-  #distinct() %>% 
-  group_by(Step) %>% 
-  mutate(p = n_distinct(Candidate),
-         n = n()) %>% 
-  ungroup() %>% 
-  distinct()
-  
-```
-
-so this works over multiple runs of the train, does it work over multiple N_Inits?
-
-yes!
 
 
-up is bad, down is good
-
-so, do we see a sudden change after the first rejection judgment?
-
-```{r}
-feat_probs %>% 
-  filter(N_INIT == 0) %>% 
-  mutate(FeatureType = if_else(Feature %in% c("+atr :: -atr", "-atr :: +atr"), "ShouldBeHigh_Bad","ShouldBeLow_Good")) %>% 
-  group_by(FeatureType,Strategy,Step) %>% 
-  summarise(AverageFeatProb = mean(FeatProb),
-            J = Judgement) %>% 
-  ungroup() %>% 
-  distinct() %>% 
-  #pivot_wider(names_from = FeatureType, values_from = AverageFeatProb) %>% 
-  ggplot(aes(x=Step, y = AverageFeatProb, group = J,color = J))+
-  geom_point(aes(shape = FeatureType))+
-  ylim(0,1)+
-  facet_wrap(~Strategy)+
-  theme_bw()
-
-
-```
-now zoom into the first 32 or so
-
-```{r}
-
-feat_probs %>% 
-  filter(N_INIT == 0,
-         Step < 32) %>% 
-  mutate(FeatureType = if_else(Feature %in% c("+atr :: -atr", "-atr :: +atr"), "ShouldBeHigh_Bad","ShouldBeLow_Good")) %>% 
-  group_by(FeatureType,Strategy,Step) %>% 
-  summarise(AverageFeatProb = mean(FeatProb),
-            J = Judgement) %>% 
-  ungroup() %>% 
-  distinct() %>% 
-  #pivot_wider(names_from = FeatureType, values_from = AverageFeatProb) %>% 
-  ggplot(aes(x=Step, y = AverageFeatProb, group = J,color = J))+
-  geom_point(aes(shape = FeatureType))+
-  ylim(0,1)+
-  facet_wrap(~Strategy)+
-  theme_bw()
-
-```
 
 # analysis of synthetic characteristics of data
 
-```{r}
-corpus_stats <- read_csv("analysis_of_characteristics_of_synthetic_data.csv") %>% 
-  mutate(NSylls = str_count(WordContainingIt, " ")+1)
-
-
-```
+# ```{r}
+# corpus_stats <- read_csv("analysis_of_characteristics_of_synthetic_data.csv") %>% 
+#   mutate(NSylls = str_count(WordContainingIt, " ")+1)
+# 
+# 
+# ```
 
 how rare are telling sequences?
 
-```{r}
-s <- corpus_stats %>% 
-  select(-WordContainingIt,-TellingSubsequence) %>% 
-  group_by(NSylls,ProperJudgementForWord) %>% 
-  summarise(n = n()) %>% 
-  pivot_wider(values_from = n, names_from = ProperJudgementForWord) %>% 
-  mutate(percent_telling_tokens = bad/(okay+bad))
+<!-- ```{r} -->
+<!-- s <- corpus_stats %>%  -->
+<!--   select(-WordContainingIt,-TellingSubsequence) %>%  -->
+<!--   group_by(NSylls,ProperJudgementForWord) %>%  -->
+<!--   summarise(n = n()) %>%  -->
+<!--   pivot_wider(values_from = n, names_from = ProperJudgementForWord) %>%  -->
+<!--   mutate(percent_telling_tokens = bad/(okay+bad)) -->
 
 
-```
+<!-- ``` -->
 
 
 
@@ -281,77 +346,380 @@ I guess the question is how often until we discover that; right? its easy to lea
 
 
 # see how the model feels about the space of possible words over time - extensional evaluatino
+# 
+# ```{r, eval=FALSE}
+# words <- read_csv("WordsAndScores_atr.csv") %>% 
+#   filter(!is.na(Word)) %>% 
+#   mutate(TypeOfEvidence = case_when(
+#     OkUnderTransparentHarmony == TRUE & OkUnderOpaqueHarmony == TRUE ~ "OkUnderBoth",
+#     OkUnderTransparentHarmony == FALSE & OkUnderOpaqueHarmony == TRUE ~ "OnlyOkUnderOpaqueHarmony",
+#     OkUnderTransparentHarmony == FALSE & OkUnderOpaqueHarmony == FALSE ~ "BadUnderBoth",
+#     OkUnderTransparentHarmony == TRUE & OkUnderOpaqueHarmony == FALSE ~ "ERROR"
+#   )) %>% 
+#   select(Word,JudgeScore,TypeOfEvidence)
+# 
+# scores <- read_csv("HumanEvalLogs.csv") %>% 
+#   rename(Word = Item) %>% 
+#   select(-Source)
+# 
+# full <- left_join(words,scores, by = "Word")
+# 
+# full %>% 
+#   filter(N_INIT == 0,
+#          Step <=10) %>% 
+#   ggplot(aes(x=Step, y = Cost, group = TypeOfEvidence, color = TypeOfEvidence))+
+#   geom_smooth()+
+#   facet_wrap(~Strategy, scales = "free_y")+
+#   theme_bw()
+# ggsave("EvalJudgments.jpeg",height=10,width=10)
+
+# 
+# ah <- a %>% 
+#   filter(Source == "AH_2003",
+#   #       Strategy == "train"
+#   ) %>% 
+#   ggplot(aes(x=Step,y=r, group=Strategy, color = Strategy))+
+#   geom_hline(yintercept = as.numeric(oracles[1,2])*-1, linetype = "dashed", color = "red")+
+#   geom_smooth()+
+#   ylim(-1,1)+
+#   theme_bw()+
+#   theme(legend.position = "none")+
+#   facet_wrap(~Source)
+# ah
+# jlhw <- a %>% 
+#   filter(Source == "JLHW_Canaan",
+#   #       Strategy == "train"
+#   ) %>% 
+#   ggplot(aes(x=Step,y=r, group=Strategy, color = Strategy))+
+#   geom_hline(yintercept = as.numeric(oracles[2,2])*-1, linetype = "dashed", color = "red")+
+#   geom_smooth()+
+#   ylim(-1,1)+
+#   theme_bw()+
+#   theme(legend.position = "none")+
+#   facet_wrap(~Source)
+# jlhw
+# scholes <- a %>% 
+#   filter(Source == "Scholes",
+#   #       Strategy == "train"
+#   ) %>% 
+#   ggplot(aes(x=Step,y=r, group=Strategy, color = Strategy))+
+#   geom_hline(yintercept = as.numeric(oracles[3,2])*-1, linetype = "dashed", color = "red")+
+#   geom_smooth()+
+#   ylim(-1,1)+
+#   theme_bw()+
+#   theme(legend.position = "right")+
+#   facet_wrap(~Source)
+# scholes
+# 
+# p <- plot_grid(ah,jlhw,scholes, nrow = 1, rel_widths = c(1,1,1.5))
+# p
+# 
+# ggsave("EvalJudgments_WithInformant.jpeg",height=7,width=10)
+
+<!-- ``` -->
+# feature query analysis
 
 ```{r}
-words <- read_csv("WordsAndScores_atr.csv") %>% 
-  filter(!is.na(Word)) %>% 
-  mutate(TypeOfEvidence = case_when(
-    OkUnderTransparentHarmony == TRUE & OkUnderOpaqueHarmony == TRUE ~ "OkUnderBoth",
-    OkUnderTransparentHarmony == FALSE & OkUnderOpaqueHarmony == TRUE ~ "OnlyOkUnderOpaqueHarmony",
-    OkUnderTransparentHarmony == FALSE & OkUnderOpaqueHarmony == FALSE ~ "BadUnderBoth",
-    OkUnderTransparentHarmony == TRUE & OkUnderOpaqueHarmony == FALSE ~ "ERROR"
-  )) %>% 
-  select(Word,JudgeScore,TypeOfEvidence)
 
-scores <- read_csv("HumanEvalLogs.csv") %>% 
-  rename(Word = Item) %>% 
-  select(-Source)
+features_queried_about_ur <- read_file("./GridSearch/D/feature_query_log.csv")
 
-full <- left_join(words,scores, by = "Word")
+features_queried_about <- features_queried_about_ur %>% 
+  str_replace_all("\', \'"," ") %>% 
+  str_split("\\r\\n") %>% 
+  unlist()%>% 
+  data.frame() %>% 
+  separate(data = ., col = `.`, sep = ",", into = c("1",'2','3','4','5','6')) %>% 
+  row_to_names(row_number = 1)
 
-full %>% 
-  filter(N_INIT == 0,
-         Step <=10) %>% 
-  ggplot(aes(x=Step, y = Cost, group = TypeOfEvidence, color = TypeOfEvidence))+
-  geom_smooth()+
-  facet_wrap(~Strategy, scales = "free_y")+
-  theme_bw()
-ggsave("EvalJudgments.jpeg",height=10,width=10)
+a <- features_queried_about %>% 
+  mutate(t_group = paste0(N_Init,Strategy,Run)) %>% 
+  select(Feature,Step,t_group)
+
+num_distinct_groups <- a %>% 
+  select(t_group) %>% 
+  distinct()
+
+list_of_feats_at_this_step <- list()
+list_of_feats_to_date <- list()
 
 
-ah <- a %>% 
-  filter(Source == "AH_2003",
-  #       Strategy == "train"
-  ) %>% 
-  ggplot(aes(x=Step,y=r, group=Strategy, color = Strategy))+
-  geom_hline(yintercept = as.numeric(oracles[1,2])*-1, linetype = "dashed", color = "red")+
-  geom_smooth()+
-  ylim(-1,1)+
-  theme_bw()+
-  theme(legend.position = "none")+
-  facet_wrap(~Source)
-ah
-jlhw <- a %>% 
-  filter(Source == "JLHW_Canaan",
-  #       Strategy == "train"
-  ) %>% 
-  ggplot(aes(x=Step,y=r, group=Strategy, color = Strategy))+
-  geom_hline(yintercept = as.numeric(oracles[2,2])*-1, linetype = "dashed", color = "red")+
-  geom_smooth()+
-  ylim(-1,1)+
-  theme_bw()+
-  theme(legend.position = "none")+
-  facet_wrap(~Source)
-jlhw
-scholes <- a %>% 
-  filter(Source == "Scholes",
-  #       Strategy == "train"
-  ) %>% 
-  ggplot(aes(x=Step,y=r, group=Strategy, color = Strategy))+
-  geom_hline(yintercept = as.numeric(oracles[3,2])*-1, linetype = "dashed", color = "red")+
-  geom_smooth()+
-  ylim(-1,1)+
-  theme_bw()+
-  theme(legend.position = "right")+
-  facet_wrap(~Source)
-scholes
+for (row in 1:nrow(num_distinct_groups)){
+  print(row)
+  #print(num_distinct_groups[row,])
+  current_group_name <- as.character(num_distinct_groups[row,])
+  #print(current_group_name)
 
-p <- plot_grid(ah,jlhw,scholes, nrow = 1, rel_widths = c(1,1,1.5))
-p
+  just_that_group <- a %>% 
+    filter(t_group == current_group_name) # current_group_name
+  steps <- just_that_group %>% 
+    select(Step) %>% 
+    distinct()
+  previous_step_features <- tibble()
+  for (step in 1:nrow(steps)){
+    #print(step)
+    current_step_name <- as.character(steps[step,])
+    just_that_step <- just_that_group %>% 
+      filter(Step == current_step_name)
+    this_step_features <- just_that_step %>% 
+      select(Feature) %>% 
+      distinct()
+    num_features_at_this_step <- nrow(this_step_features)
+    total_features_to_date_in_this_group <- previous_step_features %>% 
+      rbind(this_step_features) %>% 
+      distinct()
+    previous_step_features <- total_features_to_date_in_this_group
+    num_features_to_date_in_this_group <- total_features_to_date_in_this_group %>% 
+      nrow()
+    #print(paste0("this is step ",current_step_name," in group ",current_group_name,". There are  this many unique features ",num_features_at_this_step," and this many total features to date in this group ",num_features_to_date_in_this_group))
+    
+    list_of_feats_at_this_step[[length(list_of_feats_at_this_step)+1]] <- num_features_at_this_step
+    list_of_feats_to_date[[length(list_of_feats_to_date)+1]] <- num_features_to_date_in_this_group
 
-ggsave("EvalJudgments_WithInformant.jpeg",height=7,width=10)
+    
+  }
+}
+
+
+
+combined_t <- features_queried_about %>% 
+  select(N_Init,Strategy,Run,Candidate,Step) %>% 
+  distinct() 
+
+temp <- cbind(list_of_feats_at_this_step,list_of_feats_to_date) 
+
+colnames(temp) <- c("NumFeatsAtThisStep","NumFeatsToDate")
+
+combined <- combined_t %>% 
+  cbind(temp) %>% 
+  mutate(NumFeatsAtThisStep = as.numeric(NumFeatsAtThisStep),
+         NumFeatsToDate = as.numeric(NumFeatsToDate))
+
+write_csv(combined,"combined.csv")
+
+combined <- read_csv("combined.csv")
 
 ```
 
-so it looks like train isn't learning to punish anything, this is the no negative evidence issue? unsure.
+plot
+
+```{r}
+combined %>% 
+    filter(Strategy == "entropy",
+         Run == 1, 
+         N_Init == 0,
+         ) %>% 
+  mutate(t_group = paste0(N_Init,Strategy,Run)) %>% 
+  ggplot(aes(x=as.numeric(Step),y = as.numeric(NumFeatsToDate), group = t_group))+
+  geom_path()+  
+  #geom_hline(yintercept = 512, color = "red", linetype = "dashed")+
+  #facet_wrap(~Strategy*N_Init)+
+  theme_bw()
+
+
+c <- combined %>% 
+  filter(Strategy == "entropy",
+         Run == 1, 
+         N_Init == 0,
+         Step >20) %>% 
+  select(Candidate)
+
+
+
+t <- combined %>% 
+  mutate(t_group = paste0(N_Init,Strategy,Step)) %>% 
+  group_by(t_group) %>% 
+  mutate(mean = mean(NumFeatsToDate),
+            sd = sd(NumFeatsToDate, na.rm = T)) %>% 
+  select(mean,sd,N_Init,Strategy,Step) %>% 
+  distinct()
+
+combined %>% 
+  mutate(t_group = paste0(N_Init,Strategy,Run)) %>% 
+  ggplot(aes(x=as.numeric(Step),y = as.numeric(NumFeatsToDate), group = Strategy, color = Strategy))+
+  #geom_path()+
+  geom_smooth()+
+  geom_hline(yintercept = 294, color = "red", linetype = "dashed")+
+  #facet_wrap(~N_Init)+
+  theme_bw()
+
+ggsave("./GridSearch/D_feature_discovery.jpeg")
+
+```
+
+look at the model characteristics over time
+
+```{r}
+chars <- read_csv("./GridSearch/A/ModelEvalLogs.csv") %>% 
+  mutate(IsAccepted = if_else(judgement == FALSE, 0, 1),
+         IsRejected = if_else(judgement == TRUE, 0,1)) %>% 
+  group_by(Run,Strategy,N_Init) %>% 
+  mutate(cumsum_accepted = cumsum(IsAccepted),
+         cumsum_rejected = cumsum(IsRejected)) %>% 
+  ungroup() %>% 
+  mutate(average_logprob_accepted_data = replace_na(acc/cumsum_accepted, 0),
+         average_logprob_rejected_data = replace_na(rej/cumsum_rejected,0)
+         ) %>% 
+  select(diff,acc,rej,cumsum_accepted,cumsum_rejected,judgement,average_logprob_accepted_data,average_logprob_rejected_data,Run,Strategy,N_Init,Step,ent)
+
+
+chars %>% 
+  #filter(Run < 2) %>% 
+  select(N_Init,Step,Strategy,Run,acc,rej,average_logprob_accepted_data,average_logprob_rejected_data) %>% 
+  pivot_longer(cols = c(average_logprob_accepted_data,average_logprob_rejected_data)) %>% 
+  ggplot(aes(x=Step,y = value, color = name, group = paste0(name,Run)))+
+  geom_path()+
+  facet_wrap(~N_Init*Strategy, ncol =3)+
+  theme_bw()
+
+chars %>% 
+  #filter(Run < 2) %>% 
+  select(N_Init,Step,Strategy,Run,acc,rej,average_logprob_accepted_data,average_logprob_rejected_data) %>% 
+  mutate(good_minus_bad = average_logprob_accepted_data-average_logprob_rejected_data) %>% 
+
+  #pivot_longer(cols = c(average_logprob_accepted_data,average_logprob_rejected_data)) %>%
+  ggplot(aes(x=Step,y = good_minus_bad, color = Strategy, group = paste0(Strategy)))+
+  geom_smooth()+
+  facet_wrap(~N_Init, nrow =3)+
+  theme_bw()
+
+
+
+chars %>% 
+  #filter(Run < 2) %>% 
+  select(N_Init,ent,Step,Strategy,Run,acc,rej,average_logprob_accepted_data,average_logprob_rejected_data) %>% 
+  #pivot_longer(cols = c(average_logprob_accepted_data,average_logprob_rejected_data)) %>% 
+  ggplot(aes(x=Step,y = ent, color = Strategy, group = paste0(Strategy,Run)))+
+  geom_path()+
+  facet_wrap(~N_Init, nrow =3)+
+  theme_bw()
+
+chars %>% 
+  #filter(Run < 2) %>% 
+  select(N_Init,ent,Step,Strategy,Run,acc,rej,average_logprob_accepted_data,average_logprob_rejected_data) %>% 
+  #pivot_longer(cols = c(average_logprob_accepted_data,average_logprob_rejected_data)) %>% 
+  ggplot(aes(x=Step,y = ent, color = Strategy, group = Strategy))+
+  geom_smooth()+
+  facet_wrap(~N_Init,)+
+  theme_bw()
+
+```
+
+what is -ent doing?
+
+check diff
+
+```{r}
+chars %>% 
+  #filter(Run < 2) %>% 
+  select(N_Init,diff,Step,Strategy,Run) %>% 
+  #pivot_longer(cols = c(average_logprob_accepted_data,average_logprob_rejected_data)) %>% 
+  ggplot(aes(x=Step,y = diff, color = Strategy, group = Strategy))+
+  geom_smooth()+
+  facet_wrap(~N_Init, nrow =3)+
+  theme_bw()
+```
+
+so this is okay; how often are the "bad" shuffled data actually bad?
+
+
+# check on heldout data
+
+```{r}
+heldout_performance_broad_addins <- read_csv("broad_test_set_annotated.csv") %>% 
+  rename(Item = Word) %>% 
+  mutate(Length = str_count(Item, " ")+1) 
+
+
+
+heldout_performance <- read_csv("./GridSearch/A/HoldoutEvals.csv") %>% 
+  filter(TestType == "BroadTest")
+
+heldout_combined <- heldout_performance %>% 
+  left_join(heldout_performance_broad_addins) 
+
+
+```
+
+now plot
+
+```{r}
+heldout_combined %>% 
+ # mutate(Cost = Cost/Length) %>% 
+  group_by(Step,IsLicit,Run,Strategy) %>% 
+  summarise(mean = mean(Cost)) %>% 
+  pivot_wider(names_from = IsLicit, values_from = mean) %>% 
+  mutate(NLLBad_minus_NLLGood = `FALSE`-`TRUE`) %>% 
+  ggplot(aes(x= Step, y = NLLBad_minus_NLLGood, color = Strategy))+
+  geom_smooth()+
+  theme_bw()
+  #facet_wrap(~Run, nrow = 3)
+```
+now plot classifier accuracy
+
+want to predict IsLicit from Cost for each Step/Strategy/Run/N_Init
+
+```{r}
+
+
+library(purrr)
+library(modelr)
+library(broom)
+library(pROC)
+library(tidymodels)
+sums <- heldout_combined %>% 
+  group_by(Strategy,Step,Run) %>% 
+  crossv_kfold(10) %>%
+  mutate(model = purrr::map(train, ~glm(IsLicit ~ Cost, data=., family=binomial))) %>% 
+  unnest( fitted = map2(model, test, ~augment(.x, newdata = .y)),
+          pred = map2( model, test, ~predict( .x, .y, type = "response")) ) %>%
+  select(.id,IsLicit,.fitted, pred,Strategy,Step,Run) %>%
+  mutate(IsLicit2 = as.factor(if_else(IsLicit == TRUE,"C1","C2"))) %>% 
+  group_by(.id,Strategy,Step,Run) %>%
+summarise(auc = roc(IsLicit2, .fitted, quiet = T)$auc[1])
+
+
+  
+sums %>% 
+  ggplot(aes(x=Step, y = auc, group = Run))+
+  geom_smooth()+
+  facet_wrap(~Strategy)+
+  theme_bw()
+
+write_csv(sums,"./GridSearch/A_summary.csv")
+ggsave("./GridSearch/A_auc.jpeg") 
+
+
+```
+
+
+now the narrow set
+
+```{r}
+narrow_test_set <- read_csv("./GridSearch/E/HoldoutEvals.csv") %>% 
+  filter(TestType != "BroadTest") %>% 
+    mutate(Length = str_count(Item, " ")+1) 
+
+
+narrow_test_set %>%   
+  mutate(Cost = Cost/Length) %>% 
+
+  group_by(Step,Run,Strategy) %>% 
+  summarise(mean = mean(Cost)) %>% 
+  #pivot_wider(names_from = IsLicit, values_from = mean) %>% 
+  #mutate(NLLBad_minus_NLLGood = `FALSE`-`TRUE`) %>% 
+  ggplot(aes(x= Step, y = mean, color = Strategy))+
+  geom_smooth()+
+  theme_bw()#
++
+  facet_wrap(~Run, nrow = 3)
+```
+
+# check to see how many features are in possible
+
+```{r}
+a <- read_csv("all_feats_in_data.csv", col_names = F) %>% 
+  distinct()
+
+write_csv(a,"all_features_in_data_unique.csv")
+```
 

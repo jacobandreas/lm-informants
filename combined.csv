@@ -1,0 +1,3002 @@
+N_Init,Strategy,Run,Candidate,Step,NumFeatsAtThisStep,NumFeatsToDate
+0,eig,0,('$ pE te $'),0,18,18
+0,eig,0,('$ pi kE $'),1,18,32
+0,eig,0,('$ ti kE $'),2,18,32
+0,eig,0,('$ pE ti $'),3,18,38
+0,eig,0,('$ tE kI $'),4,18,42
+0,eig,0,('$ qe qa ta $'),5,22,60
+0,eig,0,('$ ta ta qE $'),6,22,74
+0,eig,0,('$ qi ka pi $'),7,30,95
+0,eig,0,('$ ka qa tE $'),8,22,95
+0,eig,0,('$ pI tI qa $'),9,33,117
+0,eig,0,('$ ta kE qa $'),10,24,128
+0,eig,0,('$ te qe $'),11,18,130
+0,eig,0,('$ pa pa kI $'),12,22,134
+0,eig,0,('$ tI ti qe $'),13,45,157
+0,eig,0,('$ qa ta pI $'),14,22,157
+0,eig,0,('$ qi ta $'),15,12,158
+0,eig,0,('$ qe ta ta $'),16,22,158
+0,eig,0,('$ pi qe $'),17,18,158
+0,eig,0,('$ qa qI $'),18,12,159
+0,eig,0,('$ pa qI qa $'),19,24,163
+0,eig,0,('$ qE pa pE $'),20,30,172
+0,eig,0,('$ pE qi $'),21,18,172
+0,eig,0,('$ ta ta kE $'),22,22,172
+0,eig,0,('$ qa ka ki $'),23,22,176
+0,eig,0,('$ qE pE $'),24,18,176
+0,eig,0,('$ qi tI ti $'),25,45,197
+0,eig,0,('$ qa ki $'),26,12,198
+0,eig,0,('$ qa qe ke $'),27,33,208
+0,eig,0,('$ qe kI $'),28,18,209
+0,eig,0,('$ qi qI $'),29,18,209
+0,eig,0,('$ ki qE $'),30,18,209
+0,eig,0,('$ pe qE $'),31,18,209
+0,eig,0,('$ qi pI $'),32,18,209
+0,eig,0,('$ pi pE $'),33,18,209
+0,eig,0,('$ pi kI $'),34,18,209
+0,eig,0,('$ ki tE $'),35,18,209
+0,eig,0,('$ qi kI $'),36,18,209
+0,eig,0,('$ qi tE $'),37,18,209
+0,eig,0,('$ te tE $'),38,18,209
+0,eig,0,('$ te qi $'),39,18,209
+0,eig,0,('$ pe ka pI $'),40,30,211
+0,eig,0,('$ kE ta $'),41,12,211
+0,eig,0,('$ qa qa qa kE $'),42,26,212
+0,eig,0,('$ ta ta qi $'),43,22,212
+0,eig,0,('$ ki qa ta $'),44,22,216
+0,eig,0,('$ pE qa ta $'),45,22,218
+0,eig,0,('$ kI ta ta $'),46,22,218
+0,eig,0,('$ pI qE $'),47,18,218
+0,eig,0,('$ pE qa qa $'),48,22,218
+0,eig,0,('$ qa pI $'),49,12,218
+0,eig,0,('$ pI pa tI $'),50,30,222
+0,eig,0,('$ kE tI $'),51,18,222
+0,eig,0,('$ te pa $'),52,12,222
+0,eig,0,('$ qi te $'),53,18,222
+0,eig,0,('$ qI ta qa $'),54,22,222
+0,eig,0,('$ ta ka kI $'),55,22,222
+0,eig,0,('$ pI ka pa $'),56,22,222
+0,eig,0,('$ ta qa ti $'),57,22,222
+0,eig,0,('$ pi qa qe $'),58,30,222
+0,eig,0,('$ ti pa ta $'),59,22,222
+0,eig,0,('$ ta pa pi $'),60,22,222
+0,eig,0,('$ kI ta $'),61,12,222
+0,eig,0,('$ ka qI qa $'),62,24,222
+0,eig,0,('$ ke qi $'),63,18,222
+0,eig,0,('$ kI pa qa $'),64,22,222
+0,eig,0,('$ qa ke qa $'),65,24,224
+0,eig,0,('$ pa ka tI $'),66,22,224
+0,eig,0,('$ pa ta kI $'),67,22,224
+0,eig,0,('$ tI ka pa $'),68,22,224
+0,eig,0,('$ ta pa tI $'),69,22,224
+0,eig,0,('$ ti pa ka $'),70,22,224
+0,eig,0,('$ pE ka $'),71,12,224
+0,eig,0,('$ pa pe pa $'),72,24,224
+0,eig,0,('$ pE pE $'),73,18,224
+0,eig,0,('$ qa pa pi $'),74,22,224
+0,entropy,0,('$ ki qi pe ta $'),0,54,54
+0,entropy,0,('$ qa tE kI $'),1,33,87
+0,entropy,0,('$ pa kI ta ki $'),2,42,123
+0,entropy,0,('$ qI pa qa $'),3,22,139
+0,entropy,0,('$ qE kI pi tI $'),4,64,183
+0,entropy,0,('$ qa ta ka qi $'),5,30,201
+0,entropy,0,('$ ki pI qa $'),6,33,216
+0,entropy,0,('$ ki ka tE $'),7,30,228
+0,entropy,0,('$ pa ti qE $'),8,33,239
+0,entropy,0,('$ pa ki qe $'),9,33,246
+0,entropy,0,('$ pa ti ti $'),10,33,249
+0,entropy,0,('$ qa qi pi $'),11,33,249
+0,entropy,0,('$ ka pi ki $'),12,33,249
+0,entropy,0,('$ ka pi ti $'),13,33,249
+0,entropy,0,('$ ta qi pi $'),14,33,249
+0,entropy,0,('$ qa qi qi $'),15,33,249
+0,entropy,0,('$ pa pe qi $'),16,33,249
+0,entropy,0,('$ ti kI qI qe $'),17,66,265
+0,entropy,0,('$ ki kE qI qE $'),18,68,267
+0,entropy,0,('$ kE ti qa $'),19,33,273
+0,entropy,0,('$ kE ki pa $'),20,33,273
+0,entropy,0,('$ kE pi pa pi $'),21,51,276
+0,entropy,0,('$ ki ki tI kE $'),22,60,278
+0,entropy,0,('$ ki kI pI ti $'),23,60,278
+0,entropy,0,('$ pi qi qI ti $'),24,60,279
+0,entropy,0,('$ ke pI kI $'),25,45,279
+0,entropy,0,('$ pe qI qI ta $'),26,60,280
+0,entropy,0,('$ qi pE kI $'),27,45,280
+0,entropy,0,('$ ke pI qI qe $'),28,69,280
+0,entropy,0,('$ ta kI te $'),29,33,281
+0,entropy,0,('$ pa pi tI ti $'),30,60,281
+0,entropy,0,('$ pi tI kI $'),31,45,281
+0,entropy,0,('$ ka qI ti $'),32,33,281
+0,entropy,0,('$ qi qI tI pE $'),33,60,281
+0,entropy,0,('$ qi tI ki $'),34,45,281
+0,entropy,0,('$ ke kI qI $'),35,45,281
+0,entropy,0,('$ qi kI qI $'),36,45,281
+0,entropy,0,('$ pi pI tI $'),37,45,281
+0,entropy,0,('$ qi pI qI ka $'),38,60,281
+0,entropy,0,('$ pi pi qI qi $'),39,60,281
+0,entropy,0,('$ pi kI tI $'),40,45,281
+0,entropy,0,('$ ti ki qI pI $'),41,54,281
+0,entropy,0,('$ ti qI kI $'),42,45,281
+0,entropy,0,('$ qi tE pI kE $'),43,68,281
+0,entropy,0,('$ ke ti pI pI $'),44,60,281
+0,entropy,0,('$ qi qI tI $'),45,45,281
+0,entropy,0,('$ qa qi pI tI $'),46,60,281
+0,entropy,0,('$ ti tE qI $'),47,45,281
+0,entropy,0,('$ pi kE tI $'),48,45,281
+0,entropy,0,('$ ti tI tI $'),49,45,281
+0,entropy,0,('$ qi tE kI $'),50,45,281
+0,entropy,0,('$ ki kE pI $'),51,45,281
+0,entropy,0,('$ ti qI ki $'),52,45,281
+0,entropy,0,('$ qi tI qI $'),53,45,281
+0,entropy,0,('$ pi pI kI qa $'),54,60,281
+0,entropy,0,('$ pi kE kI $'),55,45,281
+0,entropy,0,('$ qi kI tI $'),56,45,281
+0,entropy,0,('$ qi qI qI tI $'),57,54,281
+0,entropy,0,('$ qe tI kI $'),58,45,281
+0,entropy,0,('$ ke qI tI pa $'),59,60,281
+0,entropy,0,('$ te qI tI $'),60,45,281
+0,entropy,0,('$ qI pi pI qI $'),61,60,281
+0,entropy,0,('$ pe pE pI $'),62,45,281
+0,entropy,0,('$ ti qE kI $'),63,45,281
+0,entropy,0,('$ pi pI qI $'),64,45,281
+0,entropy,0,('$ ta ti pE pI $'),65,60,281
+0,entropy,0,('$ kI qi kI tI $'),66,60,281
+0,entropy,0,('$ ti tI pI $'),67,45,281
+0,entropy,0,('$ pE ke kI qI $'),68,66,282
+0,entropy,0,('$ qi pI pi ka $'),69,60,282
+0,entropy,0,('$ ki qI ti $'),70,45,282
+0,entropy,0,('$ te pi qI pi $'),71,64,282
+0,entropy,0,('$ ke qI qI $'),72,45,282
+0,entropy,0,('$ tI ki pI qI $'),73,60,282
+0,entropy,0,('$ ki pI tI $'),74,45,282
+0,unif,0,('$ te pI pi qe $'),0,68,68
+0,unif,0,('$ qi kI kE ta $'),1,56,104
+0,unif,0,('$ qa pE qi tI $'),2,58,139
+0,unif,0,('$ pa qI ka ta $'),3,34,160
+0,unif,0,('$ tI qE ka ka $'),4,39,169
+0,unif,0,('$ kI pI kE te $'),5,60,184
+0,unif,0,('$ tI tI qI tE $'),6,54,189
+0,unif,0,('$ ki te qE ta $'),7,56,205
+0,unif,0,('$ tI ka pE $'),8,30,218
+0,unif,0,('$ te tE te qa $'),9,56,224
+0,unif,0,('$ te pI kI pE $'),10,66,225
+0,unif,0,('$ ka pE $'),11,12,225
+0,unif,0,('$ tE kI $'),12,18,227
+0,unif,0,('$ qE ti pe qI $'),13,70,235
+0,unif,0,('$ pI qI kE $'),14,45,235
+0,unif,0,('$ qI ti qi pE $'),15,66,235
+0,unif,0,('$ ke qa kE kI $'),16,49,246
+0,unif,0,('$ qi qI ka qI $'),17,51,254
+0,unif,0,('$ pE tI qE tE $'),18,60,254
+0,unif,0,('$ tE qI ki $'),19,45,254
+0,unif,0,('$ pa ka pi ke $'),20,43,265
+0,unif,0,('$ qE pe ki $'),21,45,265
+0,unif,0,('$ qI qa ki qE $'),22,51,270
+0,unif,0,('$ tE tI ti $'),23,45,270
+0,unif,0,('$ tE pi tI $'),24,45,270
+0,unif,0,('$ tE qi pI $'),25,45,270
+0,unif,0,('$ pi qa ke $'),26,30,272
+0,unif,0,('$ pe pe ka qe $'),27,48,273
+0,unif,0,('$ qi ke qE qE $'),28,60,273
+0,unif,0,('$ pi pi tI $'),29,45,273
+0,unif,0,('$ kI qe ka $'),30,33,274
+0,unif,0,('$ qE pE $'),31,18,274
+0,unif,0,('$ ta ti te $'),32,33,275
+0,unif,0,('$ te kI kE ta $'),33,58,275
+0,unif,0,('$ pa tI $'),34,12,275
+0,unif,0,('$ pa ke $'),35,12,275
+0,unif,0,('$ ta qa $'),36,8,275
+0,unif,0,('$ ka ka ke tI $'),37,41,278
+0,unif,0,('$ qa ka ke tI $'),38,41,278
+0,unif,0,('$ pI kE kI pa $'),39,60,280
+0,unif,0,('$ te ki $'),40,18,280
+0,unif,0,('$ qi qI kE qe $'),41,64,280
+0,unif,0,('$ qa ke qi ka $'),42,48,280
+0,unif,0,('$ ta qE ka $'),43,24,281
+0,unif,0,('$ tI pi $'),44,18,281
+0,unif,0,('$ ta kE ti $'),45,33,281
+0,unif,0,('$ ti qi qa te $'),46,51,281
+0,unif,0,('$ pe qa qa ki $'),47,36,282
+0,unif,0,('$ pI qE ki qE $'),48,70,282
+0,unif,0,('$ pE pI qe ta $'),49,58,282
+0,unif,0,('$ ke kE te ki $'),50,64,282
+0,unif,0,('$ pi qe ke $'),51,45,283
+0,unif,0,('$ qi kE ti tE $'),52,71,283
+0,unif,0,('$ ki kE $'),53,18,283
+0,unif,0,('$ pi pi $'),54,18,283
+0,unif,0,('$ qe tI qa tI $'),55,51,283
+0,unif,0,('$ pE qI pi $'),56,45,283
+0,unif,0,('$ te tI ka $'),57,33,283
+0,unif,0,('$ te te $'),58,18,283
+0,unif,0,('$ ke qI qa ka $'),59,43,283
+0,unif,0,('$ pI pi $'),60,18,283
+0,unif,0,('$ pa pE $'),61,12,283
+0,unif,0,('$ te pa $'),62,12,283
+0,unif,0,('$ pa tE pi $'),63,33,283
+0,unif,0,('$ tI qa $'),64,12,283
+0,unif,0,('$ pI pa $'),65,12,283
+0,unif,0,('$ qa qI $'),66,12,283
+0,unif,0,('$ pe ta $'),67,12,283
+0,unif,0,('$ ke pa qe qe $'),68,48,283
+0,unif,0,('$ qE qI pI $'),69,45,283
+0,unif,0,('$ pi pa te $'),70,30,283
+0,unif,0,('$ pE ki kE pe $'),71,70,283
+0,unif,0,('$ tE kI tI te $'),72,66,283
+0,unif,0,('$ tE kE qa $'),73,33,283
+0,unif,0,('$ pa pI qI $'),74,33,284
+0,train,0,('$ pi ta qa $'),0,22,22
+0,train,0,('$ ti $'),1,3,25
+0,train,0,('$ pa ki ke pa $'),2,48,65
+0,train,0,('$ pI tE ta kI $'),3,51,106
+0,train,0,('$ ke ka ta ti $'),4,36,122
+0,train,0,('$ qe $'),5,3,123
+0,train,0,('$ kI ta $'),6,12,128
+0,train,0,('$ ta pe $'),7,12,129
+0,train,0,('$ qa ta ka qa tE $'),8,26,136
+0,train,0,('$ tE $'),9,3,137
+0,train,0,('$ qI pa pE $'),10,30,142
+0,train,0,('$ ke ta qa $'),11,22,142
+0,train,0,('$ pi ta $'),12,12,142
+0,train,0,('$ te qe $'),13,18,149
+0,train,0,('$ ke qa qI $'),14,30,155
+0,train,0,('$ ki ta qI $'),15,30,157
+0,train,0,('$ pi $'),16,3,157
+0,train,0,('$ qI $'),17,3,157
+0,train,0,('$ qi ta pI qI $'),18,51,179
+0,train,0,('$ kI pE $'),19,18,179
+0,train,0,('$ ki pa $'),20,12,179
+0,train,0,('$ qa qe ta ke ke $'),21,54,187
+0,train,0,('$ ka ki qe $'),22,33,188
+0,train,0,('$ te $'),23,3,188
+0,train,0,('$ pe $'),24,3,188
+0,train,0,('$ ka qI $'),25,12,190
+0,train,0,('$ qe qa $'),26,12,190
+0,train,0,('$ kI qI $'),27,18,193
+0,train,0,('$ ta kE kE $'),28,33,195
+0,train,0,('$ kE pE qE $'),29,45,203
+0,train,0,('$ kE $'),30,3,203
+0,train,0,('$ pE pI kI $'),31,45,213
+0,train,0,('$ qI tE pa $'),32,33,213
+0,train,0,('$ kI qE $'),33,18,213
+0,train,0,('$ qa $'),34,2,214
+0,train,0,('$ pi pe ta $'),35,33,215
+0,train,0,('$ kI $'),36,3,215
+0,train,0,('$ tE pI $'),37,18,215
+0,train,0,('$ qE pE $'),38,18,215
+0,train,0,('$ tI tE pE qI qI $'),39,69,219
+0,train,0,('$ qe ke $'),40,18,219
+0,train,0,('$ ke ke ta $'),41,33,219
+0,train,0,('$ qE kI $'),42,18,219
+0,train,0,('$ kI kI pa qe $'),43,51,229
+0,train,0,('$ qE $'),44,3,229
+0,train,0,('$ pe te qa $'),45,33,229
+0,train,0,('$ te ka ka $'),46,22,229
+0,train,0,('$ qI ta qE tI tE $'),47,74,229
+0,train,0,('$ qi ke ke $'),48,45,239
+0,train,0,('$ pi ta ti pe $'),49,51,239
+0,train,0,('$ qi qi pe $'),50,45,246
+0,train,0,('$ qa ka $'),51,8,246
+0,train,0,('$ tI kI $'),52,18,246
+0,train,0,('$ qa pE $'),53,12,246
+0,train,0,('$ qE kE tI $'),54,45,246
+0,train,0,('$ pE pa $'),55,12,246
+0,train,0,('$ qI pa pi pi ti qa ka qE tE $'),56,130,256
+0,train,0,('$ tE qa ka $'),57,22,257
+0,train,0,('$ ke $'),58,3,257
+0,train,0,('$ pE ka $'),59,12,257
+0,train,0,('$ tI $'),60,3,257
+0,train,0,('$ tE ka $'),61,12,257
+0,train,0,('$ ke ta $'),62,12,257
+0,train,0,('$ pE $'),63,3,257
+0,train,0,('$ qa qi $'),64,12,257
+0,train,0,('$ pe ta tE kI $'),65,49,257
+0,train,0,('$ pI $'),66,3,257
+0,train,0,('$ ki $'),67,3,257
+0,train,0,('$ te pi $'),68,18,258
+0,train,0,('$ qi pi $'),69,18,258
+0,train,0,('$ pI kE $'),70,18,258
+0,train,0,('$ qi ta $'),71,12,258
+0,train,0,('$ pi qi $'),72,18,258
+0,train,0,('$ ta ke $'),73,12,258
+0,train,0,('$ kE ka qe pa $'),74,41,258
+0,eig,1,('$ tI kI $'),0,18,18
+0,eig,1,('$ ta pa $'),1,8,26
+0,eig,1,('$ pe pa pE $'),2,30,52
+0,eig,1,('$ ti ka pE $'),3,30,60
+0,eig,1,('$ pa pE pa $'),4,24,79
+0,eig,1,('$ ki ta pa $'),5,22,85
+0,eig,1,('$ ke qe $'),6,18,94
+0,eig,1,('$ ti ta ka $'),7,22,94
+0,eig,1,('$ pI pI ki $'),8,45,123
+0,eig,1,('$ kI ka qa $'),9,22,129
+0,eig,1,('$ qe ka qa $'),10,22,130
+0,eig,1,('$ qi ka ta $'),11,22,130
+0,eig,1,('$ qI ka ta $'),12,22,130
+0,eig,1,('$ ti qa ti $'),13,30,145
+0,eig,1,('$ pi ka kE $'),14,30,145
+0,eig,1,('$ pI ke $'),15,18,148
+0,eig,1,('$ qI pe $'),16,18,148
+0,eig,1,('$ qE pE $'),17,18,148
+0,eig,1,('$ qa tI $'),18,12,150
+0,eig,1,('$ kI ka tE $'),19,30,154
+0,eig,1,('$ te kI $'),20,18,158
+0,eig,1,('$ pi pE $'),21,18,158
+0,eig,1,('$ pi tE $'),22,18,158
+0,eig,1,('$ qi pE $'),23,18,158
+0,eig,1,('$ pi kE $'),24,18,158
+0,eig,1,('$ te qI $'),25,18,158
+0,eig,1,('$ pe qi $'),26,18,158
+0,eig,1,('$ pa tI $'),27,12,158
+0,eig,1,('$ ka kE pE $'),28,33,168
+0,eig,1,('$ pi ta qe $'),29,30,168
+0,eig,1,('$ tI ta pa $'),30,22,168
+0,eig,1,('$ pa ka tE $'),31,22,171
+0,eig,1,('$ ki ka qE $'),32,30,171
+0,eig,1,('$ qE kE $'),33,18,171
+0,eig,1,('$ te ta ta $'),34,22,171
+0,eig,1,('$ pa ta pa tE $'),35,26,172
+0,eig,1,('$ pE pa qa $'),36,22,172
+0,eig,1,('$ tI pa tE $'),37,30,172
+0,eig,1,('$ ka qa qe $'),38,22,176
+0,eig,1,('$ pE pa $'),39,12,176
+0,eig,1,('$ pI pE ta $'),40,33,188
+0,eig,1,('$ qa ka tE $'),41,22,188
+0,eig,1,('$ ka pe pa $'),42,24,194
+0,eig,1,('$ pi pa ka $'),43,22,194
+0,eig,1,('$ kI qa $'),44,12,195
+0,eig,1,('$ pE ka pa $'),45,22,195
+0,eig,1,('$ tE ti $'),46,18,195
+0,eig,1,('$ pe qE $'),47,18,195
+0,eig,1,('$ qi pI $'),48,18,195
+0,eig,1,('$ pe pi $'),49,18,195
+0,eig,1,('$ ta qa kI $'),50,22,199
+0,eig,1,('$ ta pa kI $'),51,22,199
+0,eig,1,('$ qI pa pa $'),52,22,199
+0,eig,1,('$ tI pa qa $'),53,22,199
+0,eig,1,('$ qe ka $'),54,12,199
+0,eig,1,('$ ke ta qa $'),55,22,199
+0,eig,1,('$ ki ta ka $'),56,22,199
+0,eig,1,('$ kI kE $'),57,18,199
+0,eig,1,('$ ta tE qa $'),58,24,199
+0,eig,1,('$ qi ta $'),59,12,199
+0,eig,1,('$ ta ti pa $'),60,24,203
+0,eig,1,('$ ki tE $'),61,18,203
+0,eig,1,('$ pi qe $'),62,18,203
+0,eig,1,('$ pe qa ta $'),63,22,203
+0,eig,1,('$ pa pa kI $'),64,22,203
+0,eig,1,('$ te qa ka $'),65,22,203
+0,eig,1,('$ kI ti qI $'),66,45,218
+0,eig,1,('$ ta tI $'),67,12,218
+0,eig,1,('$ qI ka $'),68,12,218
+0,eig,1,('$ qa ti qa $'),69,24,218
+0,eig,1,('$ qa pI ta $'),70,24,218
+0,eig,1,('$ ta te ta $'),71,24,218
+0,eig,1,('$ pI qE $'),72,18,218
+0,eig,1,('$ qa tI pa $'),73,24,218
+0,eig,1,('$ kI qi kI $'),74,45,218
+0,entropy,1,('$ ti kI qe pI $'),0,70,70
+0,entropy,1,('$ pi ta $'),1,12,82
+0,entropy,1,('$ ka qa $'),2,8,90
+0,entropy,1,('$ ta tI kI $'),3,33,120
+0,entropy,1,('$ qI qi qe ti $'),4,64,148
+0,entropy,1,('$ pE pa tE $'),5,30,166
+0,entropy,1,('$ ki qa qa pi $'),6,36,188
+0,entropy,1,('$ ki kI ta $'),7,33,199
+0,entropy,1,('$ ta ke ta $'),8,24,212
+0,entropy,1,('$ kI tI pI pi $'),9,54,229
+0,entropy,1,('$ pI kI pI $'),10,45,229
+0,entropy,1,('$ tI qI pI $'),11,45,229
+0,entropy,1,('$ ti kI kI pE $'),12,60,235
+0,entropy,1,('$ ki pE kI pi $'),13,68,239
+0,entropy,1,('$ qI qI pI $'),14,45,239
+0,entropy,1,('$ pi tI qI $'),15,45,239
+0,entropy,1,('$ qi qI tI $'),16,45,239
+0,entropy,1,('$ ti kI qI qi $'),17,60,239
+0,entropy,1,('$ qi kI qI $'),18,45,239
+0,entropy,1,('$ kI tI kI $'),19,45,239
+0,entropy,1,('$ qi pI qI kI $'),20,54,239
+0,entropy,1,('$ pI pI kI $'),21,45,239
+0,entropy,1,('$ qi qI pI pi $'),22,60,239
+0,entropy,1,('$ qi qI qI ti $'),23,60,239
+0,entropy,1,('$ pI kI tI pI $'),24,45,239
+0,entropy,1,('$ pi qa qi pi $'),25,51,255
+0,entropy,1,('$ ki pI qI $'),26,45,255
+0,entropy,1,('$ pI tI tI kI $'),27,45,255
+0,entropy,1,('$ ki pI tI ki $'),28,60,255
+0,entropy,1,('$ ki ki qI pi $'),29,60,257
+0,entropy,1,('$ tI pI tI $'),30,45,257
+0,entropy,1,('$ kI kI qI te $'),31,63,257
+0,entropy,1,('$ tI qI kI $'),32,45,257
+0,entropy,1,('$ ki pI qi kI $'),33,64,257
+0,entropy,1,('$ ti kI tI ta $'),34,60,260
+0,entropy,1,('$ kE kI qi qI $'),35,64,260
+0,entropy,1,('$ pe ki tI ti $'),36,64,261
+0,entropy,1,('$ ki pI kI $'),37,45,261
+0,entropy,1,('$ tI qi tI qI $'),38,60,261
+0,entropy,1,('$ pi ti tE tE $'),39,63,262
+0,entropy,1,('$ kI pI kI $'),40,45,262
+0,entropy,1,('$ kE pI pI qI $'),41,54,262
+0,entropy,1,('$ qa pI pa $'),42,24,270
+0,entropy,1,('$ ka pa qa $'),43,16,273
+0,entropy,1,('$ qi ke kE $'),44,45,273
+0,entropy,1,('$ ti pe pE qi $'),45,68,273
+0,entropy,1,('$ ti qi pE $'),46,45,273
+0,entropy,1,('$ pe qi kE $'),47,45,273
+0,entropy,1,('$ pI te tI ti $'),48,70,273
+0,entropy,1,('$ ki pE kE ke $'),49,66,274
+0,entropy,1,('$ kI ke qI qi $'),50,70,274
+0,entropy,1,('$ ke pI pi ka $'),51,60,277
+0,entropy,1,('$ tI qi ta $'),52,33,277
+0,entropy,1,('$ qI ke ta $'),53,33,278
+0,entropy,1,('$ tI ki pa tI $'),54,51,280
+0,entropy,1,('$ pi qI ti $'),55,45,280
+0,entropy,1,('$ tI qe qI ki $'),56,70,280
+0,entropy,1,('$ ti qe pI ti $'),57,68,280
+0,entropy,1,('$ ke pI pi $'),58,45,280
+0,entropy,1,('$ ki te tI qi $'),59,68,280
+0,entropy,1,('$ te tI qi ka $'),60,60,280
+0,entropy,1,('$ pe qI pi ka $'),61,60,280
+0,entropy,1,('$ qI qE ka $'),62,33,280
+0,entropy,1,('$ ti kI pi $'),63,45,280
+0,entropy,1,('$ qi ta qI $'),64,30,280
+0,entropy,1,('$ kI pE ki $'),65,45,280
+0,entropy,1,('$ ka te qI ti $'),66,58,282
+0,entropy,1,('$ ke qI qi $'),67,45,282
+0,entropy,1,('$ ti ke tI qi $'),68,68,282
+0,entropy,1,('$ qa te tI tI $'),69,57,282
+0,entropy,1,('$ qI ti pI tI $'),70,60,282
+0,entropy,1,('$ kI ke tI tI $'),71,69,282
+0,entropy,1,('$ pe qI pi $'),72,45,282
+0,entropy,1,('$ te kI pi ta $'),73,60,282
+0,entropy,1,('$ pe kI ki $'),74,45,282
+0,unif,1,('$ pe pI tI qi $'),0,66,66
+0,unif,1,('$ tE ki ti $'),1,45,85
+0,unif,1,('$ te ke $'),2,18,94
+0,unif,1,('$ pi te ke $'),3,45,117
+0,unif,1,('$ qE pe kI $'),4,45,134
+0,unif,1,('$ qE kE kE tE $'),5,45,145
+0,unif,1,('$ qa qi $'),6,12,151
+0,unif,1,('$ pI ke $'),7,18,152
+0,unif,1,('$ qI te $'),8,18,152
+0,unif,1,('$ ti qe kI ka $'),9,60,177
+0,unif,1,('$ qI qI ta $'),10,33,188
+0,unif,1,('$ ka tI $'),11,12,190
+0,unif,1,('$ ki pa qE qI $'),12,51,211
+0,unif,1,('$ ka ke tE $'),13,33,218
+0,unif,1,('$ te ki qE $'),14,45,219
+0,unif,1,('$ tI qE pI $'),15,45,220
+0,unif,1,('$ tI qI pE ka $'),16,54,226
+0,unif,1,('$ qE pa $'),17,12,228
+0,unif,1,('$ te ki $'),18,18,228
+0,unif,1,('$ ta pE ka $'),19,24,233
+0,unif,1,('$ qe tI kE pE $'),20,66,233
+0,unif,1,('$ pI tE tE pi $'),21,66,236
+0,unif,1,('$ pa tI $'),22,12,236
+0,unif,1,('$ ki ka qi $'),23,30,242
+0,unif,1,('$ pI pe pi $'),24,45,242
+0,unif,1,('$ pi kE pa qE $'),25,50,250
+0,unif,1,('$ tI ti qE $'),26,45,251
+0,unif,1,('$ kI pi $'),27,18,251
+0,unif,1,('$ qe pI te pe $'),28,69,253
+0,unif,1,('$ pE tI pi $'),29,45,253
+0,unif,1,('$ qa tE pe $'),30,33,256
+0,unif,1,('$ te qe qI $'),31,45,256
+0,unif,1,('$ pi ki ta qi $'),32,51,259
+0,unif,1,('$ pi tE pe ke $'),33,66,259
+0,unif,1,('$ pi tE ta ta $'),34,41,263
+0,unif,1,('$ tI te te ti $'),35,66,263
+0,unif,1,('$ qa te $'),36,12,263
+0,unif,1,('$ pI qi pe qI $'),37,68,263
+0,unif,1,('$ qi pI te qa $'),38,58,265
+0,unif,1,('$ pI kI qa qE $'),39,51,265
+0,unif,1,('$ qi qi ki $'),40,45,265
+0,unif,1,('$ ke pa ke $'),41,30,266
+0,unif,1,('$ pa te $'),42,12,266
+0,unif,1,('$ kI pE tE $'),43,45,266
+0,unif,1,('$ ta ka $'),44,8,267
+0,unif,1,('$ pI pi $'),45,18,267
+0,unif,1,('$ qa pE pI $'),46,33,267
+0,unif,1,('$ pi pe ta kI $'),47,51,268
+0,unif,1,('$ qE pa qe $'),48,30,269
+0,unif,1,('$ tE ti $'),49,18,269
+0,unif,1,('$ ki tE pa $'),50,33,269
+0,unif,1,('$ kI qE $'),51,18,269
+0,unif,1,('$ kE kI tE ta $'),52,56,269
+0,unif,1,('$ pa pE $'),53,12,269
+0,unif,1,('$ qi qE pe ka $'),54,58,270
+0,unif,1,('$ ta qe pi tI $'),55,56,272
+0,unif,1,('$ qI tI pi $'),56,45,272
+0,unif,1,('$ te qE pI qe $'),57,68,272
+0,unif,1,('$ kE qa te pi $'),58,49,272
+0,unif,1,('$ pe tI pa te $'),59,51,272
+0,unif,1,('$ pe qI ta ki $'),60,51,273
+0,unif,1,('$ pi kI ti $'),61,45,273
+0,unif,1,('$ te ke te tE $'),62,54,273
+0,unif,1,('$ ke kE qa tE $'),63,49,273
+0,unif,1,('$ qE qE ke te $'),64,54,273
+0,unif,1,('$ qE tI qE $'),65,45,273
+0,unif,1,('$ qE qE $'),66,18,273
+0,unif,1,('$ qe ta $'),67,12,273
+0,unif,1,('$ tI qI $'),68,18,273
+0,unif,1,('$ te pa ta $'),69,22,274
+0,unif,1,('$ tE pE $'),70,18,274
+0,unif,1,('$ te ki qe $'),71,45,274
+0,unif,1,('$ qE ki pe $'),72,45,274
+0,unif,1,('$ kI ta ke $'),73,30,274
+0,unif,1,('$ pa ka pE $'),74,22,277
+0,train,1,('$ ta ke $'),0,12,12
+0,train,1,('$ tI $'),1,3,15
+0,train,1,('$ qa qe ta ke ke $'),2,54,60
+0,train,1,('$ te ka ka $'),3,22,72
+0,train,1,('$ qa pE $'),4,12,76
+0,train,1,('$ pe ta tE kI $'),5,49,101
+0,train,1,('$ qE kE tI $'),6,45,122
+0,train,1,('$ ka qi $'),7,12,125
+0,train,1,('$ kI $'),8,3,125
+0,train,1,('$ tE $'),9,3,126
+0,train,1,('$ qI $'),10,3,126
+0,train,1,('$ kI pE $'),11,18,133
+0,train,1,('$ pi qi $'),12,18,143
+0,train,1,('$ qi pi $'),13,18,143
+0,train,1,('$ qa $'),14,2,144
+0,train,1,('$ kI qE $'),15,18,144
+0,train,1,('$ kE ka qe pa $'),16,41,152
+0,train,1,('$ ke ka ta ti $'),17,36,156
+0,train,1,('$ qI tE pa $'),18,33,172
+0,train,1,('$ kI ta $'),19,12,174
+0,train,1,('$ qi ta pI qI $'),20,51,189
+0,train,1,('$ pI $'),21,3,189
+0,train,1,('$ tE qa ka $'),22,22,190
+0,train,1,('$ ki pa $'),23,12,190
+0,train,1,('$ qa qi $'),24,12,190
+0,train,1,('$ qE kI $'),25,18,191
+0,train,1,('$ kI qI $'),26,18,191
+0,train,1,('$ pE ka $'),27,12,191
+0,train,1,('$ pI tE ta kI $'),28,51,193
+0,train,1,('$ ti $'),29,3,194
+0,train,1,('$ ki $'),30,3,194
+0,train,1,('$ ke ta qa $'),31,22,194
+0,train,1,('$ pi ta ti pe $'),32,51,200
+0,train,1,('$ te pi $'),33,18,200
+0,train,1,('$ pi $'),34,3,200
+0,train,1,('$ qi ke ke $'),35,45,215
+0,train,1,('$ qe $'),36,3,215
+0,train,1,('$ kE pE qE $'),37,45,216
+0,train,1,('$ te ke $'),38,18,216
+0,train,1,('$ ke ta $'),39,12,216
+0,train,1,('$ qi qi pe $'),40,45,225
+0,train,1,('$ qa ta ka qa tE $'),41,26,229
+0,train,1,('$ kI kI pa qe $'),42,51,234
+0,train,1,('$ pe $'),43,3,234
+0,train,1,('$ ka ki qe $'),44,33,234
+0,train,1,('$ tE pI $'),45,18,234
+0,train,1,('$ qa ka $'),46,8,234
+0,train,1,('$ pa ki ke pa $'),47,48,238
+0,train,1,('$ pi pe ta $'),48,33,238
+0,train,1,('$ qI pa pi pi ti qa ka qE tE $'),49,130,251
+0,train,1,('$ ke qa qI $'),50,30,251
+0,train,1,('$ pe te qa $'),51,33,251
+0,train,1,('$ ke $'),52,3,251
+0,train,1,('$ qI ta qE tI tE $'),53,74,254
+0,train,1,('$ qe qe $'),54,18,254
+0,train,1,('$ pi ta qa $'),55,22,254
+0,train,1,('$ ki ta qI $'),56,30,254
+0,train,1,('$ pE $'),57,3,254
+0,train,1,('$ qe ke $'),58,18,254
+0,train,1,('$ pE pa $'),59,12,254
+0,train,1,('$ ta pe $'),60,12,254
+0,train,1,('$ tI kI $'),61,18,254
+0,train,1,('$ ta kE kE $'),62,33,254
+0,train,1,('$ pE pI kI $'),63,45,255
+0,train,1,('$ tE ka $'),64,12,255
+0,train,1,('$ qI pa pE $'),65,30,255
+0,train,1,('$ qE pE $'),66,18,255
+0,train,1,('$ qE $'),67,3,255
+0,train,1,('$ qe qa $'),68,12,255
+0,train,1,('$ tI tE pE qI qI $'),69,69,258
+0,train,1,('$ ke ke ta $'),70,33,258
+0,train,1,('$ te qe $'),71,18,258
+0,train,1,('$ ka qI $'),72,12,258
+0,train,1,('$ pi ta $'),73,12,258
+0,train,1,('$ te $'),74,3,258
+0,eig,2,('$ tE pi $'),0,18,18
+0,eig,2,('$ tE kI $'),1,18,24
+0,eig,2,('$ ta qa kI $'),2,22,43
+0,eig,2,('$ pa ki qa $'),3,24,64
+0,eig,2,('$ ta tI qa $'),4,24,71
+0,eig,2,('$ pa ka ti $'),5,22,76
+0,eig,2,('$ pi tI ta $'),6,33,100
+0,eig,2,('$ kI qi qa $'),7,33,111
+0,eig,2,('$ te qe $'),8,18,117
+0,eig,2,('$ qI ti tI $'),9,45,149
+0,eig,2,('$ tI pa tI $'),10,30,172
+0,eig,2,('$ tI qi ka $'),11,33,172
+0,eig,2,('$ ka pi ta $'),12,24,172
+0,eig,2,('$ ta kE pI $'),13,33,184
+0,eig,2,('$ pe ta $'),14,12,186
+0,eig,2,('$ kI qi ta $'),15,33,186
+0,eig,2,('$ pe qe $'),16,18,186
+0,eig,2,('$ qI ka $'),17,12,186
+0,eig,2,('$ pe pa $'),18,12,186
+0,eig,2,('$ ti ta pE $'),19,30,197
+0,eig,2,('$ qa te ka $'),20,24,201
+0,eig,2,('$ pa kE pa $'),21,24,201
+0,eig,2,('$ qI qI $'),22,18,201
+0,eig,2,('$ ta ke $'),23,12,201
+0,eig,2,('$ qa ke te $'),24,33,207
+0,eig,2,('$ pi ka pa $'),25,22,214
+0,eig,2,('$ ka ti ka $'),26,24,214
+0,eig,2,('$ qi tI ta $'),27,33,214
+0,eig,2,('$ ke tI $'),28,18,214
+0,eig,2,('$ pa ki pa $'),29,24,214
+0,eig,2,('$ kE pe $'),30,18,214
+0,eig,2,('$ te tE $'),31,18,214
+0,eig,2,('$ qa qI pa $'),32,24,214
+0,eig,2,('$ pe qE $'),33,18,214
+0,eig,2,('$ qI te $'),34,18,215
+0,eig,2,('$ qa kE $'),35,12,215
+0,eig,2,('$ pI ke $'),36,18,215
+0,eig,2,('$ kI qe $'),37,18,215
+0,eig,2,('$ qe qI $'),38,18,215
+0,eig,2,('$ ke qe $'),39,18,215
+0,eig,2,('$ tI pE ka $'),40,33,219
+0,eig,2,('$ qI ta pE $'),41,30,220
+0,eig,2,('$ ki pa $'),42,12,220
+0,eig,2,('$ tI pI ta $'),43,33,220
+0,eig,2,('$ tI pi ta $'),44,33,220
+0,eig,2,('$ ki tE $'),45,18,220
+0,eig,2,('$ te tI $'),46,18,220
+0,eig,2,('$ te pi $'),47,18,220
+0,eig,2,('$ pa ka qi $'),48,22,220
+0,eig,2,('$ pI ka $'),49,12,220
+0,eig,2,('$ pI ka tE $'),50,30,220
+0,eig,2,('$ pI kE $'),51,18,220
+0,eig,2,('$ ka pi $'),52,12,220
+0,eig,2,('$ ka ka te $'),53,22,222
+0,eig,2,('$ qe ke $'),54,18,222
+0,eig,2,('$ qa qe $'),55,12,222
+0,eig,2,('$ qI qa ka $'),56,22,223
+0,eig,2,('$ tI ka ta $'),57,22,223
+0,eig,2,('$ qE ti $'),58,18,223
+0,eig,2,('$ tE ti $'),59,18,223
+0,eig,2,('$ qI ka ta $'),60,22,223
+0,eig,2,('$ qE ke $'),61,18,223
+0,eig,2,('$ pE qi $'),62,18,223
+0,eig,2,('$ te qI $'),63,18,223
+0,eig,2,('$ pE te $'),64,18,223
+0,eig,2,('$ pI pi $'),65,18,223
+0,eig,2,('$ tI ti $'),66,18,223
+0,eig,2,('$ kI pi $'),67,18,223
+0,eig,2,('$ ke kI $'),68,18,223
+0,eig,2,('$ pE ki $'),69,18,223
+0,eig,2,('$ tE ki $'),70,18,223
+0,eig,2,('$ pI ti $'),71,18,223
+0,eig,2,('$ pi tE $'),72,18,223
+0,eig,2,('$ te kI $'),73,18,223
+0,eig,2,('$ qi kI $'),74,18,223
+0,entropy,2,('$ pI pI qI ti $'),0,54,54
+0,entropy,2,('$ pa tE $'),1,12,66
+0,entropy,2,('$ tI qa qi qE $'),2,51,115
+0,entropy,2,('$ te ta pa $'),3,22,132
+0,entropy,2,('$ tI ti ta $'),4,33,156
+0,entropy,2,('$ pa ki $'),5,12,164
+0,entropy,2,('$ ta ka kI $'),6,22,177
+0,entropy,2,('$ qi pe kI ta $'),7,60,210
+0,entropy,2,('$ qi qe qE qa $'),8,56,212
+0,entropy,2,('$ qI qa kE ta $'),9,42,224
+0,entropy,2,('$ ke pe pi $'),10,45,235
+0,entropy,2,('$ te tI pa $'),11,33,237
+0,entropy,2,('$ ti ke pI pe $'),12,70,244
+0,entropy,2,('$ ki ka qI pi $'),13,51,256
+0,entropy,2,('$ qe qi ti $'),14,45,257
+0,entropy,2,('$ te ti qi $'),15,45,257
+0,entropy,2,('$ qe pI ka $'),16,33,257
+0,entropy,2,('$ pi ki qI qa $'),17,60,260
+0,entropy,2,('$ ke ti qi $'),18,45,260
+0,entropy,2,('$ pe ke tI qa $'),19,60,260
+0,entropy,2,('$ ke kI qa $'),20,33,260
+0,entropy,2,('$ qI pa tE pa $'),21,42,260
+0,entropy,2,('$ kI ka tE ka $'),22,42,260
+0,entropy,2,('$ te pI pa ta $'),23,43,264
+0,entropy,2,('$ ta tI tI $'),24,33,267
+0,entropy,2,('$ pa tI ki $'),25,33,267
+0,entropy,2,('$ pa qa ta $'),26,16,269
+0,entropy,2,('$ pE ti pi ti $'),27,63,273
+0,entropy,2,('$ te ti pi $'),28,45,273
+0,entropy,2,('$ pa qi qi $'),29,33,275
+0,entropy,2,('$ qi qa kI ka $'),30,42,276
+0,entropy,2,('$ qi qe pE ke $'),31,64,276
+0,entropy,2,('$ ti ke qi $'),32,45,276
+0,entropy,2,('$ qi te qi $'),33,45,276
+0,entropy,2,('$ qi ki ti $'),34,45,276
+0,entropy,2,('$ pi te qI $'),35,45,276
+0,entropy,2,('$ pe pe pI qi $'),36,66,277
+0,entropy,2,('$ ti qi ti pI $'),37,54,277
+0,entropy,2,('$ pi te qi $'),38,45,277
+0,entropy,2,('$ ti ti qI pe $'),39,66,277
+0,entropy,2,('$ te te qI pI $'),40,63,278
+0,entropy,2,('$ ki qi ki tI $'),41,54,278
+0,entropy,2,('$ qe qe kI ti $'),42,66,278
+0,entropy,2,('$ ke ke tI kI $'),43,63,278
+0,entropy,2,('$ te te kI kI $'),44,63,278
+0,entropy,2,('$ ki ti qi pE $'),45,63,278
+0,entropy,2,('$ ti pe qI $'),46,45,278
+0,entropy,2,('$ ki qe qI $'),47,45,278
+0,entropy,2,('$ qi ti kI $'),48,45,278
+0,entropy,2,('$ qi ke tI pI $'),49,66,278
+0,entropy,2,('$ ki ti ti pI $'),50,54,278
+0,entropy,2,('$ pi qe qI $'),51,45,278
+0,entropy,2,('$ pi ke kE tI $'),52,64,278
+0,entropy,2,('$ tI ke kE kI $'),53,68,279
+0,entropy,2,('$ ti pe tE qi $'),54,68,279
+0,entropy,2,('$ ti te kE tI $'),55,64,279
+0,entropy,2,('$ ki te tI $'),56,45,279
+0,entropy,2,('$ ti ki pe qI $'),57,66,279
+0,entropy,2,('$ te te tI qI $'),58,63,279
+0,entropy,2,('$ qi pe qI $'),59,45,279
+0,entropy,2,('$ qi qi pe pI $'),60,66,279
+0,entropy,2,('$ qi ke kI kE $'),61,68,279
+0,entropy,2,('$ ti ke qI $'),62,45,279
+0,entropy,2,('$ pi qe tE pE $'),63,60,279
+0,entropy,2,('$ qe te ti pI $'),64,60,279
+0,entropy,2,('$ ki te qI kI $'),65,66,279
+0,entropy,2,('$ te te tI ti $'),66,66,279
+0,entropy,2,('$ ti pe pI $'),67,45,279
+0,entropy,2,('$ qi qi qI ta $'),68,60,279
+0,entropy,2,('$ ki ti ti $'),69,45,279
+0,entropy,2,('$ pi ki kI $'),70,45,279
+0,entropy,2,('$ qe qe kI ki $'),71,66,279
+0,entropy,2,('$ pi ti kE kI $'),72,66,279
+0,entropy,2,('$ qi pi ki $'),73,45,279
+0,entropy,2,('$ ki pa tE qi $'),74,51,280
+0,unif,2,('$ qe qE ta $'),0,33,33
+0,unif,2,('$ qa qE qI $'),1,33,63
+0,unif,2,('$ qi te $'),2,18,75
+0,unif,2,('$ qa pE ke $'),3,33,86
+0,unif,2,('$ ka qI $'),4,12,91
+0,unif,2,('$ tE te ti tE $'),5,68,137
+0,unif,2,('$ kE ka pa ka $'),6,26,153
+0,unif,2,('$ pe qe ta pe $'),7,48,166
+0,unif,2,('$ pi ta ti kI $'),8,51,186
+0,unif,2,('$ qi pI $'),9,18,190
+0,unif,2,('$ qE kI $'),10,18,192
+0,unif,2,('$ pE ki $'),11,18,192
+0,unif,2,('$ ti te $'),12,18,192
+0,unif,2,('$ kE tI $'),13,18,192
+0,unif,2,('$ qa qi ka $'),14,24,201
+0,unif,2,('$ qE ki ki $'),15,45,207
+0,unif,2,('$ kE tI qE $'),16,45,216
+0,unif,2,('$ pi ka ta te $'),17,36,223
+0,unif,2,('$ te pI kE ki $'),18,70,235
+0,unif,2,('$ qa pa ke $'),19,22,236
+0,unif,2,('$ tE pE ke $'),20,45,236
+0,unif,2,('$ ki ta $'),21,12,236
+0,unif,2,('$ qI qi pE $'),22,45,246
+0,unif,2,('$ kE qa qa qE $'),23,34,248
+0,unif,2,('$ qE ke ke qi $'),24,60,252
+0,unif,2,('$ tI qI ki $'),25,45,254
+0,unif,2,('$ ke te qI $'),26,45,256
+0,unif,2,('$ pI qi ke qI $'),27,68,259
+0,unif,2,('$ ka ki pe pI $'),28,60,261
+0,unif,2,('$ qe ta pi $'),29,30,262
+0,unif,2,('$ ki ti qa $'),30,33,267
+0,unif,2,('$ tE te tE pa $'),31,56,268
+0,unif,2,('$ ki pa ta $'),32,22,268
+0,unif,2,('$ qa pi $'),33,12,268
+0,unif,2,('$ pa qe $'),34,12,268
+0,unif,2,('$ qI ki $'),35,18,268
+0,unif,2,('$ te qE ki ke $'),36,68,270
+0,unif,2,('$ te tE tI $'),37,45,270
+0,unif,2,('$ ke qe ti kE $'),38,66,270
+0,unif,2,('$ ke ka qe pE $'),39,49,270
+0,unif,2,('$ kI pi $'),40,18,270
+0,unif,2,('$ qe qe ke $'),41,45,270
+0,unif,2,('$ qI qi qi $'),42,45,270
+0,unif,2,('$ pi tI ta pE $'),43,51,276
+0,unif,2,('$ qa pe kI $'),44,33,276
+0,unif,2,('$ ta tI $'),45,12,276
+0,unif,2,('$ qe kI ta $'),46,33,276
+0,unif,2,('$ ta te pI pE $'),47,58,276
+0,unif,2,('$ tE pE qa $'),48,33,278
+0,unif,2,('$ pe tI qa $'),49,33,278
+0,unif,2,('$ pi tE tE $'),50,45,279
+0,unif,2,('$ pa kI tI $'),51,33,279
+0,unif,2,('$ kE te tE $'),52,45,279
+0,unif,2,('$ kE kI qa $'),53,33,280
+0,unif,2,('$ ka te ti $'),54,33,280
+0,unif,2,('$ pi tI $'),55,18,280
+0,unif,2,('$ qa ti qE $'),56,33,280
+0,unif,2,('$ qE qa pI kI $'),57,51,281
+0,unif,2,('$ ti pe pi $'),58,45,281
+0,unif,2,('$ ti tE pE ka $'),59,57,281
+0,unif,2,('$ tE tI $'),60,18,281
+0,unif,2,('$ qa ka $'),61,8,281
+0,unif,2,('$ pe qa kE $'),62,30,282
+0,unif,2,('$ ke qe pE kI $'),63,60,282
+0,unif,2,('$ pa qa qI pa $'),64,34,284
+0,unif,2,('$ qi qE $'),65,18,284
+0,unif,2,('$ te qI te $'),66,45,285
+0,unif,2,('$ kI ke qi $'),67,45,285
+0,unif,2,('$ ka qe $'),68,12,285
+0,unif,2,('$ te pa ke $'),69,30,285
+0,unif,2,('$ ka ka ka ta $'),70,16,285
+0,unif,2,('$ qE qI pI pE $'),71,60,285
+0,unif,2,('$ pa pE ki $'),72,33,285
+0,unif,2,('$ ka ta kE $'),73,22,285
+0,unif,2,('$ pa te $'),74,12,285
+0,train,2,('$ ki pa $'),0,12,12
+0,train,2,('$ qa qe ta ke ke $'),1,54,64
+0,train,2,('$ qe qe $'),2,18,68
+0,train,2,('$ pE ka $'),3,12,74
+0,train,2,('$ pI $'),4,3,77
+0,train,2,('$ ke ka ta ti $'),5,36,92
+0,train,2,('$ ki $'),6,3,93
+0,train,2,('$ tI kI $'),7,18,109
+0,train,2,('$ kI qE $'),8,18,109
+0,train,2,('$ pe ta tE kI $'),9,49,127
+0,train,2,('$ qI tE pa $'),10,33,143
+0,train,2,('$ qa $'),11,2,145
+0,train,2,('$ pi qi $'),12,18,149
+0,train,2,('$ kE $'),13,3,149
+0,train,2,('$ te $'),14,3,149
+0,train,2,('$ tE qa ka $'),15,22,153
+0,train,2,('$ tI $'),16,3,153
+0,train,2,('$ qe qa $'),17,12,153
+0,train,2,('$ pi ta ti pe $'),18,51,169
+0,train,2,('$ ke ta $'),19,12,169
+0,train,2,('$ ke $'),20,3,169
+0,train,2,('$ pi ta qa $'),21,22,171
+0,train,2,('$ pi ta $'),22,12,171
+0,train,2,('$ ka qI $'),23,12,176
+0,train,2,('$ ki ta qI $'),24,30,178
+0,train,2,('$ ti $'),25,3,178
+0,train,2,('$ qa pE $'),26,12,178
+0,train,2,('$ pI kE $'),27,18,178
+0,train,2,('$ pE $'),28,3,178
+0,train,2,('$ te ka ka $'),29,22,178
+0,train,2,('$ qI ta qE tI tE $'),30,74,198
+0,train,2,('$ qi pi $'),31,18,198
+0,train,2,('$ pI tE ta kI $'),32,51,200
+0,train,2,('$ ka qi $'),33,12,200
+0,train,2,('$ kI pE $'),34,18,200
+0,train,2,('$ qI pa pi pi ti qa ka qE tE $'),35,130,247
+0,train,2,('$ kE ka qe pa $'),36,41,247
+0,train,2,('$ pi $'),37,3,247
+0,train,2,('$ qa ta ka qa tE $'),38,26,249
+0,train,2,('$ pE pa $'),39,12,249
+0,train,2,('$ kE pE qE $'),40,45,249
+0,train,2,('$ ta kE kE $'),41,33,249
+0,train,2,('$ tE $'),42,3,249
+0,train,2,('$ qI $'),43,3,249
+0,train,2,('$ pe te qa $'),44,33,249
+0,train,2,('$ qa ka $'),45,8,249
+0,train,2,('$ qi ke ke $'),46,45,249
+0,train,2,('$ qa qi $'),47,12,249
+0,train,2,('$ ke ke ta $'),48,33,249
+0,train,2,('$ te ke $'),49,18,249
+0,train,2,('$ ta ke $'),50,12,249
+0,train,2,('$ te qe $'),51,18,249
+0,train,2,('$ pe $'),52,3,249
+0,train,2,('$ pE pI kI $'),53,45,253
+0,train,2,('$ qi ta $'),54,12,253
+0,train,2,('$ pa ki ke pa $'),55,48,253
+0,train,2,('$ qE $'),56,3,253
+0,train,2,('$ tE pI $'),57,18,253
+0,train,2,('$ te pi $'),58,18,253
+0,train,2,('$ kI $'),59,3,253
+0,train,2,('$ qe $'),60,3,253
+0,train,2,('$ ka ki qe $'),61,33,253
+0,train,2,('$ kI ta $'),62,12,253
+0,train,2,('$ qI pa pE $'),63,30,253
+0,train,2,('$ kI qI $'),64,18,253
+0,train,2,('$ qe ke $'),65,18,253
+0,train,2,('$ ke qa qI $'),66,30,253
+0,train,2,('$ qE pE $'),67,18,253
+0,train,2,('$ qi ta pI qI $'),68,51,254
+0,train,2,('$ ta pe $'),69,12,254
+0,train,2,('$ pi pe ta $'),70,33,254
+0,train,2,('$ qE kE tI $'),71,45,254
+0,train,2,('$ ke ta qa $'),72,22,254
+0,train,2,('$ qE kI $'),73,18,254
+0,train,2,('$ qi qi pe $'),74,45,254
+0,eig,3,('$ qE kI $'),0,18,18
+0,eig,3,('$ pa ta qE $'),1,22,38
+0,eig,3,('$ ke ke $'),2,18,50
+0,eig,3,('$ ta pE $'),3,12,52
+0,eig,3,('$ pI ta pa $'),4,22,71
+0,eig,3,('$ tE kI $'),5,18,71
+0,eig,3,('$ ki ka kI $'),6,30,91
+0,eig,3,('$ ta ta kI $'),7,22,95
+0,eig,3,('$ qE ta pa $'),8,22,97
+0,eig,3,('$ pa ti ta $'),9,24,115
+0,eig,3,('$ pa ta ti $'),10,22,120
+0,eig,3,('$ pi ta ta $'),11,22,124
+0,eig,3,('$ pa qa pe $'),12,22,124
+0,eig,3,('$ pa ka $'),13,8,124
+0,eig,3,('$ pi pe qa $'),14,33,138
+0,eig,3,('$ pE qa pa $'),15,22,138
+0,eig,3,('$ ki kE $'),16,18,143
+0,eig,3,('$ pe qE $'),17,18,143
+0,eig,3,('$ ki tI $'),18,18,147
+0,eig,3,('$ ki tE $'),19,18,147
+0,eig,3,('$ te tI $'),20,18,147
+0,eig,3,('$ pi kI $'),21,18,147
+0,eig,3,('$ tI qe $'),22,18,151
+0,eig,3,('$ qI pe $'),23,18,151
+0,eig,3,('$ pi kE $'),24,18,151
+0,eig,3,('$ ki pe $'),25,18,151
+0,eig,3,('$ qI ta tI $'),26,30,157
+0,eig,3,('$ qi ka ka $'),27,22,157
+0,eig,3,('$ pi ka ka $'),28,22,157
+0,eig,3,('$ qI qa pa $'),29,22,157
+0,eig,3,('$ kE qI $'),30,18,157
+0,eig,3,('$ pI qa ka $'),31,22,157
+0,eig,3,('$ ka pa pI $'),32,22,157
+0,eig,3,('$ qa pa pE $'),33,22,157
+0,eig,3,('$ pE qi kI $'),34,45,184
+0,eig,3,('$ kE qi kI $'),35,45,184
+0,eig,3,('$ pa tI tI $'),36,33,196
+0,eig,3,('$ ti pa $'),37,12,196
+0,eig,3,('$ te qa ki $'),38,30,200
+0,eig,3,('$ pi te $'),39,18,200
+0,eig,3,('$ kE ta ka $'),40,22,200
+0,eig,3,('$ ka ke $'),41,12,200
+0,eig,3,('$ ka te qI $'),42,33,203
+0,eig,3,('$ qa ka ka kE $'),43,26,205
+0,eig,3,('$ tI ka qa $'),44,22,205
+0,eig,3,('$ ta qE ki $'),45,33,209
+0,eig,3,('$ pa ka tI $'),46,22,209
+0,eig,3,('$ tE pE $'),47,18,209
+0,eig,3,('$ qi qa $'),48,12,209
+0,eig,3,('$ qa tI ta $'),49,24,214
+0,eig,3,('$ pE te $'),50,18,214
+0,eig,3,('$ qE pa $'),51,12,214
+0,eig,3,('$ pe qa tE $'),52,30,214
+0,eig,3,('$ te ki $'),53,18,214
+0,eig,3,('$ pI ka pa $'),54,22,214
+0,eig,3,('$ kI qa qa $'),55,22,214
+0,eig,3,('$ ti qa kE $'),56,30,214
+0,eig,3,('$ qa qI kI $'),57,33,214
+0,eig,3,('$ ta qa pE $'),58,22,214
+0,eig,3,('$ ki pE ti $'),59,45,231
+0,eig,3,('$ pE qa $'),60,12,231
+0,eig,3,('$ kI qa tI $'),61,30,231
+0,eig,3,('$ ti te $'),62,18,231
+0,eig,3,('$ pa qa $'),63,8,231
+0,eig,3,('$ qe ta ka pa $'),64,26,231
+0,eig,3,('$ ti ta ta $'),65,22,231
+0,eig,3,('$ tI qa ka $'),66,22,231
+0,eig,3,('$ pe ta ta $'),67,22,231
+0,eig,3,('$ ka ta kI $'),68,22,231
+0,eig,3,('$ ki ka kE $'),69,30,231
+0,eig,3,('$ qa pi $'),70,12,231
+0,eig,3,('$ ka qI pI $'),71,33,231
+0,eig,3,('$ tE qE $'),72,18,231
+0,eig,3,('$ pa pa tE $'),73,22,231
+0,eig,3,('$ te pa $'),74,12,231
+0,entropy,3,('$ qE pE pI kI $'),0,54,54
+0,entropy,3,('$ ki pi ta $'),1,33,86
+0,entropy,3,('$ ka ti $'),2,12,97
+0,entropy,3,('$ pi ta ke $'),3,30,121
+0,entropy,3,('$ pa qa pe $'),4,22,135
+0,entropy,3,('$ pa qi te qI $'),5,60,174
+0,entropy,3,('$ pa kE pa $'),6,24,186
+0,entropy,3,('$ kI pI qe $'),7,45,207
+0,entropy,3,('$ pI kE pa ta $'),8,39,220
+0,entropy,3,('$ tI pa pI $'),9,30,229
+0,entropy,3,('$ pi qI ti pe $'),10,64,245
+0,entropy,3,('$ ta ta tI $'),11,22,251
+0,entropy,3,('$ ki qI kI $'),12,45,255
+0,entropy,3,('$ ta qi pI pI $'),13,60,263
+0,entropy,3,('$ ki kI kI $'),14,45,263
+0,entropy,3,('$ ki pI qI $'),15,45,263
+0,entropy,3,('$ ti pI tI $'),16,45,263
+0,entropy,3,('$ ka ki pI $'),17,33,263
+0,entropy,3,('$ ka ke kI ka $'),18,48,266
+0,entropy,3,('$ ti tI ki pE $'),19,68,267
+0,entropy,3,('$ pe tI ti ka $'),20,60,270
+0,entropy,3,('$ qi qI pI $'),21,45,270
+0,entropy,3,('$ pi tI pi $'),22,45,270
+0,entropy,3,('$ ki pI pI $'),23,45,270
+0,entropy,3,('$ te tI ki $'),24,45,270
+0,entropy,3,('$ ki kI ki $'),25,45,270
+0,entropy,3,('$ te kI ti $'),26,45,270
+0,entropy,3,('$ qa pI qi qi $'),27,60,274
+0,entropy,3,('$ kI ke te $'),28,45,276
+0,entropy,3,('$ ti kI pi qe $'),29,64,276
+0,entropy,3,('$ pi pi ti $'),30,45,277
+0,entropy,3,('$ qi tI pi $'),31,45,277
+0,entropy,3,('$ qI pi ki pe $'),32,60,277
+0,entropy,3,('$ pI pe pi pi $'),33,66,277
+0,entropy,3,('$ tE ki qI pI $'),34,66,277
+0,entropy,3,('$ pi kI pI $'),35,45,277
+0,entropy,3,('$ qe qI pi ki $'),36,66,277
+0,entropy,3,('$ ki ti pi $'),37,45,277
+0,entropy,3,('$ pe tI pi ki $'),38,66,277
+0,entropy,3,('$ qe kI qi $'),39,45,277
+0,entropy,3,('$ pI te qe $'),40,45,277
+0,entropy,3,('$ ti tI qi qe $'),41,64,277
+0,entropy,3,('$ pi qI tI $'),42,45,277
+0,entropy,3,('$ kI te qe $'),43,45,277
+0,entropy,3,('$ ti kI qi $'),44,45,277
+0,entropy,3,('$ pi qI pI $'),45,45,277
+0,entropy,3,('$ pe tI ti ke $'),46,68,277
+0,entropy,3,('$ pi ti ti kI $'),47,54,277
+0,entropy,3,('$ kI ke ki $'),48,45,277
+0,entropy,3,('$ ti pI te pe $'),49,66,277
+0,entropy,3,('$ pI pe te $'),50,45,277
+0,entropy,3,('$ tI pi ke ke $'),51,60,277
+0,entropy,3,('$ qi kI ti tI $'),52,64,277
+0,entropy,3,('$ qi qI qI $'),53,45,277
+0,entropy,3,('$ ki qI qe te $'),54,66,277
+0,entropy,3,('$ ti pI pi kI $'),55,64,277
+0,entropy,3,('$ kI pi kI tI $'),56,60,277
+0,entropy,3,('$ ti qI ti $'),57,45,277
+0,entropy,3,('$ qi tI ti $'),58,45,277
+0,entropy,3,('$ pE ki ti ti $'),59,63,277
+0,entropy,3,('$ qI ke te $'),60,45,277
+0,entropy,3,('$ ti tI ki $'),61,45,277
+0,entropy,3,('$ qI qe qe $'),62,45,277
+0,entropy,3,('$ tE pi qa ka $'),63,43,281
+0,entropy,3,('$ pi tI pi ti $'),64,60,281
+0,entropy,3,('$ pi tI qi $'),65,45,281
+0,entropy,3,('$ pe qI ki $'),66,45,281
+0,entropy,3,('$ qi pI tI $'),67,45,281
+0,entropy,3,('$ qe kI ti ki $'),68,66,281
+0,entropy,3,('$ qi pI qI $'),69,45,281
+0,entropy,3,('$ ki qI qI $'),70,45,281
+0,entropy,3,('$ tI ki ti ti $'),71,54,281
+0,entropy,3,('$ ti tI kI $'),72,45,281
+0,entropy,3,('$ qe kI ki qi $'),73,66,281
+0,entropy,3,('$ qI te pe $'),74,45,281
+0,unif,3,('$ tE kI ta $'),0,33,33
+0,unif,3,('$ tE ka pi qe $'),1,51,80
+0,unif,3,('$ pi kI $'),2,18,92
+0,unif,3,('$ qe ti $'),3,18,98
+0,unif,3,('$ qE ke pa $'),4,33,113
+0,unif,3,('$ ke qe $'),5,18,114
+0,unif,3,('$ pe pI pI pi $'),6,66,163
+0,unif,3,('$ tE tI qa tE $'),7,51,179
+0,unif,3,('$ tI qi $'),8,18,180
+0,unif,3,('$ kE ta $'),9,12,180
+0,unif,3,('$ tE pi $'),10,18,180
+0,unif,3,('$ pe ke qE $'),11,45,191
+0,unif,3,('$ pa ke $'),12,12,195
+0,unif,3,('$ kI tI kI $'),13,45,202
+0,unif,3,('$ pE qE kI pI $'),14,54,202
+0,unif,3,('$ tE ka ki ti $'),15,51,206
+0,unif,3,('$ pe ti $'),16,18,206
+0,unif,3,('$ qa te $'),17,12,206
+0,unif,3,('$ ke qI qE qa $'),18,58,213
+0,unif,3,('$ qa kI ke $'),19,33,219
+0,unif,3,('$ pe qI qe $'),20,45,222
+0,unif,3,('$ pE ki $'),21,18,222
+0,unif,3,('$ pi qI ka pI $'),22,51,230
+0,unif,3,('$ ke ka ta ki $'),23,36,243
+0,unif,3,('$ qI pI $'),24,18,243
+0,unif,3,('$ kI pI qE $'),25,45,243
+0,unif,3,('$ qi ti pI ti $'),26,60,248
+0,unif,3,('$ kI qE pe $'),27,45,250
+0,unif,3,('$ ti tI qE $'),28,45,250
+0,unif,3,('$ qE ta tI $'),29,30,251
+0,unif,3,('$ te pa qe $'),30,30,254
+0,unif,3,('$ qe qi qi $'),31,45,256
+0,unif,3,('$ pE pa $'),32,12,256
+0,unif,3,('$ pI ke kI tE $'),33,70,259
+0,unif,3,('$ pI ki ki $'),34,45,261
+0,unif,3,('$ qI qi tE pe $'),35,68,262
+0,unif,3,('$ ka ti qe pe $'),36,60,262
+0,unif,3,('$ qE pI qE qe $'),37,64,262
+0,unif,3,('$ qI ka $'),38,12,263
+0,unif,3,('$ qa tI pE ki $'),39,60,266
+0,unif,3,('$ te ki qe $'),40,45,266
+0,unif,3,('$ qi qi tI $'),41,45,266
+0,unif,3,('$ pi pe $'),42,18,266
+0,unif,3,('$ te ki qE te $'),43,68,266
+0,unif,3,('$ pe pa tI $'),44,30,269
+0,unif,3,('$ kI tE qe $'),45,45,269
+0,unif,3,('$ te qe qi qe $'),46,60,269
+0,unif,3,('$ pa ta qI $'),47,22,272
+0,unif,3,('$ pI pi $'),48,18,272
+0,unif,3,('$ ta ka $'),49,8,273
+0,unif,3,('$ pE ka tE pI $'),50,49,274
+0,unif,3,('$ qE te ka ti $'),51,51,274
+0,unif,3,('$ qi qi qi $'),52,45,274
+0,unif,3,('$ pa ki kI qe $'),53,60,275
+0,unif,3,('$ te ti ti $'),54,45,275
+0,unif,3,('$ tE qa pI $'),55,30,275
+0,unif,3,('$ qa ta ka qE $'),56,26,279
+0,unif,3,('$ qE pI kI pI $'),57,54,279
+0,unif,3,('$ qa qI $'),58,12,279
+0,unif,3,('$ ti ki pi $'),59,45,279
+0,unif,3,('$ tI pe pe qa $'),60,57,280
+0,unif,3,('$ qa qa $'),61,8,280
+0,unif,3,('$ qi ti $'),62,18,280
+0,unif,3,('$ kI tI pi $'),63,45,280
+0,unif,3,('$ ke ka kE $'),64,30,280
+0,unif,3,('$ kI tE ta qa $'),65,39,281
+0,unif,3,('$ kI kE $'),66,18,281
+0,unif,3,('$ tE kE kI te $'),67,66,281
+0,unif,3,('$ tE pI qE kE $'),68,60,281
+0,unif,3,('$ qa ta te ti $'),69,39,281
+0,unif,3,('$ pE pe ti $'),70,45,281
+0,unif,3,('$ qI pi $'),71,18,281
+0,unif,3,('$ qI tE qa $'),72,33,281
+0,unif,3,('$ tE te ka $'),73,33,281
+0,unif,3,('$ te pa tE qa $'),74,41,283
+0,train,3,('$ qE $'),0,3,3
+0,train,3,('$ pi ta $'),1,12,15
+0,train,3,('$ qE kE tI $'),2,45,59
+0,train,3,('$ qe qe $'),3,18,68
+0,train,3,('$ tE qa ka $'),4,22,85
+0,train,3,('$ qa qi $'),5,12,92
+0,train,3,('$ pi qi $'),6,18,101
+0,train,3,('$ qa ka $'),7,8,103
+0,train,3,('$ pi ta ti pe $'),8,51,136
+0,train,3,('$ qE pE $'),9,18,137
+0,train,3,('$ qe qa $'),10,12,137
+0,train,3,('$ qi ta pI qI $'),11,51,152
+0,train,3,('$ te ke $'),12,18,152
+0,train,3,('$ qI pa pE $'),13,30,157
+0,train,3,('$ tE ka $'),14,12,158
+0,train,3,('$ kE pE qE $'),15,45,163
+0,train,3,('$ qi ke ke $'),16,45,180
+0,train,3,('$ tI kI $'),17,18,182
+0,train,3,('$ ke ta qa $'),18,22,185
+0,train,3,('$ qI ta qE tI tE $'),19,74,194
+0,train,3,('$ qi pi $'),20,18,194
+0,train,3,('$ qI pa pi pi ti qa ka qE tE $'),21,130,232
+0,train,3,('$ tE $'),22,3,232
+0,train,3,('$ pa ki ke pa $'),23,48,232
+0,train,3,('$ ta pe $'),24,12,232
+0,train,3,('$ ke ka ta ti $'),25,36,238
+0,train,3,('$ ke qa qI $'),26,30,238
+0,train,3,('$ ta kE kE $'),27,33,239
+0,train,3,('$ te ka ka $'),28,22,239
+0,train,3,('$ pE $'),29,3,239
+0,train,3,('$ ka qi $'),30,12,239
+0,train,3,('$ qa qe ta ke ke $'),31,54,244
+0,train,3,('$ te $'),32,3,245
+0,train,3,('$ ki pa $'),33,12,245
+0,train,3,('$ qI $'),34,3,246
+0,train,3,('$ pE ka $'),35,12,246
+0,train,3,('$ qE kI $'),36,18,246
+0,train,3,('$ pe ta tE kI $'),37,49,246
+0,train,3,('$ ka qI $'),38,12,246
+0,train,3,('$ ke $'),39,3,246
+0,train,3,('$ ki $'),40,3,246
+0,train,3,('$ te qe $'),41,18,246
+0,train,3,('$ pI $'),42,3,246
+0,train,3,('$ qe $'),43,3,246
+0,train,3,('$ pe $'),44,3,246
+0,train,3,('$ kI qE $'),45,18,246
+0,train,3,('$ kI qI $'),46,18,246
+0,train,3,('$ ke ta $'),47,12,246
+0,train,3,('$ tI tE pE qI qI $'),48,69,251
+0,train,3,('$ qe ke $'),49,18,251
+0,train,3,('$ ti $'),50,3,251
+0,train,3,('$ te pi $'),51,18,251
+0,train,3,('$ tI $'),52,3,251
+0,train,3,('$ qi ta $'),53,12,251
+0,train,3,('$ pe te qa $'),54,33,251
+0,train,3,('$ pi ta qa $'),55,22,251
+0,train,3,('$ qi qi pe $'),56,45,251
+0,train,3,('$ ka ki qe $'),57,33,251
+0,train,3,('$ kI kI pa qe $'),58,51,256
+0,train,3,('$ kE ka qe pa $'),59,41,256
+0,train,3,('$ pE pI kI $'),60,45,256
+0,train,3,('$ kI $'),61,3,256
+0,train,3,('$ pi $'),62,3,256
+0,train,3,('$ tE pI $'),63,18,256
+0,train,3,('$ pI tE ta kI $'),64,51,256
+0,train,3,('$ ta ke $'),65,12,256
+0,train,3,('$ qa ta ka qa tE $'),66,26,257
+0,train,3,('$ kE $'),67,3,257
+0,train,3,('$ qa $'),68,2,258
+0,train,3,('$ pI kE $'),69,18,258
+0,train,3,('$ kI ta $'),70,12,258
+0,train,3,('$ qa pE $'),71,12,258
+0,train,3,('$ qI tE pa $'),72,33,258
+0,train,3,('$ pE pa $'),73,12,258
+0,train,3,('$ pi pe ta $'),74,33,258
+0,eig,4,('$ ke ke $'),0,18,18
+0,eig,4,('$ ki ka tI $'),1,30,45
+0,eig,4,('$ ka qa $'),2,8,51
+0,eig,4,('$ tI qa pa $'),3,22,65
+0,eig,4,('$ qi te $'),4,18,70
+0,eig,4,('$ qi ke ka $'),5,33,86
+0,eig,4,('$ qe qa pI $'),6,30,92
+0,eig,4,('$ ka ka pe $'),7,22,103
+0,eig,4,('$ tE qa pa $'),8,22,105
+0,eig,4,('$ ti ka qa $'),9,22,107
+0,eig,4,('$ qa qi $'),10,12,111
+0,eig,4,('$ ki ta pE $'),11,30,111
+0,eig,4,('$ qe ke $'),12,18,111
+0,eig,4,('$ pa ka $'),13,8,111
+0,eig,4,('$ ta qa qE $'),14,22,113
+0,eig,4,('$ kE ta ta $'),15,22,113
+0,eig,4,('$ qi ti ti $'),16,45,146
+0,eig,4,('$ qe ka $'),17,12,146
+0,eig,4,('$ ka qa te $'),18,22,146
+0,eig,4,('$ te kI $'),19,18,151
+0,eig,4,('$ pi pE $'),20,18,153
+0,eig,4,('$ qE kI $'),21,18,159
+0,eig,4,('$ qa pa pE $'),22,22,159
+0,eig,4,('$ kE tI ka $'),23,33,178
+0,eig,4,('$ qE pi pa $'),24,33,183
+0,eig,4,('$ qI ka $'),25,12,183
+0,eig,4,('$ te kI qa $'),26,33,187
+0,eig,4,('$ ka ka pE $'),27,22,187
+0,eig,4,('$ ta ka tI $'),28,22,189
+0,eig,4,('$ qe qa $'),29,12,189
+0,eig,4,('$ ke ke qa $'),30,33,189
+0,eig,4,('$ qi qE $'),31,18,189
+0,eig,4,('$ qi pI $'),32,18,189
+0,eig,4,('$ pI ke $'),33,18,190
+0,eig,4,('$ qe kI $'),34,18,190
+0,eig,4,('$ pe qi $'),35,18,190
+0,eig,4,('$ tI ta $'),36,12,190
+0,eig,4,('$ ki pa pa $'),37,22,190
+0,eig,4,('$ ta kE ka $'),38,24,196
+0,eig,4,('$ pE te $'),39,18,196
+0,eig,4,('$ te tE $'),40,18,196
+0,eig,4,('$ qE qE $'),41,18,196
+0,eig,4,('$ te qa $'),42,12,196
+0,eig,4,('$ tE pi ta $'),43,33,196
+0,eig,4,('$ kI ka pa $'),44,22,196
+0,eig,4,('$ ti pa qi $'),45,30,202
+0,eig,4,('$ kI ka qa $'),46,22,202
+0,eig,4,('$ kI qa $'),47,12,202
+0,eig,4,('$ pa qE ka $'),48,24,202
+0,eig,4,('$ ke qe $'),49,18,202
+0,eig,4,('$ kI pa qa $'),50,22,202
+0,eig,4,('$ pe qi ti $'),51,45,211
+0,eig,4,('$ pE ta pa $'),52,22,211
+0,eig,4,('$ tI ka qa $'),53,22,211
+0,eig,4,('$ ti ta qi $'),54,30,211
+0,eig,4,('$ qa pI $'),55,12,211
+0,eig,4,('$ ka ka pI $'),56,22,211
+0,eig,4,('$ ki qI $'),57,18,211
+0,eig,4,('$ qI te $'),58,18,211
+0,eig,4,('$ pE qi $'),59,18,211
+0,eig,4,('$ tI ti $'),60,18,211
+0,eig,4,('$ ti tI $'),61,18,211
+0,eig,4,('$ qi qI $'),62,18,211
+0,eig,4,('$ qE ke $'),63,18,211
+0,eig,4,('$ kE pe $'),64,18,211
+0,eig,4,('$ te qI $'),65,18,211
+0,eig,4,('$ te tI $'),66,18,211
+0,eig,4,('$ tE ti $'),67,18,211
+0,eig,4,('$ pI kE $'),68,18,211
+0,eig,4,('$ qa qa pE $'),69,22,211
+0,eig,4,('$ tI ta ka $'),70,22,211
+0,eig,4,('$ qa pa qe $'),71,22,211
+0,eig,4,('$ ka qa pE $'),72,22,211
+0,eig,4,('$ pI ta pa $'),73,22,211
+0,eig,4,('$ qa ta ka $'),74,16,212
+0,entropy,4,('$ ke tE kE ta $'),0,54,54
+0,entropy,4,('$ pI ki kI $'),1,45,96
+0,entropy,4,('$ ka qi $'),2,12,107
+0,entropy,4,('$ kI qa ki te $'),3,51,150
+0,entropy,4,('$ ta ka ka $'),4,16,161
+0,entropy,4,('$ qI ki ka tE $'),5,51,186
+0,entropy,4,('$ qi ki qa $'),6,33,195
+0,entropy,4,('$ pa ta qI $'),7,22,205
+0,entropy,4,('$ te qi pI qi $'),8,64,233
+0,entropy,4,('$ pi tI pi $'),9,45,234
+0,entropy,4,('$ ki pI pi $'),10,45,234
+0,entropy,4,('$ qI qa qa $'),11,22,239
+0,entropy,4,('$ ti pI ki $'),12,45,239
+0,entropy,4,('$ pa ki kI pI $'),13,60,247
+0,entropy,4,('$ ka pI pi $'),14,33,253
+0,entropy,4,('$ qI tI pe $'),15,45,259
+0,entropy,4,('$ tI kI ke $'),16,45,259
+0,entropy,4,('$ kI tI ke $'),17,45,259
+0,entropy,4,('$ ki kI pi $'),18,45,259
+0,entropy,4,('$ qi tI ti $'),19,45,259
+0,entropy,4,('$ qI kI pi $'),20,45,260
+0,entropy,4,('$ ti qI ki te $'),21,64,263
+0,entropy,4,('$ qi qI qi $'),22,45,263
+0,entropy,4,('$ qi kE ti $'),23,45,265
+0,entropy,4,('$ tI pE ki qa $'),24,60,267
+0,entropy,4,('$ kI pI qi $'),25,45,267
+0,entropy,4,('$ pi qI tI pe $'),26,66,267
+0,entropy,4,('$ kI qI pe $'),27,45,267
+0,entropy,4,('$ ti qa tI qa $'),28,42,273
+0,entropy,4,('$ ti tI ki $'),29,45,273
+0,entropy,4,('$ pI qE qi qe $'),30,68,273
+0,entropy,4,('$ qe pI qI pi $'),31,66,273
+0,entropy,4,('$ ki qI ki ta $'),32,60,273
+0,entropy,4,('$ ta ki pI qi $'),33,60,273
+0,entropy,4,('$ ti qI ki $'),34,45,273
+0,entropy,4,('$ pi qI ti $'),35,45,273
+0,entropy,4,('$ kI pI qI qi $'),36,54,274
+0,entropy,4,('$ tI qi ki ti $'),37,54,275
+0,entropy,4,('$ ki tI ki pi $'),38,60,275
+0,entropy,4,('$ pa pi qI ki $'),39,60,275
+0,entropy,4,('$ ta tI qI qi $'),40,60,276
+0,entropy,4,('$ pi qI ki qi $'),41,60,276
+0,entropy,4,('$ qI qI pi ke $'),42,60,276
+0,entropy,4,('$ ki qI ki $'),43,45,276
+0,entropy,4,('$ ki tI ti pi $'),44,60,276
+0,entropy,4,('$ pI tI ti pi $'),45,54,276
+0,entropy,4,('$ ti tI pi $'),46,45,276
+0,entropy,4,('$ pi pI pi $'),47,45,276
+0,entropy,4,('$ qe tI qI ki $'),48,66,276
+0,entropy,4,('$ pI pE pi $'),49,45,276
+0,entropy,4,('$ kI qI te te $'),50,63,276
+0,entropy,4,('$ tI pI ti $'),51,45,276
+0,entropy,4,('$ qI ki ti pi $'),52,54,276
+0,entropy,4,('$ te ki kI qi $'),53,64,276
+0,entropy,4,('$ kI pI qi ke $'),54,60,276
+0,entropy,4,('$ tI tI ti qe $'),55,60,276
+0,entropy,4,('$ ta ki tI qi $'),56,60,276
+0,entropy,4,('$ ki qI pi $'),57,45,276
+0,entropy,4,('$ kI tI ti $'),58,45,276
+0,entropy,4,('$ tI tI pi te $'),59,60,276
+0,entropy,4,('$ pe pI qI pe $'),60,69,276
+0,entropy,4,('$ qe qi qI pi $'),61,64,276
+0,entropy,4,('$ qI pI ki $'),62,45,276
+0,entropy,4,('$ qI kI pi pi $'),63,54,276
+0,entropy,4,('$ kI tE pi $'),64,45,276
+0,entropy,4,('$ pi pI qi $'),65,45,276
+0,entropy,4,('$ ti tI ki ki $'),66,60,276
+0,entropy,4,('$ qI kI te $'),67,45,276
+0,entropy,4,('$ kI qI pi pi $'),68,54,276
+0,entropy,4,('$ kI kI ke $'),69,45,276
+0,entropy,4,('$ qa ki kI ki $'),70,60,276
+0,entropy,4,('$ pi pI ti $'),71,45,276
+0,entropy,4,('$ kI pI pi $'),72,45,276
+0,entropy,4,('$ qi ti pi $'),73,45,276
+0,entropy,4,('$ pI kI pe $'),74,45,276
+0,unif,4,('$ pa tE $'),0,12,12
+0,unif,4,('$ qE qa pa $'),1,22,31
+0,unif,4,('$ pE ti ta ke $'),2,51,75
+0,unif,4,('$ pI qI ta ka $'),3,43,92
+0,unif,4,('$ ka ke kI qE $'),4,58,140
+0,unif,4,('$ te ka $'),5,12,145
+0,unif,4,('$ ka pI kI pi $'),6,60,184
+0,unif,4,('$ qI pI $'),7,18,184
+0,unif,4,('$ tI qi kI $'),8,45,201
+0,unif,4,('$ qe kI $'),9,18,205
+0,unif,4,('$ tI pi tI qa $'),10,60,210
+0,unif,4,('$ pa kE $'),11,12,210
+0,unif,4,('$ kE pe $'),12,18,210
+0,unif,4,('$ kI qi qE $'),13,45,211
+0,unif,4,('$ qi te kI qa $'),14,60,224
+0,unif,4,('$ pI ti $'),15,18,224
+0,unif,4,('$ pi pe qE ka $'),16,56,226
+0,unif,4,('$ pI ta pE $'),17,30,233
+0,unif,4,('$ qa qI qE $'),18,33,236
+0,unif,4,('$ kI te pE tE $'),19,66,236
+0,unif,4,('$ ke pi ti kE $'),20,66,244
+0,unif,4,('$ pa te pe pe $'),21,51,251
+0,unif,4,('$ pe tE qE $'),22,45,251
+0,unif,4,('$ tI ta pE ka $'),23,42,254
+0,unif,4,('$ ke qE qe $'),24,45,256
+0,unif,4,('$ qI qa pe $'),25,30,258
+0,unif,4,('$ tI te tI qa $'),26,60,259
+0,unif,4,('$ qE kE ka pE $'),27,48,261
+0,unif,4,('$ pe pe qE qi $'),28,66,262
+0,unif,4,('$ pe qi $'),29,18,262
+0,unif,4,('$ tI kI qi ta $'),30,60,263
+0,unif,4,('$ qI pa pi $'),31,30,267
+0,unif,4,('$ qE ki qE $'),32,45,267
+0,unif,4,('$ te tI qI kE $'),33,66,269
+0,unif,4,('$ pa pi $'),34,12,269
+0,unif,4,('$ ka ke te $'),35,33,269
+0,unif,4,('$ ke ke $'),36,18,269
+0,unif,4,('$ tE tE ki kI $'),37,66,269
+0,unif,4,('$ kE ta qe $'),38,30,270
+0,unif,4,('$ ke kE qE $'),39,45,270
+0,unif,4,('$ qe qI $'),40,18,270
+0,unif,4,('$ ka qi $'),41,12,270
+0,unif,4,('$ ta pE qe ka $'),42,46,271
+0,unif,4,('$ pi qI ka $'),43,33,271
+0,unif,4,('$ pI qe ti $'),44,45,273
+0,unif,4,('$ ti ka ti tI $'),45,51,274
+0,unif,4,('$ pe pe ki qe $'),46,60,274
+0,unif,4,('$ qE ta pE tE $'),47,48,274
+0,unif,4,('$ qa ka qi ka $'),48,34,281
+0,unif,4,('$ tE qI tE ti $'),49,68,281
+0,unif,4,('$ pE pE ti $'),50,45,281
+0,unif,4,('$ kE ke qE te $'),51,64,281
+0,unif,4,('$ pI kE ki $'),52,45,281
+0,unif,4,('$ pI qi kI ti $'),53,64,281
+0,unif,4,('$ qa tE ki kE $'),54,59,281
+0,unif,4,('$ qe tI qi ta $'),55,60,281
+0,unif,4,('$ pa pI ti ke $'),56,60,282
+0,unif,4,('$ pe qa tE qI $'),57,49,283
+0,unif,4,('$ pE pe pi qE $'),58,68,283
+0,unif,4,('$ qa tE $'),59,12,283
+0,unif,4,('$ te ta $'),60,12,283
+0,unif,4,('$ pE pa $'),61,12,283
+0,unif,4,('$ qI pi ke $'),62,45,283
+0,unif,4,('$ pe ke qe $'),63,45,283
+0,unif,4,('$ tI qI $'),64,18,283
+0,unif,4,('$ tI qE te $'),65,45,283
+0,unif,4,('$ pa ka $'),66,8,283
+0,unif,4,('$ pa pa pe $'),67,22,284
+0,unif,4,('$ qi pa tI qe $'),68,51,284
+0,unif,4,('$ pa ki pa $'),69,24,284
+0,unif,4,('$ te pe qE qi $'),70,66,284
+0,unif,4,('$ pa ke ki $'),71,33,284
+0,unif,4,('$ ta qa tE ti $'),72,41,285
+0,unif,4,('$ ka ka $'),73,8,285
+0,unif,4,('$ tE pa kI $'),74,30,285
+0,train,4,('$ tI $'),0,3,3
+0,train,4,('$ ke ka ta ti $'),1,36,39
+0,train,4,('$ pE pI kI $'),2,45,84
+0,train,4,('$ qi ta $'),3,12,92
+0,train,4,('$ kI qI $'),4,18,95
+0,train,4,('$ te qe $'),5,18,103
+0,train,4,('$ qa qi $'),6,12,106
+0,train,4,('$ qi ke ke $'),7,45,131
+0,train,4,('$ kI ta $'),8,12,135
+0,train,4,('$ tE $'),9,3,136
+0,train,4,('$ qe ke $'),10,18,136
+0,train,4,('$ kI qE $'),11,18,136
+0,train,4,('$ pi ta $'),12,12,136
+0,train,4,('$ ka qi $'),13,12,136
+0,train,4,('$ ka ki qe $'),14,33,153
+0,train,4,('$ ta pe $'),15,12,155
+0,train,4,('$ pi qi $'),16,18,157
+0,train,4,('$ pE ka $'),17,12,158
+0,train,4,('$ qI pa pi pi ti qa ka qE tE $'),18,130,215
+0,train,4,('$ pe $'),19,3,216
+0,train,4,('$ qE pE $'),20,18,216
+0,train,4,('$ qi ta pI qI $'),21,51,227
+0,train,4,('$ tI kI $'),22,18,227
+0,train,4,('$ te ke $'),23,18,227
+0,train,4,('$ pE pa $'),24,12,227
+0,train,4,('$ ke ta $'),25,12,227
+0,train,4,('$ qI tE pa $'),26,33,237
+0,train,4,('$ ki ta qI $'),27,30,238
+0,train,4,('$ ke ke ta $'),28,33,240
+0,train,4,('$ pe ta tE kI $'),29,49,240
+0,train,4,('$ qE kI $'),30,18,240
+0,train,4,('$ pI tE ta kI $'),31,51,242
+0,train,4,('$ qa pE $'),32,12,243
+0,train,4,('$ pe te qa $'),33,33,243
+0,train,4,('$ qI pa pE $'),34,30,244
+0,train,4,('$ te pi $'),35,18,244
+0,train,4,('$ kE $'),36,3,244
+0,train,4,('$ kI $'),37,3,244
+0,train,4,('$ ki pa $'),38,12,244
+0,train,4,('$ qa ka $'),39,8,246
+0,train,4,('$ pi ta ti pe $'),40,51,247
+0,train,4,('$ ka qI $'),41,12,247
+0,train,4,('$ pa ki ke pa $'),42,48,247
+0,train,4,('$ ki $'),43,3,247
+0,train,4,('$ qe $'),44,3,247
+0,train,4,('$ qe qa $'),45,12,247
+0,train,4,('$ ke ta qa $'),46,22,247
+0,train,4,('$ pi pe ta $'),47,33,247
+0,train,4,('$ kI kI pa qe $'),48,51,249
+0,train,4,('$ tI tE pE qI qI $'),49,69,252
+0,train,4,('$ qI ta qE tI tE $'),50,74,252
+0,train,4,('$ qi qi pe $'),51,45,252
+0,train,4,('$ qi pi $'),52,18,252
+0,train,4,('$ qa qe ta ke ke $'),53,54,255
+0,train,4,('$ qI $'),54,3,255
+0,train,4,('$ ta ke $'),55,12,255
+0,train,4,('$ tE qa ka $'),56,22,256
+0,train,4,('$ pE $'),57,3,256
+0,train,4,('$ qe qe $'),58,18,256
+0,train,4,('$ qa ta ka qa tE $'),59,26,257
+0,train,4,('$ pI $'),60,3,257
+0,train,4,('$ te ka ka $'),61,22,257
+0,train,4,('$ tE pI $'),62,18,257
+0,train,4,('$ pi ta qa $'),63,22,257
+0,train,4,('$ ke $'),64,3,257
+0,train,4,('$ qE $'),65,3,257
+0,train,4,('$ pI kE $'),66,18,257
+0,train,4,('$ qa $'),67,2,258
+0,train,4,('$ ke qa qI $'),68,30,258
+0,train,4,('$ pi $'),69,3,258
+0,train,4,('$ qE kE tI $'),70,45,258
+0,train,4,('$ kE pE qE $'),71,45,258
+0,train,4,('$ kI pE $'),72,18,258
+0,train,4,('$ tE ka $'),73,12,258
+0,train,4,('$ ti $'),74,3,258
+0,eig,5,('$ te kI $'),0,18,18
+0,eig,5,('$ kI pE $'),1,18,32
+0,eig,5,('$ ka tI $'),2,12,38
+0,eig,5,('$ ta kI ti $'),3,33,61
+0,eig,5,('$ tE tI $'),4,18,62
+0,eig,5,('$ ka qa qe $'),5,22,82
+0,eig,5,('$ qa qa tE $'),6,22,86
+0,eig,5,('$ ka pa tE $'),7,22,86
+0,eig,5,('$ pa ka qE $'),8,22,86
+0,eig,5,('$ pI ki qa $'),9,33,112
+0,eig,5,('$ ka qa pI $'),10,22,116
+0,eig,5,('$ pi te $'),11,18,119
+0,eig,5,('$ kI ta pe $'),12,30,140
+0,eig,5,('$ pI pe ka $'),13,33,144
+0,eig,5,('$ kI qI qa $'),14,33,151
+0,eig,5,('$ qa ta kI $'),15,22,151
+0,eig,5,('$ pI pa ta $'),16,22,155
+0,eig,5,('$ qI qi ka $'),17,33,155
+0,eig,5,('$ tE pa $'),18,12,155
+0,eig,5,('$ qE pa qi $'),19,30,159
+0,eig,5,('$ pe qe $'),20,18,160
+0,eig,5,('$ tI qi qa $'),21,33,160
+0,eig,5,('$ ke ka pa $'),22,22,167
+0,eig,5,('$ ki qa qa $'),23,22,167
+0,eig,5,('$ kI qa pi $'),24,30,169
+0,eig,5,('$ ti ki ta $'),25,33,175
+0,eig,5,('$ qe ka ta $'),26,22,175
+0,eig,5,('$ kI qE $'),27,18,175
+0,eig,5,('$ te ta ta $'),28,22,175
+0,eig,5,('$ tI qa kE $'),29,30,181
+0,eig,5,('$ kE ta ke $'),30,30,181
+0,eig,5,('$ ta kI tI $'),31,33,187
+0,eig,5,('$ ka pa tI $'),32,22,187
+0,eig,5,('$ pa pa pE $'),33,22,187
+0,eig,5,('$ kE ta ti $'),34,30,187
+0,eig,5,('$ ka pa qE $'),35,22,187
+0,eig,5,('$ tE ti $'),36,18,187
+0,eig,5,('$ qE ke $'),37,18,187
+0,eig,5,('$ tE ki $'),38,18,187
+0,eig,5,('$ pI ti $'),39,18,187
+0,eig,5,('$ te qe $'),40,18,187
+0,eig,5,('$ pe ta $'),41,12,187
+0,eig,5,('$ qi ta qa $'),42,22,187
+0,eig,5,('$ qe qa ta $'),43,22,187
+0,eig,5,('$ qE qI $'),44,18,187
+0,eig,5,('$ tE ti ta $'),45,33,193
+0,eig,5,('$ tI ta $'),46,12,193
+0,eig,5,('$ kI pe pa $'),47,33,193
+0,eig,5,('$ pI kE $'),48,18,193
+0,eig,5,('$ kE pa ka $'),49,22,193
+0,eig,5,('$ kI pa ka $'),50,22,193
+0,eig,5,('$ qa pi $'),51,12,194
+0,eig,5,('$ te qi $'),52,18,194
+0,eig,5,('$ qe ka ka $'),53,22,194
+0,eig,5,('$ ta ta ti $'),54,22,194
+0,eig,5,('$ pa ta tE $'),55,22,194
+0,eig,5,('$ te ka pa $'),56,22,194
+0,eig,5,('$ qI ta ka $'),57,22,194
+0,eig,5,('$ pa tI $'),58,12,194
+0,eig,5,('$ qi ta qE $'),59,30,198
+0,eig,5,('$ ta qa $'),60,8,198
+0,eig,5,('$ te qI $'),61,18,198
+0,eig,5,('$ ke pi $'),62,18,198
+0,eig,5,('$ tE pa pa $'),63,22,198
+0,eig,5,('$ qa ta qI $'),64,22,198
+0,eig,5,('$ tI qa pa $'),65,22,198
+0,eig,5,('$ qa pa tE $'),66,22,198
+0,eig,5,('$ pa ta tI $'),67,22,198
+0,eig,5,('$ pe ta qa $'),68,22,198
+0,eig,5,('$ pI pa $'),69,12,198
+0,eig,5,('$ ka tI qa $'),70,24,206
+0,eig,5,('$ tI ka kI $'),71,30,206
+0,eig,5,('$ kE pe $'),72,18,206
+0,eig,5,('$ qE pE $'),73,18,206
+0,eig,5,('$ pE qa pa $'),74,22,206
+0,entropy,5,('$ qI pI tE te $'),0,60,60
+0,entropy,5,('$ pa ka tI $'),1,22,81
+0,entropy,5,('$ qi pa $'),2,12,92
+0,entropy,5,('$ qa pi ki $'),3,33,123
+0,entropy,5,('$ ka tI qa qa $'),4,34,149
+0,entropy,5,('$ te qi ta qI $'),5,51,181
+0,entropy,5,('$ kI qi qI $'),6,45,201
+0,entropy,5,('$ kI pi qi $'),7,45,207
+0,entropy,5,('$ te qI kI $'),8,45,225
+0,entropy,5,('$ kI pi ti $'),9,45,225
+0,entropy,5,('$ te ta qa pa $'),10,26,237
+0,entropy,5,('$ kI ki ki $'),11,45,237
+0,entropy,5,('$ ti ki ti $'),12,45,242
+0,entropy,5,('$ tI tI ki qi $'),13,54,244
+0,entropy,5,('$ qI ti kI ka $'),14,60,251
+0,entropy,5,('$ pI ki pi ti $'),15,54,251
+0,entropy,5,('$ tI pi qi pi $'),16,54,251
+0,entropy,5,('$ pI qi ti $'),17,45,251
+0,entropy,5,('$ pI qe qI $'),18,45,254
+0,entropy,5,('$ tI qe qI $'),19,45,254
+0,entropy,5,('$ kI qi ki $'),20,45,254
+0,entropy,5,('$ pI ke pI $'),21,45,254
+0,entropy,5,('$ tI ti qI $'),22,45,254
+0,entropy,5,('$ pI ki qi $'),23,45,254
+0,entropy,5,('$ tI ke qi $'),24,45,254
+0,entropy,5,('$ qI qi pI $'),25,45,254
+0,entropy,5,('$ qI ki pi $'),26,45,254
+0,entropy,5,('$ kI pi qi kE $'),27,66,256
+0,entropy,5,('$ kI te pi $'),28,45,256
+0,entropy,5,('$ tI te qI $'),29,45,256
+0,entropy,5,('$ pI te tI $'),30,45,256
+0,entropy,5,('$ tI ti qi $'),31,45,256
+0,entropy,5,('$ ti ki ti pi $'),32,45,256
+0,entropy,5,('$ qI ti ti $'),33,45,256
+0,entropy,5,('$ qI pi pi ke $'),34,60,256
+0,entropy,5,('$ pI ti qi pe $'),35,60,256
+0,entropy,5,('$ kI pi qI ke $'),36,68,257
+0,entropy,5,('$ qI ki tI $'),37,45,257
+0,entropy,5,('$ qI pi ti ti $'),38,54,257
+0,entropy,5,('$ kI qi qi $'),39,45,257
+0,entropy,5,('$ pI te pI $'),40,45,257
+0,entropy,5,('$ qI ti ka $'),41,33,262
+0,entropy,5,('$ kI qi ti $'),42,45,262
+0,entropy,5,('$ tE qa qi $'),43,30,270
+0,entropy,5,('$ pI pI ki pi $'),44,54,270
+0,entropy,5,('$ ke pi ki tI $'),45,60,270
+0,entropy,5,('$ pi pI qi tI $'),46,64,270
+0,entropy,5,('$ tI qi qi pi $'),47,54,270
+0,entropy,5,('$ pi pe pi $'),48,45,271
+0,entropy,5,('$ ta qI pe qI $'),49,60,274
+0,entropy,5,('$ pa qi tE qa $'),50,48,279
+0,entropy,5,('$ ti qI ti $'),51,45,279
+0,entropy,5,('$ qi pI qi $'),52,45,279
+0,entropy,5,('$ qi qE pa $'),53,33,279
+0,entropy,5,('$ kI kI pi pi $'),54,54,279
+0,entropy,5,('$ qI kI ki $'),55,45,279
+0,entropy,5,('$ ka pi tI ki $'),56,60,279
+0,entropy,5,('$ pa qI tI ki $'),57,60,281
+0,entropy,5,('$ ta ke tE $'),58,33,281
+0,entropy,5,('$ pI tI pi $'),59,45,281
+0,entropy,5,('$ ki tI qi $'),60,45,281
+0,entropy,5,('$ qa ki kE $'),61,33,281
+0,entropy,5,('$ pI kI ki $'),62,45,281
+0,entropy,5,('$ pI tI qi $'),63,45,281
+0,entropy,5,('$ kI pI pi $'),64,45,281
+0,entropy,5,('$ ka pi pI ti $'),65,60,281
+0,entropy,5,('$ pa pi qE $'),66,33,281
+0,entropy,5,('$ ka qi pE $'),67,33,281
+0,entropy,5,('$ kI kI pi $'),68,45,281
+0,entropy,5,('$ ta ki tI ki $'),69,60,281
+0,entropy,5,('$ ka pi pE $'),70,33,281
+0,entropy,5,('$ ka ta pi qa $'),71,34,284
+0,entropy,5,('$ pa ki qI $'),72,33,284
+0,entropy,5,('$ kI qI pi qa $'),73,60,284
+0,entropy,5,('$ qa kE pI ki $'),74,56,284
+0,unif,5,('$ tI pi qe ti $'),0,64,64
+0,unif,5,('$ tE ta qa qa $'),1,26,90
+0,unif,5,('$ pe ki $'),2,18,96
+0,unif,5,('$ ka ta pe kI $'),3,41,125
+0,unif,5,('$ kE pe qe $'),4,45,133
+0,unif,5,('$ qE tI pa qa $'),5,43,153
+0,unif,5,('$ pE tE ti qe $'),6,66,169
+0,unif,5,('$ qa qa ti pi $'),7,43,178
+0,unif,5,('$ pe qe tE $'),8,45,188
+0,unif,5,('$ qa qi $'),9,12,194
+0,unif,5,('$ qI qE ke kE $'),10,64,202
+0,unif,5,('$ qI kE $'),11,18,206
+0,unif,5,('$ ki qe ti $'),12,45,206
+0,unif,5,('$ qa qE tI $'),13,33,212
+0,unif,5,('$ tI qe $'),14,18,213
+0,unif,5,('$ pE pi ti $'),15,45,216
+0,unif,5,('$ kI ta $'),16,12,220
+0,unif,5,('$ pa qE pe ti $'),17,56,223
+0,unif,5,('$ kE ti tE ke $'),18,70,229
+0,unif,5,('$ kE ke ke kI $'),19,66,229
+0,unif,5,('$ qE qE pa $'),20,33,229
+0,unif,5,('$ ki qE qe $'),21,45,230
+0,unif,5,('$ pi qe qi $'),22,45,230
+0,unif,5,('$ ke ki $'),23,18,230
+0,unif,5,('$ pe kE ki ke $'),24,68,231
+0,unif,5,('$ qE qE $'),25,18,231
+0,unif,5,('$ pa kE qI $'),26,33,231
+0,unif,5,('$ ke qE qi kE $'),27,70,231
+0,unif,5,('$ ka qI $'),28,12,232
+0,unif,5,('$ qi pi ta tE $'),29,51,248
+0,unif,5,('$ pi te $'),30,18,248
+0,unif,5,('$ qE pa pI $'),31,30,253
+0,unif,5,('$ kE ki pI $'),32,45,253
+0,unif,5,('$ ta pe $'),33,12,253
+0,unif,5,('$ qi qi $'),34,18,253
+0,unif,5,('$ qI ti ta ta $'),35,43,256
+0,unif,5,('$ tE qa ki qI $'),36,51,259
+0,unif,5,('$ qi tE ke $'),37,45,259
+0,unif,5,('$ kI pE $'),38,18,259
+0,unif,5,('$ pe ta qa qe $'),39,34,260
+0,unif,5,('$ ti qE pI $'),40,45,265
+0,unif,5,('$ ki te ki $'),41,45,265
+0,unif,5,('$ ki tI te $'),42,45,267
+0,unif,5,('$ kE tI $'),43,18,267
+0,unif,5,('$ ke ke ti ka $'),44,60,269
+0,unif,5,('$ kE kI qI pe $'),45,66,270
+0,unif,5,('$ te pe pi $'),46,45,270
+0,unif,5,('$ ti tI qE $'),47,45,272
+0,unif,5,('$ qE qa ki pi $'),48,51,272
+0,unif,5,('$ te pe ka $'),49,33,272
+0,unif,5,('$ ka ke $'),50,12,272
+0,unif,5,('$ qi qE qE te $'),51,66,272
+0,unif,5,('$ pi ka ki qE $'),52,51,278
+0,unif,5,('$ qa ka qE $'),53,22,279
+0,unif,5,('$ qi ke tE $'),54,45,280
+0,unif,5,('$ qe pa kE $'),55,30,280
+0,unif,5,('$ qi ti kI $'),56,45,282
+0,unif,5,('$ pI pe ti te $'),57,68,282
+0,unif,5,('$ tE qI ta pE $'),58,51,282
+0,unif,5,('$ qI te ta ti $'),59,51,282
+0,unif,5,('$ tE ti qE $'),60,45,282
+0,unif,5,('$ kE tE pI $'),61,45,282
+0,unif,5,('$ ke ta $'),62,12,282
+0,unif,5,('$ qE ti tE $'),63,45,282
+0,unif,5,('$ ta te qa qe $'),64,41,284
+0,unif,5,('$ ke kI pi ki $'),65,66,284
+0,unif,5,('$ qa kE $'),66,12,284
+0,unif,5,('$ te qe qi pi $'),67,54,284
+0,unif,5,('$ kE tE qI tI $'),68,54,284
+0,unif,5,('$ tI qa qE qi $'),69,51,284
+0,unif,5,('$ te tI pa ta $'),70,43,285
+0,unif,5,('$ ka qi $'),71,12,285
+0,unif,5,('$ qe qe kE $'),72,45,285
+0,unif,5,('$ pa ta $'),73,8,285
+0,unif,5,('$ pe qE pa $'),74,33,285
+0,train,5,('$ qE $'),0,3,3
+0,train,5,('$ kI qI $'),1,18,21
+0,train,5,('$ kE $'),2,3,21
+0,train,5,('$ kE ka qe pa $'),3,41,62
+0,train,5,('$ kI pE $'),4,18,65
+0,train,5,('$ ke ta $'),5,12,67
+0,train,5,('$ pi pe ta $'),6,33,88
+0,train,5,('$ pi ta $'),7,12,90
+0,train,5,('$ qE kI $'),8,18,96
+0,train,5,('$ te qe $'),9,18,101
+0,train,5,('$ pe ta tE kI $'),10,49,126
+0,train,5,('$ ta pe $'),11,12,132
+0,train,5,('$ ki $'),12,3,134
+0,train,5,('$ qe $'),13,3,134
+0,train,5,('$ qa qi $'),14,12,136
+0,train,5,('$ ka qI $'),15,12,138
+0,train,5,('$ ka ki qe $'),16,33,151
+0,train,5,('$ tI kI $'),17,18,151
+0,train,5,('$ pa ki ke pa $'),18,48,151
+0,train,5,('$ pi ta qa $'),19,22,156
+0,train,5,('$ pE pI kI $'),20,45,176
+0,train,5,('$ te pi $'),21,18,178
+0,train,5,('$ kE pE qE $'),22,45,183
+0,train,5,('$ ke $'),23,3,183
+0,train,5,('$ kI $'),24,3,183
+0,train,5,('$ pI kE $'),25,18,183
+0,train,5,('$ tE qa ka $'),26,22,186
+0,train,5,('$ qi pi $'),27,18,186
+0,train,5,('$ qI tE pa $'),28,33,192
+0,train,5,('$ pi ta ti pe $'),29,51,204
+0,train,5,('$ qa ta ka qa tE $'),30,26,209
+0,train,5,('$ pE ka $'),31,12,209
+0,train,5,('$ te ka ka $'),32,22,209
+0,train,5,('$ tE $'),33,3,209
+0,train,5,('$ ke ke ta $'),34,33,209
+0,train,5,('$ qI $'),35,3,209
+0,train,5,('$ qe ke $'),36,18,209
+0,train,5,('$ pe $'),37,3,209
+0,train,5,('$ ta kE kE $'),38,33,210
+0,train,5,('$ qE kE tI $'),39,45,211
+0,train,5,('$ kI qE $'),40,18,211
+0,train,5,('$ qa qe ta ke ke $'),41,54,212
+0,train,5,('$ ke ta qa $'),42,22,212
+0,train,5,('$ qI ta qE tI tE $'),43,74,217
+0,train,5,('$ qE pE $'),44,18,217
+0,train,5,('$ te $'),45,3,217
+0,train,5,('$ ta ke $'),46,12,217
+0,train,5,('$ tI tE pE qI qI $'),47,69,221
+0,train,5,('$ pE pa $'),48,12,221
+0,train,5,('$ te ke $'),49,18,221
+0,train,5,('$ tE pI $'),50,18,221
+0,train,5,('$ tI $'),51,3,221
+0,train,5,('$ pe te qa $'),52,33,221
+0,train,5,('$ kI kI pa qe $'),53,51,225
+0,train,5,('$ pE $'),54,3,225
+0,train,5,('$ qa pE $'),55,12,225
+0,train,5,('$ ke ka ta ti $'),56,36,228
+0,train,5,('$ qI pa pi pi ti qa ka qE tE $'),57,130,256
+0,train,5,('$ qI pa pE $'),58,30,256
+0,train,5,('$ qi ta $'),59,12,256
+0,train,5,('$ qa ka $'),60,8,256
+0,train,5,('$ qa $'),61,2,257
+0,train,5,('$ kI ta $'),62,12,257
+0,train,5,('$ pi $'),63,3,257
+0,train,5,('$ pI tE ta kI $'),64,51,257
+0,train,5,('$ qi ke ke $'),65,45,257
+0,train,5,('$ tE ka $'),66,12,257
+0,train,5,('$ ki pa $'),67,12,257
+0,train,5,('$ qi qi pe $'),68,45,257
+0,train,5,('$ qi ta pI qI $'),69,51,258
+0,train,5,('$ pi qi $'),70,18,258
+0,train,5,('$ qe qe $'),71,18,258
+0,train,5,('$ qe qa $'),72,12,258
+0,train,5,('$ ke qa qI $'),73,30,258
+0,train,5,('$ pI $'),74,3,258
+0,eig,6,('$ ki pe $'),0,18,18
+0,eig,6,('$ te qI $'),1,18,32
+0,eig,6,('$ qi qE $'),2,18,34
+0,eig,6,('$ qE pE $'),3,18,42
+0,eig,6,('$ qi ta $'),4,12,48
+0,eig,6,('$ kE qi ka $'),5,33,69
+0,eig,6,('$ pE te $'),6,18,71
+0,eig,6,('$ ke qe $'),7,18,71
+0,eig,6,('$ ka qi $'),8,12,77
+0,eig,6,('$ ka ka qi $'),9,22,92
+0,eig,6,('$ pe pa $'),10,12,93
+0,eig,6,('$ qe qa pe $'),11,30,108
+0,eig,6,('$ qe kI $'),12,18,108
+0,eig,6,('$ qI qI $'),13,18,111
+0,eig,6,('$ qE ti pa $'),14,33,111
+0,eig,6,('$ pi qa ta $'),15,22,120
+0,eig,6,('$ qa qi qa $'),16,24,126
+0,eig,6,('$ ka pe pI $'),17,33,140
+0,eig,6,('$ qa te pa $'),18,24,143
+0,eig,6,('$ pa pE qI $'),19,33,150
+0,eig,6,('$ qa ka $'),20,8,150
+0,eig,6,('$ ka ka tI $'),21,22,153
+0,eig,6,('$ ke pa qa $'),22,22,154
+0,eig,6,('$ pa ta pI $'),23,22,154
+0,eig,6,('$ ka ta ka $'),24,16,156
+0,eig,6,('$ qI ta ka $'),25,22,161
+0,eig,6,('$ pa ta ti $'),26,22,161
+0,eig,6,('$ tE pa ta $'),27,22,161
+0,eig,6,('$ ta pE qa $'),28,24,166
+0,eig,6,('$ kE ka ta $'),29,22,166
+0,eig,6,('$ ke qi $'),30,18,166
+0,eig,6,('$ ta pa kI $'),31,22,166
+0,eig,6,('$ ti pa ta $'),32,22,166
+0,eig,6,('$ ki ti pa $'),33,33,178
+0,eig,6,('$ pa qe $'),34,12,178
+0,eig,6,('$ ta ki qa $'),35,24,178
+0,eig,6,('$ qa ka pE $'),36,22,178
+0,eig,6,('$ pi qe $'),37,18,178
+0,eig,6,('$ ta ti $'),38,12,178
+0,eig,6,('$ ta pI ki $'),39,33,188
+0,eig,6,('$ qE kE $'),40,18,188
+0,eig,6,('$ ta ti pI $'),41,33,190
+0,eig,6,('$ ki qa pa $'),42,22,190
+0,eig,6,('$ kI pa qa $'),43,22,190
+0,eig,6,('$ qI ta ta $'),44,22,190
+0,eig,6,('$ tE pa $'),45,12,190
+0,eig,6,('$ qe ka qa $'),46,22,190
+0,eig,6,('$ tE kI $'),47,18,190
+0,eig,6,('$ tE qa $'),48,12,190
+0,eig,6,('$ pa ta ke $'),49,22,190
+0,eig,6,('$ pa kI ka $'),50,24,190
+0,eig,6,('$ ti kE $'),51,18,190
+0,eig,6,('$ tE pE $'),52,18,190
+0,eig,6,('$ qi qa $'),53,12,190
+0,eig,6,('$ kI ki ka $'),54,33,190
+0,eig,6,('$ kI kE $'),55,18,190
+0,eig,6,('$ ta qE $'),56,12,190
+0,eig,6,('$ ta kI kE $'),57,33,190
+0,eig,6,('$ kE pI $'),58,18,190
+0,eig,6,('$ kE ta ta $'),59,22,190
+0,eig,6,('$ pa ka pE $'),60,22,190
+0,eig,6,('$ qE ka pa $'),61,22,190
+0,eig,6,('$ tE qa qa $'),62,22,190
+0,eig,6,('$ tI qa ka $'),63,22,190
+0,eig,6,('$ qE pa pa $'),64,22,190
+0,eig,6,('$ ta pE ti $'),65,33,190
+0,eig,6,('$ qe ke $'),66,18,190
+0,eig,6,('$ pa pe $'),67,12,190
+0,eig,6,('$ ta qE tE $'),68,33,190
+0,eig,6,('$ kI ka kI $'),69,30,206
+0,eig,6,('$ pE qa qe $'),70,30,208
+0,eig,6,('$ ta qa qe $'),71,22,208
+0,eig,6,('$ pi pa ta $'),72,22,208
+0,eig,6,('$ pa pa tI $'),73,22,208
+0,eig,6,('$ tI pa pa $'),74,22,208
+0,entropy,6,('$ ti pi ke ka $'),0,54,54
+0,entropy,6,('$ pa ki $'),1,12,66
+0,entropy,6,('$ pa ka pi kI $'),2,43,109
+0,entropy,6,('$ ti ta kI $'),3,30,135
+0,entropy,6,('$ pE kI pi $'),4,45,164
+0,entropy,6,('$ qa kE qa $'),5,24,179
+0,entropy,6,('$ tE ta qa qa $'),6,26,193
+0,entropy,6,('$ qi pI pI $'),7,45,213
+0,entropy,6,('$ pi pI tI $'),8,45,213
+0,entropy,6,('$ qI ti tI pa $'),9,60,234
+0,entropy,6,('$ qa pi pa ta $'),10,34,246
+0,entropy,6,('$ ti pI tI $'),11,45,246
+0,entropy,6,('$ ki tI qI qE $'),12,60,250
+0,entropy,6,('$ pi qE kI $'),13,45,250
+0,entropy,6,('$ qi kE qi ka $'),14,60,259
+0,entropy,6,('$ tI ka pi $'),15,30,267
+0,entropy,6,('$ ki tI pI $'),16,45,267
+0,entropy,6,('$ pi qI ki $'),17,45,267
+0,entropy,6,('$ ti pI ki $'),18,45,267
+0,entropy,6,('$ te qI qI $'),19,45,268
+0,entropy,6,('$ ki kI qI $'),20,45,268
+0,entropy,6,('$ qi qI ki ta $'),21,60,268
+0,entropy,6,('$ qe pE tI ka $'),22,60,270
+0,entropy,6,('$ ki pI ki $'),23,45,270
+0,entropy,6,('$ ki tE qI $'),24,45,270
+0,entropy,6,('$ qi kI qI qa $'),25,60,270
+0,entropy,6,('$ ti pI ti $'),26,45,270
+0,entropy,6,('$ pi tE qi ta $'),27,60,270
+0,entropy,6,('$ ki pI tI qa $'),28,60,270
+0,entropy,6,('$ pe kI pi ta $'),29,60,270
+0,entropy,6,('$ ti pI pI ke $'),30,66,270
+0,entropy,6,('$ ti pI qI pa $'),31,60,270
+0,entropy,6,('$ qi tI pI $'),32,45,270
+0,entropy,6,('$ ke qI qI pE $'),33,66,270
+0,entropy,6,('$ qI tE pI ka $'),34,60,271
+0,entropy,6,('$ qa tE pI pE $'),35,56,275
+0,entropy,6,('$ ki tE ti $'),36,45,275
+0,entropy,6,('$ pe pI pI tE $'),37,66,275
+0,entropy,6,('$ pi pI kI ka $'),38,60,275
+0,entropy,6,('$ te pI qI $'),39,45,275
+0,entropy,6,('$ ti pE pi ka $'),40,60,275
+0,entropy,6,('$ qi qI pi $'),41,45,275
+0,entropy,6,('$ ti qE pI ta $'),42,60,275
+0,entropy,6,('$ qa ka pE pI $'),43,39,277
+0,entropy,6,('$ qi tE pI $'),44,45,277
+0,entropy,6,('$ qi qI kI qa $'),45,60,277
+0,entropy,6,('$ ki qE kI qe $'),46,70,277
+0,entropy,6,('$ te kI kI $'),47,45,277
+0,entropy,6,('$ qe pE qE pE $'),48,54,277
+0,entropy,6,('$ qi tI tI qi $'),49,60,277
+0,entropy,6,('$ qi kI kI $'),50,45,277
+0,entropy,6,('$ ke tI qI $'),51,45,277
+0,entropy,6,('$ ki qI qI $'),52,45,277
+0,entropy,6,('$ ki pE qi ta $'),53,60,277
+0,entropy,6,('$ ti kI ki qa $'),54,60,277
+0,entropy,6,('$ ti pE pi te $'),55,70,280
+0,entropy,6,('$ ti kI tI $'),56,45,280
+0,entropy,6,('$ pe ki kI qi $'),57,64,282
+0,entropy,6,('$ pi pI pI ke $'),58,66,282
+0,entropy,6,('$ ki pI pI $'),59,45,282
+0,entropy,6,('$ ki qE qI $'),60,45,282
+0,entropy,6,('$ ki tI qI $'),61,45,282
+0,entropy,6,('$ qi kE qI $'),62,45,282
+0,entropy,6,('$ qi tI tI kI $'),63,54,282
+0,entropy,6,('$ ki tE qi pe $'),64,70,282
+0,entropy,6,('$ qe qI tI $'),65,45,282
+0,entropy,6,('$ qi ti qI pI $'),66,54,282
+0,entropy,6,('$ ki qI ki $'),67,45,282
+0,entropy,6,('$ ki qE kI $'),68,45,282
+0,entropy,6,('$ ki pE kI $'),69,45,282
+0,entropy,6,('$ ki tE kI $'),70,45,282
+0,entropy,6,('$ ki pI qI $'),71,45,282
+0,entropy,6,('$ pi pI tI qe $'),72,66,282
+0,entropy,6,('$ qi qI pI $'),73,45,282
+0,entropy,6,('$ pi tE ki ke $'),74,70,282
+0,unif,6,('$ pi ki ta $'),0,33,33
+0,unif,6,('$ qa qI $'),1,12,45
+0,unif,6,('$ pE ti $'),2,18,56
+0,unif,6,('$ pI pi kE pI $'),3,68,102
+0,unif,6,('$ qE pa $'),4,12,112
+0,unif,6,('$ ti te $'),5,18,118
+0,unif,6,('$ kE pE pE $'),6,45,137
+0,unif,6,('$ ka ti $'),7,12,139
+0,unif,6,('$ qi qe kI tE $'),8,68,151
+0,unif,6,('$ tI ta $'),9,12,152
+0,unif,6,('$ pi qE qa $'),10,33,163
+0,unif,6,('$ tE kI $'),11,18,163
+0,unif,6,('$ qi tI $'),12,18,166
+0,unif,6,('$ kI te pi $'),13,45,178
+0,unif,6,('$ pE kI pa ke $'),14,51,194
+0,unif,6,('$ te tI $'),15,18,194
+0,unif,6,('$ qa qe ta qe $'),16,41,212
+0,unif,6,('$ ka pE pe qE $'),17,56,223
+0,unif,6,('$ tI pe ta ta $'),18,41,229
+0,unif,6,('$ pe qI te ti $'),19,70,235
+0,unif,6,('$ pi ka qa $'),20,22,237
+0,unif,6,('$ qE tI qE $'),21,45,237
+0,unif,6,('$ pe ta pe $'),22,30,237
+0,unif,6,('$ pe qi kE $'),23,45,237
+0,unif,6,('$ te qe pe ki $'),24,54,242
+0,unif,6,('$ pe ke tE ta $'),25,54,242
+0,unif,6,('$ qi qi qe ta $'),26,54,243
+0,unif,6,('$ kE pE ti pa $'),27,60,246
+0,unif,6,('$ kE pE $'),28,18,246
+0,unif,6,('$ pI pE ta $'),29,33,246
+0,unif,6,('$ kI tI pe tE $'),30,66,248
+0,unif,6,('$ ti qi pi $'),31,45,251
+0,unif,6,('$ te tI qe qa $'),32,59,251
+0,unif,6,('$ ki ka ke $'),33,30,251
+0,unif,6,('$ ke tE pE $'),34,45,251
+0,unif,6,('$ ke ti qi $'),35,45,252
+0,unif,6,('$ qE qE pE pa $'),36,51,252
+0,unif,6,('$ ki kI pi $'),37,45,252
+0,unif,6,('$ pI pE qa ki $'),38,51,255
+0,unif,6,('$ tE pI $'),39,18,255
+0,unif,6,('$ pe pe ke pa $'),40,51,255
+0,unif,6,('$ ke ki $'),41,18,255
+0,unif,6,('$ qi kE qa qi $'),42,51,255
+0,unif,6,('$ ki qa kI qE $'),43,51,265
+0,unif,6,('$ ta te kE $'),44,33,268
+0,unif,6,('$ ta qE pI pE $'),45,56,271
+0,unif,6,('$ pi pE ka $'),46,33,271
+0,unif,6,('$ qE pi tE $'),47,45,271
+0,unif,6,('$ tI pe qa ke $'),48,50,271
+0,unif,6,('$ ta ka qi qi $'),49,43,279
+0,unif,6,('$ tE qe kI $'),50,45,279
+0,unif,6,('$ qE pe qi $'),51,45,279
+0,unif,6,('$ ka ke $'),52,12,279
+0,unif,6,('$ te tE tI $'),53,45,279
+0,unif,6,('$ qE qe qI te $'),54,70,279
+0,unif,6,('$ tE ta ka $'),55,22,280
+0,unif,6,('$ te te qi $'),56,45,280
+0,unif,6,('$ pa pa $'),57,8,280
+0,unif,6,('$ tI pa pI $'),58,30,281
+0,unif,6,('$ qI pI $'),59,18,281
+0,unif,6,('$ tE pe ki kE $'),60,68,281
+0,unif,6,('$ pE qI pi $'),61,45,282
+0,unif,6,('$ qE pe ka $'),62,33,282
+0,unif,6,('$ qa ta pi qi $'),63,43,282
+0,unif,6,('$ ti pa qe ke $'),64,51,282
+0,unif,6,('$ tE tI $'),65,18,282
+0,unif,6,('$ pe tI pE $'),66,45,282
+0,unif,6,('$ pI pa ti $'),67,30,282
+0,unif,6,('$ pI qe ta $'),68,33,282
+0,unif,6,('$ qe qa qE qi $'),69,50,283
+0,unif,6,('$ qI qE pa $'),70,33,283
+0,unif,6,('$ pe ki $'),71,18,283
+0,unif,6,('$ qe ki kE $'),72,45,283
+0,unif,6,('$ ta qa tE $'),73,22,285
+0,unif,6,('$ qa qa pE $'),74,22,285
+0,train,6,('$ kI ta $'),0,12,12
+0,train,6,('$ kI pE $'),1,18,24
+0,train,6,('$ qe ke $'),2,18,38
+0,train,6,('$ qE kE tI $'),3,45,70
+0,train,6,('$ kI qI $'),4,18,74
+0,train,6,('$ tE pI $'),5,18,75
+0,train,6,('$ pe ta tE kI $'),6,49,100
+0,train,6,('$ kE $'),7,3,103
+0,train,6,('$ pI tE ta kI $'),8,51,128
+0,train,6,('$ pi $'),9,3,130
+0,train,6,('$ qi qi pe $'),10,45,157
+0,train,6,('$ qe qa $'),11,12,159
+0,train,6,('$ qi ta $'),12,12,159
+0,train,6,('$ qI tE pa $'),13,33,159
+0,train,6,('$ qI pa pi pi ti qa ka qE tE $'),14,130,211
+0,train,6,('$ ke $'),15,3,211
+0,train,6,('$ qE $'),16,3,211
+0,train,6,('$ te ka ka $'),17,22,215
+0,train,6,('$ kE ka qe pa $'),18,41,225
+0,train,6,('$ qe qe $'),19,18,225
+0,train,6,('$ tE ka $'),20,12,225
+0,train,6,('$ ke ke ta $'),21,33,225
+0,train,6,('$ ka qi $'),22,12,229
+0,train,6,('$ pe $'),23,3,229
+0,train,6,('$ pI $'),24,3,229
+0,train,6,('$ ke ta $'),25,12,229
+0,train,6,('$ te qe $'),26,18,229
+0,train,6,('$ pE $'),27,3,229
+0,train,6,('$ qI pa pE $'),28,30,231
+0,train,6,('$ ke qa qI $'),29,30,233
+0,train,6,('$ kI qE $'),30,18,233
+0,train,6,('$ kI kI pa qe $'),31,51,235
+0,train,6,('$ ta pe $'),32,12,236
+0,train,6,('$ qa ka $'),33,8,237
+0,train,6,('$ pE pa $'),34,12,237
+0,train,6,('$ qe $'),35,3,237
+0,train,6,('$ ki $'),36,3,237
+0,train,6,('$ qI ta qE tI tE $'),37,74,242
+0,train,6,('$ te ke $'),38,18,242
+0,train,6,('$ kE pE qE $'),39,45,242
+0,train,6,('$ pa ki ke pa $'),40,48,243
+0,train,6,('$ qi ke ke $'),41,45,244
+0,train,6,('$ te $'),42,3,244
+0,train,6,('$ ta kE kE $'),43,33,245
+0,train,6,('$ pE ka $'),44,12,245
+0,train,6,('$ tI $'),45,3,245
+0,train,6,('$ qa qi $'),46,12,245
+0,train,6,('$ pe te qa $'),47,33,245
+0,train,6,('$ qi ta pI qI $'),48,51,246
+0,train,6,('$ pi ta qa $'),49,22,246
+0,train,6,('$ ki pa $'),50,12,246
+0,train,6,('$ tI tE pE qI qI $'),51,69,250
+0,train,6,('$ qE pE $'),52,18,250
+0,train,6,('$ ki ta qI $'),53,30,250
+0,train,6,('$ ka qI $'),54,12,250
+0,train,6,('$ ke ka ta ti $'),55,36,253
+0,train,6,('$ qa ta ka qa tE $'),56,26,254
+0,train,6,('$ ta ke $'),57,12,254
+0,train,6,('$ pE pI kI $'),58,45,254
+0,train,6,('$ pi ta $'),59,12,254
+0,train,6,('$ ti $'),60,3,254
+0,train,6,('$ tI kI $'),61,18,254
+0,train,6,('$ te pi $'),62,18,255
+0,train,6,('$ ka ki qe $'),63,33,255
+0,train,6,('$ ke ta qa $'),64,22,255
+0,train,6,('$ tE $'),65,3,255
+0,train,6,('$ pi ta ti pe $'),66,51,256
+0,train,6,('$ tE qa ka $'),67,22,257
+0,train,6,('$ pI kE $'),68,18,257
+0,train,6,('$ qE kI $'),69,18,257
+0,train,6,('$ qi pi $'),70,18,257
+0,train,6,('$ qa $'),71,2,258
+0,train,6,('$ qa qe ta ke ke $'),72,54,258
+0,train,6,('$ pi pe ta $'),73,33,258
+0,train,6,('$ pi qi $'),74,18,258
+0,eig,7,('$ qE pE $'),0,18,18
+0,eig,7,('$ ke tI qa $'),1,33,45
+0,eig,7,('$ pe ki $'),2,18,55
+0,eig,7,('$ ta pE pa $'),3,24,67
+0,eig,7,('$ ta pi $'),4,12,72
+0,eig,7,('$ kE qa tI $'),5,30,94
+0,eig,7,('$ pi kE $'),6,18,102
+0,eig,7,('$ pI pi $'),7,18,110
+0,eig,7,('$ pE ti $'),8,18,110
+0,eig,7,('$ ti te $'),9,18,110
+0,eig,7,('$ ta ka kE $'),10,22,118
+0,eig,7,('$ ti qa ta $'),11,22,133
+0,eig,7,('$ tE ka $'),12,12,133
+0,eig,7,('$ qE ka tE $'),13,30,135
+0,eig,7,('$ qi ki qa $'),14,33,146
+0,eig,7,('$ tI kI $'),15,18,146
+0,eig,7,('$ pE qa $'),16,12,146
+0,eig,7,('$ qi pa pa $'),17,22,146
+0,eig,7,('$ kI ka qi $'),18,30,156
+0,eig,7,('$ pE pE $'),19,18,156
+0,eig,7,('$ pI qa pI $'),20,30,158
+0,eig,7,('$ kI pi ta $'),21,33,164
+0,eig,7,('$ pi kI pa $'),22,33,166
+0,eig,7,('$ pI qi ka $'),23,33,166
+0,eig,7,('$ qa qa qe $'),24,22,170
+0,eig,7,('$ qI pi ka $'),25,33,170
+0,eig,7,('$ ka pi $'),26,12,170
+0,eig,7,('$ ta pa ti $'),27,22,172
+0,eig,7,('$ ke ki $'),28,18,172
+0,eig,7,('$ qi qa ka $'),29,22,172
+0,eig,7,('$ qI ta pI $'),30,30,172
+0,eig,7,('$ pa pa ke $'),31,22,172
+0,eig,7,('$ qa qa pi $'),32,22,172
+0,eig,7,('$ tI qa pI $'),33,30,172
+0,eig,7,('$ ke ki qa $'),34,33,174
+0,eig,7,('$ pa pa pe $'),35,22,174
+0,eig,7,('$ pa ta pe $'),36,22,174
+0,eig,7,('$ kE pa tI $'),37,30,174
+0,eig,7,('$ ti qI pa $'),38,33,174
+0,eig,7,('$ te tE $'),39,18,174
+0,eig,7,('$ pI ka $'),40,12,174
+0,eig,7,('$ pI pa qi $'),41,30,174
+0,eig,7,('$ tE qE $'),42,18,174
+0,eig,7,('$ pa pa qI $'),43,22,174
+0,eig,7,('$ ka pa tE $'),44,22,174
+0,eig,7,('$ pI ki ka $'),45,33,174
+0,eig,7,('$ tI ka kI $'),46,30,174
+0,eig,7,('$ te pa qa $'),47,22,175
+0,eig,7,('$ pE ka qi $'),48,30,175
+0,eig,7,('$ ki pe $'),49,18,175
+0,eig,7,('$ tI ta tI $'),50,30,175
+0,eig,7,('$ qI ta qI $'),51,30,175
+0,eig,7,('$ tI ka tI $'),52,30,175
+0,eig,7,('$ pa tE $'),53,12,175
+0,eig,7,('$ ti pa ke $'),54,30,179
+0,eig,7,('$ te te $'),55,18,179
+0,eig,7,('$ ka ta kE $'),56,22,179
+0,eig,7,('$ tI ka ki $'),57,30,179
+0,eig,7,('$ ta ke $'),58,12,179
+0,eig,7,('$ ka kE qa $'),59,24,179
+0,eig,7,('$ ki kE $'),60,18,179
+0,eig,7,('$ pa pI $'),61,12,179
+0,eig,7,('$ qa ka ti $'),62,22,179
+0,eig,7,('$ qe kI $'),63,18,179
+0,eig,7,('$ ka qa $'),64,8,179
+0,eig,7,('$ ki pa pa $'),65,22,179
+0,eig,7,('$ ka ta qE $'),66,22,179
+0,eig,7,('$ kI kE $'),67,18,179
+0,eig,7,('$ pa qa pe $'),68,22,179
+0,eig,7,('$ pa pa pE $'),69,22,179
+0,eig,7,('$ pa ki $'),70,12,179
+0,eig,7,('$ ka ta qI $'),71,22,179
+0,eig,7,('$ ke qi $'),72,18,179
+0,eig,7,('$ te pa pa $'),73,22,179
+0,eig,7,('$ qi ta $'),74,12,179
+0,entropy,7,('$ qi ki qi tI $'),0,54,54
+0,entropy,7,('$ pa tE $'),1,12,66
+0,entropy,7,('$ ti pa $'),2,12,78
+0,entropy,7,('$ ka pe qE ta $'),3,46,117
+0,entropy,7,('$ kI ka ki $'),4,30,141
+0,entropy,7,('$ pa pa tI qe $'),5,43,168
+0,entropy,7,('$ kI pI ta ta $'),6,43,198
+0,entropy,7,('$ pe pa tI ke $'),7,51,206
+0,entropy,7,('$ ka ka qi pi $'),8,43,219
+0,entropy,7,('$ qI pi ta tE $'),9,51,229
+0,entropy,7,('$ tE qI ki $'),10,45,244
+0,entropy,7,('$ qe pa kI pi $'),11,51,245
+0,entropy,7,('$ ke qa kI ti $'),12,51,245
+0,entropy,7,('$ pi ta kI ti $'),13,51,245
+0,entropy,7,('$ kI kI qi pa $'),14,60,248
+0,entropy,7,('$ ta qa pi $'),15,22,248
+0,entropy,7,('$ tE kI kI ka $'),16,60,254
+0,entropy,7,('$ pI qI qI tE $'),17,54,256
+0,entropy,7,('$ kI tI ki ke $'),18,60,258
+0,entropy,7,('$ tI kI qi qa $'),19,60,258
+0,entropy,7,('$ qI qi ka ta $'),20,43,259
+0,entropy,7,('$ qI tI pa $'),21,33,259
+0,entropy,7,('$ ki qa ta ta $'),22,30,264
+0,entropy,7,('$ pI pa qa $'),23,22,264
+0,entropy,7,('$ pI tI ki $'),24,45,264
+0,entropy,7,('$ ka tI qa $'),25,24,269
+0,entropy,7,('$ kE pi tI kI $'),26,66,274
+0,entropy,7,('$ qa qI qI kI $'),27,60,276
+0,entropy,7,('$ kI tI tI $'),28,45,276
+0,entropy,7,('$ pI pI kI $'),29,45,276
+0,entropy,7,('$ qE kI qI pI $'),30,54,276
+0,entropy,7,('$ tI tI tI $'),31,45,276
+0,entropy,7,('$ pi kI pI pI $'),32,54,277
+0,entropy,7,('$ qe kI tI qI $'),33,63,277
+0,entropy,7,('$ pi kI pI tI $'),34,54,277
+0,entropy,7,('$ pE kI qI $'),35,45,277
+0,entropy,7,('$ tE pi qI kI $'),36,66,277
+0,entropy,7,('$ qI qI pI $'),37,45,277
+0,entropy,7,('$ qi tI ti ki $'),38,60,278
+0,entropy,7,('$ pI pI tI $'),39,45,278
+0,entropy,7,('$ qI qE pI $'),40,45,279
+0,entropy,7,('$ te tE qI tI $'),41,60,279
+0,entropy,7,('$ pI pE pI tI $'),42,60,279
+0,entropy,7,('$ kI qI qi $'),43,45,279
+0,entropy,7,('$ pE pI tI $'),44,45,279
+0,entropy,7,('$ tI tI tI tI $'),45,45,279
+0,entropy,7,('$ qE qI pI $'),46,45,279
+0,entropy,7,('$ tI tI ki qa $'),47,60,279
+0,entropy,7,('$ tI qI ti qi $'),48,54,279
+0,entropy,7,('$ kI pI ki $'),49,45,279
+0,entropy,7,('$ pI pI pI $'),50,45,279
+0,entropy,7,('$ ki kI pi ta $'),51,60,279
+0,entropy,7,('$ pI tI ti ki $'),52,54,279
+0,entropy,7,('$ qI kE ti pi $'),53,66,279
+0,entropy,7,('$ pa qE kI tI $'),54,54,279
+0,entropy,7,('$ tI pI pI $'),55,45,279
+0,entropy,7,('$ pE pI kI $'),56,45,279
+0,entropy,7,('$ kI qI tI qi $'),57,54,279
+0,entropy,7,('$ qE tI tI $'),58,45,279
+0,entropy,7,('$ tI tI kI $'),59,45,279
+0,entropy,7,('$ ti tE kI tI $'),60,66,279
+0,entropy,7,('$ ti qI ti pi $'),61,60,279
+0,entropy,7,('$ pI qI ki qE $'),62,66,279
+0,entropy,7,('$ tI kI ki ta $'),63,60,279
+0,entropy,7,('$ pa qa ka $'),64,16,279
+0,entropy,7,('$ pI tI pi $'),65,45,279
+0,entropy,7,('$ tI kI kI $'),66,45,279
+0,entropy,7,('$ ki kI pi ki $'),67,60,279
+0,entropy,7,('$ pE qI qI $'),68,45,279
+0,entropy,7,('$ kI qI qI tI $'),69,45,279
+0,entropy,7,('$ ti kE pi qi $'),70,69,280
+0,entropy,7,('$ kE pI kI ki $'),71,60,280
+0,entropy,7,('$ pI pI ti pe $'),72,60,280
+0,entropy,7,('$ ki qI ti tI $'),73,64,280
+0,entropy,7,('$ ki tE pi tI $'),74,70,280
+0,unif,7,('$ ki qE ke qa $'),0,58,58
+0,unif,7,('$ qI tE ki $'),1,45,85
+0,unif,7,('$ te te ki $'),2,45,110
+0,unif,7,('$ pa ta $'),3,8,115
+0,unif,7,('$ kI qE ka $'),4,33,123
+0,unif,7,('$ pi qa pa pe $'),5,36,144
+0,unif,7,('$ tE kI ki $'),6,45,163
+0,unif,7,('$ tI tE qe te $'),7,60,165
+0,unif,7,('$ tI ta ki ki $'),8,51,184
+0,unif,7,('$ pi te $'),9,18,186
+0,unif,7,('$ pa ti pe pe $'),10,60,197
+0,unif,7,('$ pI tE $'),11,18,200
+0,unif,7,('$ qa ta $'),12,8,200
+0,unif,7,('$ pI pa pe pE $'),13,51,209
+0,unif,7,('$ kI ti qi $'),14,45,216
+0,unif,7,('$ qa tE $'),15,12,218
+0,unif,7,('$ tE kI $'),16,18,218
+0,unif,7,('$ ta pi $'),17,12,219
+0,unif,7,('$ pa qi $'),18,12,219
+0,unif,7,('$ ka ke pa pe $'),19,41,224
+0,unif,7,('$ qI te kI tE $'),20,70,244
+0,unif,7,('$ pI pE qi pE $'),21,70,246
+0,unif,7,('$ qE qI kI $'),22,45,247
+0,unif,7,('$ pI kE $'),23,18,247
+0,unif,7,('$ qe qE ki kE $'),24,70,248
+0,unif,7,('$ kI ta ka kI $'),25,36,254
+0,unif,7,('$ ke qe qe $'),26,45,254
+0,unif,7,('$ ta qE $'),27,12,254
+0,unif,7,('$ ta pi ka ki $'),28,42,257
+0,unif,7,('$ ti pi tE qE $'),29,63,263
+0,unif,7,('$ qa pe qE $'),30,33,263
+0,unif,7,('$ pE ta qi $'),31,30,263
+0,unif,7,('$ pE tE pi pE $'),32,69,263
+0,unif,7,('$ qa tI kI $'),33,33,267
+0,unif,7,('$ qE ki tI pI $'),34,66,268
+0,unif,7,('$ tI kI kI tE $'),35,54,268
+0,unif,7,('$ qa pe ka pe $'),36,41,268
+0,unif,7,('$ qa qI pe $'),37,33,270
+0,unif,7,('$ ti pE $'),38,18,270
+0,unif,7,('$ te te $'),39,18,270
+0,unif,7,('$ kI kI $'),40,18,270
+0,unif,7,('$ pI pi pe $'),41,45,270
+0,unif,7,('$ qa ti qE ke $'),42,60,270
+0,unif,7,('$ qe pe ti $'),43,45,270
+0,unif,7,('$ ta ki pi $'),44,33,270
+0,unif,7,('$ ke pa pe $'),45,30,270
+0,unif,7,('$ kE pI $'),46,18,270
+0,unif,7,('$ qe te pE $'),47,45,270
+0,unif,7,('$ qE pa tE $'),48,30,272
+0,unif,7,('$ pa pe $'),49,12,272
+0,unif,7,('$ qI pa pi tE $'),50,51,272
+0,unif,7,('$ pi ka qE qI $'),51,51,274
+0,unif,7,('$ pE ta pI $'),52,30,274
+0,unif,7,('$ ka tI qe qI $'),53,60,274
+0,unif,7,('$ qi qE ti qi $'),54,69,274
+0,unif,7,('$ pa kE $'),55,12,274
+0,unif,7,('$ tI qa kI pI $'),56,51,274
+0,unif,7,('$ qI qe qE qa $'),57,58,277
+0,unif,7,('$ ki qi pi ke $'),58,54,278
+0,unif,7,('$ qe ke kE $'),59,45,278
+0,unif,7,('$ pe qe tE pa $'),60,54,278
+0,unif,7,('$ pa ka tI ti $'),61,43,278
+0,unif,7,('$ ki qi qI ke $'),62,66,278
+0,unif,7,('$ pa pI ka $'),63,24,280
+0,unif,7,('$ ka kI ke ta $'),64,48,281
+0,unif,7,('$ ki te qa ka $'),65,39,283
+0,unif,7,('$ kI qi ti $'),66,45,283
+0,unif,7,('$ pa ke qE $'),67,33,283
+0,unif,7,('$ ka ti ti $'),68,33,283
+0,unif,7,('$ kE qa qi $'),69,30,283
+0,unif,7,('$ kI tI ke $'),70,45,283
+0,unif,7,('$ qI tI qi ti $'),71,54,283
+0,unif,7,('$ pE tE tE kE $'),72,45,283
+0,unif,7,('$ te pi $'),73,18,283
+0,unif,7,('$ pE qi qa $'),74,33,285
+0,train,7,('$ pi qi $'),0,18,18
+0,train,7,('$ ti $'),1,3,21
+0,train,7,('$ qi qi pe $'),2,45,51
+0,train,7,('$ qa ka $'),3,8,59
+0,train,7,('$ kE ka qe pa $'),4,41,94
+0,train,7,('$ ka qi $'),5,12,106
+0,train,7,('$ tE ka $'),6,12,108
+0,train,7,('$ te ka ka $'),7,22,117
+0,train,7,('$ te pi $'),8,18,117
+0,train,7,('$ kI qE $'),9,18,126
+0,train,7,('$ tI $'),10,3,127
+0,train,7,('$ pE pa $'),11,12,127
+0,train,7,('$ ta ke $'),12,12,127
+0,train,7,('$ qI tE pa $'),13,33,140
+0,train,7,('$ tE $'),14,3,141
+0,train,7,('$ ke $'),15,3,141
+0,train,7,('$ qa ta ka qa tE $'),16,26,151
+0,train,7,('$ ke qa qI $'),17,30,163
+0,train,7,('$ ke ke ta $'),18,33,166
+0,train,7,('$ pe te qa $'),19,33,166
+0,train,7,('$ kE pE qE $'),20,45,180
+0,train,7,('$ tI tE pE qI qI $'),21,69,201
+0,train,7,('$ kI kI pa qe $'),22,51,210
+0,train,7,('$ qa qi $'),23,12,210
+0,train,7,('$ pI $'),24,3,210
+0,train,7,('$ te $'),25,3,210
+0,train,7,('$ ki pa $'),26,12,212
+0,train,7,('$ qE kE tI $'),27,45,212
+0,train,7,('$ qe ke $'),28,18,212
+0,train,7,('$ qE pE $'),29,18,212
+0,train,7,('$ pI kE $'),30,18,212
+0,train,7,('$ te ke $'),31,18,212
+0,train,7,('$ ke ka ta ti $'),32,36,216
+0,train,7,('$ qe $'),33,3,216
+0,train,7,('$ qa pE $'),34,12,217
+0,train,7,('$ pE $'),35,3,217
+0,train,7,('$ qa qe ta ke ke $'),36,54,226
+0,train,7,('$ qI $'),37,3,226
+0,train,7,('$ qI pa pi pi ti qa ka qE tE $'),38,130,250
+0,train,7,('$ qI pa pE $'),39,30,252
+0,train,7,('$ ta pe $'),40,12,252
+0,train,7,('$ qi ta pI qI $'),41,51,254
+0,train,7,('$ ki ta qI $'),42,30,254
+0,train,7,('$ kI pE $'),43,18,254
+0,train,7,('$ pi pe ta $'),44,33,254
+0,train,7,('$ kI ta $'),45,12,254
+0,train,7,('$ qe qe $'),46,18,254
+0,train,7,('$ pe $'),47,3,254
+0,train,7,('$ qE $'),48,3,254
+0,train,7,('$ ki $'),49,3,254
+0,train,7,('$ ke ta qa $'),50,22,254
+0,train,7,('$ qi pi $'),51,18,254
+0,train,7,('$ qE kI $'),52,18,254
+0,train,7,('$ qI ta qE tI tE $'),53,74,255
+0,train,7,('$ ke ta $'),54,12,255
+0,train,7,('$ ta kE kE $'),55,33,255
+0,train,7,('$ ka ki qe $'),56,33,256
+0,train,7,('$ te qe $'),57,18,256
+0,train,7,('$ ka qI $'),58,12,256
+0,train,7,('$ pI tE ta kI $'),59,51,256
+0,train,7,('$ kI $'),60,3,256
+0,train,7,('$ pi ta ti pe $'),61,51,256
+0,train,7,('$ kE $'),62,3,256
+0,train,7,('$ pa ki ke pa $'),63,48,256
+0,train,7,('$ tE pI $'),64,18,256
+0,train,7,('$ pE pI kI $'),65,45,256
+0,train,7,('$ tE qa ka $'),66,22,257
+0,train,7,('$ pi ta qa $'),67,22,257
+0,train,7,('$ qa $'),68,2,258
+0,train,7,('$ pE ka $'),69,12,258
+0,train,7,('$ kI qI $'),70,18,258
+0,train,7,('$ pi $'),71,3,258
+0,train,7,('$ qi ke ke $'),72,45,258
+0,train,7,('$ qi ta $'),73,12,258
+0,train,7,('$ pe ta tE kI $'),74,49,258
+0,eig,8,('$ pi kE $'),0,18,18
+0,eig,8,('$ pe qe $'),1,18,28
+0,eig,8,('$ qI qa pa $'),2,22,47
+0,eig,8,('$ ka qa tI $'),3,22,67
+0,eig,8,('$ pe ta $'),4,12,70
+0,eig,8,('$ ka qa ti $'),5,22,75
+0,eig,8,('$ ti qa qi $'),6,30,93
+0,eig,8,('$ pi pe $'),7,18,95
+0,eig,8,('$ pa qi $'),8,12,99
+0,eig,8,('$ pi pa ki $'),9,30,99
+0,eig,8,('$ qE qI $'),10,18,108
+0,eig,8,('$ tE qa $'),11,12,110
+0,eig,8,('$ qa kI ta $'),12,24,124
+0,eig,8,('$ pa tI $'),13,12,124
+0,eig,8,('$ pe pa pi $'),14,30,124
+0,eig,8,('$ te ke $'),15,18,124
+0,eig,8,('$ kE qa ka $'),16,22,128
+0,eig,8,('$ pE pa $'),17,12,128
+0,eig,8,('$ ti pa ka $'),18,22,132
+0,eig,8,('$ ti pa $'),19,12,132
+0,eig,8,('$ qI pI $'),20,18,134
+0,eig,8,('$ tI qa $'),21,12,134
+0,eig,8,('$ pa kE ta $'),22,24,136
+0,eig,8,('$ ki kE $'),23,18,136
+0,eig,8,('$ pi pE $'),24,18,136
+0,eig,8,('$ pI ke $'),25,18,138
+0,eig,8,('$ qI te $'),26,18,138
+0,eig,8,('$ pe qE $'),27,18,138
+0,eig,8,('$ te tE $'),28,18,138
+0,eig,8,('$ tI qe $'),29,18,138
+0,eig,8,('$ pE te $'),30,18,138
+0,eig,8,('$ qi pE $'),31,18,138
+0,eig,8,('$ qe qI $'),32,18,140
+0,eig,8,('$ qe kI $'),33,18,140
+0,eig,8,('$ ki te $'),34,18,140
+0,eig,8,('$ pE qa $'),35,12,140
+0,eig,8,('$ pa ka qe $'),36,22,141
+0,eig,8,('$ pi ke $'),37,18,141
+0,eig,8,('$ qI ta qa $'),38,22,141
+0,eig,8,('$ qa tI $'),39,12,141
+0,eig,8,('$ pa ta pE $'),40,22,141
+0,eig,8,('$ pE tE $'),41,18,141
+0,eig,8,('$ ka qi $'),42,12,141
+0,eig,8,('$ qe ke $'),43,18,141
+0,eig,8,('$ qa pa ki $'),44,22,141
+0,eig,8,('$ qI ka $'),45,12,141
+0,eig,8,('$ pa pE qa $'),46,24,141
+0,eig,8,('$ pI kE $'),47,18,141
+0,eig,8,('$ qa pa qI $'),48,22,141
+0,eig,8,('$ pa ti $'),49,12,141
+0,eig,8,('$ qa pa qi $'),50,22,141
+0,eig,8,('$ pe qi $'),51,18,141
+0,eig,8,('$ qa te $'),52,12,141
+0,eig,8,('$ pa ti kI $'),53,33,159
+0,eig,8,('$ tE qE $'),54,18,159
+0,eig,8,('$ qi ka pa $'),55,22,159
+0,eig,8,('$ ta ta kI $'),56,22,159
+0,eig,8,('$ ka ke $'),57,12,159
+0,eig,8,('$ ka ka ki $'),58,22,159
+0,eig,8,('$ ka pa tE $'),59,22,159
+0,eig,8,('$ ta ta tI $'),60,22,159
+0,eig,8,('$ pa ki $'),61,12,159
+0,eig,8,('$ qE ta ti $'),62,30,165
+0,eig,8,('$ tE pI $'),63,18,165
+0,eig,8,('$ tE pa $'),64,12,165
+0,eig,8,('$ pi te $'),65,18,165
+0,eig,8,('$ ta tI $'),66,12,165
+0,eig,8,('$ ta ka qe $'),67,22,165
+0,eig,8,('$ qE qE $'),68,18,165
+0,eig,8,('$ qE qa ta $'),69,22,165
+0,eig,8,('$ te ta $'),70,12,165
+0,eig,8,('$ tI pa ta $'),71,22,165
+0,eig,8,('$ ta pi ka $'),72,24,169
+0,eig,8,('$ pa qa $'),73,8,169
+0,eig,8,('$ pa qe ta $'),74,24,169
+0,entropy,8,('$ te te kI tE $'),0,66,66
+0,entropy,8,('$ pi qa qa qe $'),1,36,99
+0,entropy,8,('$ pI tI qi $'),2,45,136
+0,entropy,8,('$ pa ti pa $'),3,24,154
+0,entropy,8,('$ kI qa tI $'),4,30,175
+0,entropy,8,('$ pa ki pI qa $'),5,48,198
+0,entropy,8,('$ qa ta kI ti $'),6,43,216
+0,entropy,8,('$ qa qa $'),7,8,218
+0,entropy,8,('$ pe pI pi tI $'),8,68,239
+0,entropy,8,('$ ki ki ti $'),9,45,244
+0,entropy,8,('$ pi ti qi tE $'),10,63,247
+0,entropy,8,('$ pi pe pi $'),11,45,250
+0,entropy,8,('$ kI qi qE $'),12,45,254
+0,entropy,8,('$ ki qe pi $'),13,45,254
+0,entropy,8,('$ kI ti pE $'),14,45,254
+0,entropy,8,('$ pe qi qi $'),15,45,255
+0,entropy,8,('$ ki ti kI $'),16,45,255
+0,entropy,8,('$ pi ti qE $'),17,45,255
+0,entropy,8,('$ pi ke kI $'),18,45,255
+0,entropy,8,('$ pI qi pE $'),19,45,255
+0,entropy,8,('$ kI pi kE $'),20,45,255
+0,entropy,8,('$ qi qe pi $'),21,45,255
+0,entropy,8,('$ ki ti qi $'),22,45,255
+0,entropy,8,('$ qi qi pE $'),23,45,255
+0,entropy,8,('$ ki te qI tI $'),24,66,255
+0,entropy,8,('$ pi pi pE $'),25,45,255
+0,entropy,8,('$ ke pi ki pI $'),26,60,255
+0,entropy,8,('$ kI pi tI $'),27,45,255
+0,entropy,8,('$ pi qe kI $'),28,45,255
+0,entropy,8,('$ qi te qi $'),29,45,255
+0,entropy,8,('$ ki ti pE $'),30,45,255
+0,entropy,8,('$ ki pe qI $'),31,45,255
+0,entropy,8,('$ pI qe ta qi $'),32,51,265
+0,entropy,8,('$ ti ki qI $'),33,45,265
+0,entropy,8,('$ kI ki qI pI $'),34,60,266
+0,entropy,8,('$ pI pi pI kI $'),35,60,266
+0,entropy,8,('$ ti ti pI $'),36,45,266
+0,entropy,8,('$ ti qi pE $'),37,45,266
+0,entropy,8,('$ ta ti pi tI $'),38,60,267
+0,entropy,8,('$ ka pi ti pI $'),39,60,267
+0,entropy,8,('$ te ki qi pE $'),40,66,267
+0,entropy,8,('$ qI pi pI tI $'),41,60,267
+0,entropy,8,('$ kE ki pi qI $'),42,66,268
+0,entropy,8,('$ qe kI $'),43,18,268
+0,entropy,8,('$ ka tI pi tI $'),44,60,269
+0,entropy,8,('$ pi ki pI qI $'),45,54,269
+0,entropy,8,('$ ki qi ki $'),46,45,269
+0,entropy,8,('$ qe qi ki qI $'),47,60,269
+0,entropy,8,('$ ka pI pe qI $'),48,60,270
+0,entropy,8,('$ te pi pi ti $'),49,54,270
+0,entropy,8,('$ ta kI pi tI $'),50,60,270
+0,entropy,8,('$ ke qi pi qI $'),51,60,270
+0,entropy,8,('$ ti pi pI kI $'),52,54,270
+0,entropy,8,('$ pi kI kI $'),53,45,270
+0,entropy,8,('$ ta tI ti kI $'),54,60,270
+0,entropy,8,('$ qi ti qI $'),55,45,270
+0,entropy,8,('$ ti ti qI $'),56,45,270
+0,entropy,8,('$ pi qe pI pi $'),57,68,270
+0,entropy,8,('$ ti qi qI $'),58,45,270
+0,entropy,8,('$ qi qe kI kI $'),59,66,270
+0,entropy,8,('$ ki qi qI pI $'),60,54,270
+0,entropy,8,('$ pi ti pi $'),61,45,270
+0,entropy,8,('$ pi ki kI $'),62,45,270
+0,entropy,8,('$ ke qi ti pE $'),63,66,270
+0,entropy,8,('$ te qi ki kI $'),64,60,270
+0,entropy,8,('$ pa kI qi qI $'),65,60,270
+0,entropy,8,('$ pi qi kI pI $'),66,54,270
+0,entropy,8,('$ qI qi kI $'),67,45,270
+0,entropy,8,('$ tE ke pI kI $'),68,66,270
+0,entropy,8,('$ kI ti pi tI $'),69,60,270
+0,entropy,8,('$ ti qi qI tI $'),70,54,270
+0,entropy,8,('$ kI qi pI qI $'),71,60,270
+0,entropy,8,('$ tI pe ki ki $'),72,66,271
+0,entropy,8,('$ ti ki pi qi $'),73,45,271
+0,entropy,8,('$ qe qi qI kI $'),74,60,271
+0,unif,8,('$ qI kE $'),0,18,18
+0,unif,8,('$ pa ti kE ka $'),1,48,64
+0,unif,8,('$ pI qE pI $'),2,45,96
+0,unif,8,('$ pi te pI $'),3,45,119
+0,unif,8,('$ te pi ta $'),4,33,135
+0,unif,8,('$ pe qI ta kI $'),5,51,151
+0,unif,8,('$ qE ti $'),6,18,156
+0,unif,8,('$ ki kE tI $'),7,45,159
+0,unif,8,('$ pa ke $'),8,12,163
+0,unif,8,('$ ka pa pa $'),9,16,174
+0,unif,8,('$ ta qa qi $'),10,22,186
+0,unif,8,('$ kI te pi qa $'),11,60,197
+0,unif,8,('$ pi kE $'),12,18,197
+0,unif,8,('$ kE ta $'),13,12,199
+0,unif,8,('$ pI pI pa pE $'),14,51,212
+0,unif,8,('$ ke tI $'),15,18,212
+0,unif,8,('$ qa pE tE $'),16,33,220
+0,unif,8,('$ ti kE qi $'),17,45,225
+0,unif,8,('$ ti qi pe $'),18,45,235
+0,unif,8,('$ pe ki $'),19,18,235
+0,unif,8,('$ qe ka $'),20,12,236
+0,unif,8,('$ ke tI pi qe $'),21,68,247
+0,unif,8,('$ ke ta ke $'),22,30,251
+0,unif,8,('$ pa kE ka tI $'),23,42,254
+0,unif,8,('$ qE pi pI $'),24,45,260
+0,unif,8,('$ pe pi $'),25,18,260
+0,unif,8,('$ tE qa $'),26,12,260
+0,unif,8,('$ qI pI $'),27,18,260
+0,unif,8,('$ ti ke $'),28,18,260
+0,unif,8,('$ ke tE kI $'),29,45,260
+0,unif,8,('$ qi ti qE qE $'),30,63,262
+0,unif,8,('$ ke ta $'),31,12,262
+0,unif,8,('$ ka pa ti ka $'),32,34,264
+0,unif,8,('$ pI pa pE $'),33,30,265
+0,unif,8,('$ tI ta pa kI $'),34,36,270
+0,unif,8,('$ pE ki $'),35,18,270
+0,unif,8,('$ te kE pI $'),36,45,270
+0,unif,8,('$ qa pe ke $'),37,33,273
+0,unif,8,('$ qe ki te $'),38,45,273
+0,unif,8,('$ ta ta ta $'),39,16,273
+0,unif,8,('$ qI pe $'),40,18,273
+0,unif,8,('$ pE qe qI pE $'),41,68,273
+0,unif,8,('$ ta qE qa qI $'),42,42,273
+0,unif,8,('$ ka pi $'),43,12,273
+0,unif,8,('$ qI ti tE qa $'),44,58,273
+0,unif,8,('$ tI pI kI $'),45,45,274
+0,unif,8,('$ qI qE ki pI $'),46,68,275
+0,unif,8,('$ ki tE ke $'),47,45,275
+0,unif,8,('$ te qe $'),48,18,275
+0,unif,8,('$ pE ka tE $'),49,30,275
+0,unif,8,('$ ti qI pE te $'),50,64,275
+0,unif,8,('$ qa qe pe pe $'),51,51,275
+0,unif,8,('$ pa pe ke tI $'),52,57,275
+0,unif,8,('$ kI ka pE qE $'),53,51,275
+0,unif,8,('$ tE kI pE $'),54,45,275
+0,unif,8,('$ qi ki $'),55,18,275
+0,unif,8,('$ tE qE tI ke $'),56,66,275
+0,unif,8,('$ te ta kE tI $'),57,49,278
+0,unif,8,('$ pe qa ka ta $'),58,26,279
+0,unif,8,('$ ka qa $'),59,8,279
+0,unif,8,('$ qi qi kI qE $'),60,60,279
+0,unif,8,('$ qE ti ta $'),61,33,280
+0,unif,8,('$ ti te pa ka $'),62,39,281
+0,unif,8,('$ kE pe $'),63,18,281
+0,unif,8,('$ qa ki $'),64,12,281
+0,unif,8,('$ ta qe ta $'),65,24,281
+0,unif,8,('$ pI pa $'),66,12,281
+0,unif,8,('$ pe kE qI $'),67,45,281
+0,unif,8,('$ pi pi $'),68,18,281
+0,unif,8,('$ kE qE pi $'),69,45,281
+0,unif,8,('$ tE tI pe $'),70,45,281
+0,unif,8,('$ tE ta ki pe $'),71,51,283
+0,unif,8,('$ pE qa $'),72,12,283
+0,unif,8,('$ kE qI $'),73,18,283
+0,unif,8,('$ pE qE ki $'),74,45,283
+0,train,8,('$ kE ka qe pa $'),0,41,41
+0,train,8,('$ pi $'),1,3,44
+0,train,8,('$ ka qi $'),2,12,56
+0,train,8,('$ qi qi pe $'),3,45,99
+0,train,8,('$ ke ke ta $'),4,33,107
+0,train,8,('$ qa pE $'),5,12,113
+0,train,8,('$ pi ta qa $'),6,22,124
+0,train,8,('$ qE pE $'),7,18,131
+0,train,8,('$ qe qe $'),8,18,131
+0,train,8,('$ te qe $'),9,18,131
+0,train,8,('$ pE $'),10,3,133
+0,train,8,('$ qa qi $'),11,12,133
+0,train,8,('$ qI pa pi pi ti qa ka qE tE $'),12,130,190
+0,train,8,('$ tE $'),13,3,190
+0,train,8,('$ qe qa $'),14,12,190
+0,train,8,('$ qe ke $'),15,18,190
+0,train,8,('$ pi ta ti pe $'),16,51,198
+0,train,8,('$ tI $'),17,3,198
+0,train,8,('$ ke ka ta ti $'),18,36,205
+0,train,8,('$ pE ka $'),19,12,206
+0,train,8,('$ ki ta qI $'),20,30,212
+0,train,8,('$ pi qi $'),21,18,215
+0,train,8,('$ qI ta qE tI tE $'),22,74,235
+0,train,8,('$ qa qe ta ke ke $'),23,54,235
+0,train,8,('$ ka ki qe $'),24,33,235
+0,train,8,('$ ke ta qa $'),25,22,235
+0,train,8,('$ ke qa qI $'),26,30,235
+0,train,8,('$ ke $'),27,3,235
+0,train,8,('$ qi ke ke $'),28,45,235
+0,train,8,('$ pe $'),29,3,235
+0,train,8,('$ ki pa $'),30,12,236
+0,train,8,('$ pE pa $'),31,12,236
+0,train,8,('$ kE $'),32,3,236
+0,train,8,('$ kI qE $'),33,18,237
+0,train,8,('$ ta ke $'),34,12,237
+0,train,8,('$ qE kI $'),35,18,239
+0,train,8,('$ qi pi $'),36,18,239
+0,train,8,('$ qE kE tI $'),37,45,242
+0,train,8,('$ pI $'),38,3,242
+0,train,8,('$ tI kI $'),39,18,242
+0,train,8,('$ tE pI $'),40,18,242
+0,train,8,('$ kI kI pa qe $'),41,51,248
+0,train,8,('$ te ke $'),42,18,248
+0,train,8,('$ ke ta $'),43,12,248
+0,train,8,('$ pi ta $'),44,12,248
+0,train,8,('$ pe te qa $'),45,33,248
+0,train,8,('$ qI $'),46,3,248
+0,train,8,('$ qa ka $'),47,8,249
+0,train,8,('$ qe $'),48,3,249
+0,train,8,('$ tE qa ka $'),49,22,251
+0,train,8,('$ pI kE $'),50,18,251
+0,train,8,('$ te pi $'),51,18,251
+0,train,8,('$ ta kE kE $'),52,33,251
+0,train,8,('$ qI tE pa $'),53,33,251
+0,train,8,('$ pE pI kI $'),54,45,252
+0,train,8,('$ kI pE $'),55,18,252
+0,train,8,('$ qi ta pI qI $'),56,51,253
+0,train,8,('$ pI tE ta kI $'),57,51,253
+0,train,8,('$ pi pe ta $'),58,33,253
+0,train,8,('$ qi ta $'),59,12,253
+0,train,8,('$ tE ka $'),60,12,253
+0,train,8,('$ te $'),61,3,253
+0,train,8,('$ qE $'),62,3,253
+0,train,8,('$ pe ta tE kI $'),63,49,253
+0,train,8,('$ qa $'),64,2,254
+0,train,8,('$ kI $'),65,3,254
+0,train,8,('$ ta pe $'),66,12,254
+0,train,8,('$ te ka ka $'),67,22,254
+0,train,8,('$ tI tE pE qI qI $'),68,69,257
+0,train,8,('$ ki $'),69,3,257
+0,train,8,('$ kE pE qE $'),70,45,257
+0,train,8,('$ kI ta $'),71,12,257
+0,train,8,('$ kI qI $'),72,18,257
+0,train,8,('$ ti $'),73,3,257
+0,train,8,('$ ka qI $'),74,12,257
+0,eig,9,('$ kI qe $'),0,18,18
+0,eig,9,('$ pi pi $'),1,18,28
+0,eig,9,('$ qa ta ki $'),2,22,50
+0,eig,9,('$ pi pa pa $'),3,22,70
+0,eig,9,('$ qe ka $'),4,12,73
+0,eig,9,('$ pe ka pE $'),5,30,87
+0,eig,9,('$ kI kE $'),6,18,93
+0,eig,9,('$ ta ka kI $'),7,22,95
+0,eig,9,('$ pi tI qa $'),8,33,116
+0,eig,9,('$ pi ti qa $'),9,33,122
+0,eig,9,('$ pi qa qa $'),10,22,122
+0,eig,9,('$ qE qa ta $'),11,22,129
+0,eig,9,('$ qI tI ta $'),12,33,136
+0,eig,9,('$ pi ta pa $'),13,22,136
+0,eig,9,('$ ka ka qI $'),14,22,136
+0,eig,9,('$ te tE $'),15,18,139
+0,eig,9,('$ qa pi $'),16,12,144
+0,eig,9,('$ qi ta ti $'),17,30,158
+0,eig,9,('$ qa qi ka $'),18,24,170
+0,eig,9,('$ tE pi $'),19,18,171
+0,eig,9,('$ qa pa pi $'),20,22,171
+0,eig,9,('$ te qi $'),21,18,171
+0,eig,9,('$ pE pa $'),22,12,171
+0,eig,9,('$ tE pE ta $'),23,33,173
+0,eig,9,('$ te qa $'),24,12,173
+0,eig,9,('$ pI ka ka $'),25,22,173
+0,eig,9,('$ qE kE $'),26,18,173
+0,eig,9,('$ ki ka ta $'),27,22,173
+0,eig,9,('$ ti qa pa $'),28,22,173
+0,eig,9,('$ qE ta pa $'),29,22,173
+0,eig,9,('$ tI pa ta $'),30,22,173
+0,eig,9,('$ qa pa ke $'),31,22,175
+0,eig,9,('$ qI kI ta $'),32,33,175
+0,eig,9,('$ kI kI ka $'),33,33,175
+0,eig,9,('$ ti pI ka $'),34,33,175
+0,eig,9,('$ ka qa pi $'),35,22,175
+0,eig,9,('$ pI pa $'),36,12,175
+0,eig,9,('$ ki pI ta $'),37,33,175
+0,eig,9,('$ ki tE $'),38,18,175
+0,eig,9,('$ pi tE $'),39,18,175
+0,eig,9,('$ ki pa qa $'),40,22,175
+0,eig,9,('$ pa tE $'),41,12,176
+0,eig,9,('$ pi ka qe $'),42,30,176
+0,eig,9,('$ qi tE $'),43,18,176
+0,eig,9,('$ pe ti $'),44,18,176
+0,eig,9,('$ qa qa qe $'),45,22,176
+0,eig,9,('$ qi ta $'),46,12,176
+0,eig,9,('$ pi pa ta $'),47,22,176
+0,eig,9,('$ pa pa pa ke $'),48,26,178
+0,eig,9,('$ pE te $'),49,18,178
+0,eig,9,('$ qI pe $'),50,18,178
+0,eig,9,('$ pI qE $'),51,18,178
+0,eig,9,('$ te ta $'),52,12,178
+0,eig,9,('$ qi ke pa $'),53,33,178
+0,eig,9,('$ ti kE pa $'),54,33,178
+0,eig,9,('$ pa ka ke $'),55,22,178
+0,eig,9,('$ ka qa ki $'),56,22,178
+0,eig,9,('$ ta ka $'),57,8,178
+0,eig,9,('$ ta qa qa $'),58,16,178
+0,eig,9,('$ qe ta pi $'),59,30,178
+0,eig,9,('$ qE pa $'),60,12,178
+0,eig,9,('$ qE ta ta $'),61,22,178
+0,eig,9,('$ qI qi $'),62,18,178
+0,eig,9,('$ qe ke $'),63,18,178
+0,eig,9,('$ qa ta ke $'),64,22,178
+0,eig,9,('$ qi qa te $'),65,30,178
+0,eig,9,('$ pi ta $'),66,12,178
+0,eig,9,('$ kI pE qa $'),67,33,178
+0,eig,9,('$ ti ti $'),68,18,178
+0,eig,9,('$ te ka pa $'),69,22,178
+0,eig,9,('$ pE pa qa $'),70,22,178
+0,eig,9,('$ ta ti $'),71,12,178
+0,eig,9,('$ ki ka ke $'),72,30,178
+0,eig,9,('$ kI kE qa $'),73,33,178
+0,eig,9,('$ ta tI $'),74,12,178
+0,entropy,9,('$ pE ke pe pa $'),0,54,54
+0,entropy,9,('$ ki tI $'),1,18,71
+0,entropy,9,('$ qi ka pI $'),2,30,99
+0,entropy,9,('$ pa kI ta $'),3,24,118
+0,entropy,9,('$ ka ke qI qi $'),4,58,162
+0,entropy,9,('$ qa qE kI qi $'),5,56,173
+0,entropy,9,('$ pE kI qI pI $'),6,54,192
+0,entropy,9,('$ tI tI pI ke $'),7,63,202
+0,entropy,9,('$ ta tI kI ki $'),8,60,205
+0,entropy,9,('$ ta qa tI pi $'),9,43,216
+0,entropy,9,('$ ka pI kI kI $'),10,60,216
+0,entropy,9,('$ te qI tI pI $'),11,63,219
+0,entropy,9,('$ qa qI tI pi $'),12,60,219
+0,entropy,9,('$ ti kI ki $'),13,45,219
+0,entropy,9,('$ qi ti kI te $'),14,66,231
+0,entropy,9,('$ qE qI kI tI $'),15,54,231
+0,entropy,9,('$ pi ti tI tI $'),16,54,231
+0,entropy,9,('$ qI tI tI ti $'),17,54,231
+0,entropy,9,('$ qa pI kI tI $'),18,60,231
+0,entropy,9,('$ qi qi kI ti $'),19,60,231
+0,entropy,9,('$ qa te pI ti $'),20,58,231
+0,entropy,9,('$ te pi pI tI $'),21,60,231
+0,entropy,9,('$ pi pi qI ki $'),22,60,231
+0,entropy,9,('$ qa qI kI ti $'),23,60,231
+0,entropy,9,('$ ta qi kI ki $'),24,60,231
+0,entropy,9,('$ pa ka tI pI $'),25,43,231
+0,entropy,9,('$ pI kI kI pa $'),26,60,239
+0,entropy,9,('$ ti tI kE qa $'),27,56,242
+0,entropy,9,('$ qI kI ta qa $'),28,43,250
+0,entropy,9,('$ kI qi pI pi $'),29,64,252
+0,entropy,9,('$ qI kI ta ka $'),30,43,252
+0,entropy,9,('$ kI kI qI qa $'),31,60,252
+0,entropy,9,('$ qI qI qI ki $'),32,54,252
+0,entropy,9,('$ kI ki tI ki $'),33,64,252
+0,entropy,9,('$ tI kI pI ti $'),34,54,252
+0,entropy,9,('$ qi ti tI pI $'),35,54,252
+0,entropy,9,('$ ti qi kI pe $'),36,66,252
+0,entropy,9,('$ ki qi ki pI $'),37,54,254
+0,entropy,9,('$ qi pI tI pI $'),38,54,254
+0,entropy,9,('$ kI tI pI ta $'),39,60,254
+0,entropy,9,('$ pi pI qI tI $'),40,54,254
+0,entropy,9,('$ ki pI pI tE $'),41,60,254
+0,entropy,9,('$ kI pI qE qa $'),42,54,254
+0,entropy,9,('$ pi ti tI pe $'),43,66,254
+0,entropy,9,('$ qi ti qI pe $'),44,66,254
+0,entropy,9,('$ kI ti qI qe $'),45,68,254
+0,entropy,9,('$ kI tI tI ti $'),46,54,254
+0,entropy,9,('$ pi kI kI te $'),47,66,254
+0,entropy,9,('$ pI qI qI pe $'),48,63,254
+0,entropy,9,('$ qi qi qI qe $'),49,66,254
+0,entropy,9,('$ qI qi tI kI $'),50,60,254
+0,entropy,9,('$ pi qi qI pi $'),51,60,254
+0,entropy,9,('$ ki tI ki $'),52,45,254
+0,entropy,9,('$ pI kI qi qa $'),53,60,257
+0,entropy,9,('$ tI kI kI kE $'),54,54,257
+0,entropy,9,('$ ti ti pi qa $'),55,60,258
+0,entropy,9,('$ qI qi tI qe $'),56,68,258
+0,entropy,9,('$ tI qI kI ka $'),57,60,258
+0,entropy,9,('$ qi pi pi ti $'),58,45,259
+0,entropy,9,('$ pI ki kI ti $'),59,64,259
+0,entropy,9,('$ pI tI ki qI $'),60,60,259
+0,entropy,9,('$ ti qi ti qI $'),61,54,259
+0,entropy,9,('$ kI ki tI pe $'),62,68,259
+0,entropy,9,('$ ti ki kI qE $'),63,60,259
+0,entropy,9,('$ qI kI tI qe $'),64,63,259
+0,entropy,9,('$ pI pI ta ka $'),65,43,259
+0,entropy,9,('$ kI pi pI qI $'),66,60,259
+0,entropy,9,('$ pI kI pi qE $'),67,66,259
+0,entropy,9,('$ ti qi tI tI $'),68,54,259
+0,entropy,9,('$ ti ki tI pi $'),69,60,259
+0,entropy,9,('$ qI pI ki $'),70,45,259
+0,entropy,9,('$ pI tI ti $'),71,45,259
+0,entropy,9,('$ pi qI pI pi $'),72,60,259
+0,entropy,9,('$ ti qi tI qi $'),73,60,259
+0,entropy,9,('$ pi ki ti tI $'),74,54,259
+0,unif,9,('$ ti te ke $'),0,45,45
+0,unif,9,('$ ki pa qI tE $'),1,51,88
+0,unif,9,('$ qE pI kE qe $'),2,64,122
+0,unif,9,('$ pa qi $'),3,12,130
+0,unif,9,('$ pE qI qI ke $'),4,66,145
+0,unif,9,('$ ke ti pI tE $'),5,64,165
+0,unif,9,('$ pa ta tE pe $'),6,39,187
+0,unif,9,('$ pi ke qi $'),7,45,191
+0,unif,9,('$ qe ki kI $'),8,45,193
+0,unif,9,('$ pe ti $'),9,18,193
+0,unif,9,('$ qE tE tI $'),10,45,199
+0,unif,9,('$ qa qE ke ki $'),11,56,204
+0,unif,9,('$ pI tE $'),12,18,205
+0,unif,9,('$ ta te pE $'),13,33,209
+0,unif,9,('$ qE qe pE $'),14,45,212
+0,unif,9,('$ te pI ti $'),15,45,217
+0,unif,9,('$ ke ki kE $'),16,45,217
+0,unif,9,('$ qI tI $'),17,18,218
+0,unif,9,('$ qI qi $'),18,18,218
+0,unif,9,('$ pa pi qE $'),19,33,218
+0,unif,9,('$ kE ta qe $'),20,30,226
+0,unif,9,('$ ki qE ke te $'),21,66,226
+0,unif,9,('$ ke kI te $'),22,45,226
+0,unif,9,('$ pi ki pe pa $'),23,54,238
+0,unif,9,('$ ke kI $'),24,18,238
+0,unif,9,('$ kI pa ta ta $'),25,30,248
+0,unif,9,('$ ta kI tE kI $'),26,60,249
+0,unif,9,('$ qi qE pE tE $'),27,63,249
+0,unif,9,('$ ke tE ke $'),28,45,249
+0,unif,9,('$ pa ki $'),29,12,249
+0,unif,9,('$ ke ka tE qE $'),30,48,250
+0,unif,9,('$ pI tI qe qe $'),31,63,250
+0,unif,9,('$ ki tI kI qa $'),32,60,260
+0,unif,9,('$ pi pe qe $'),33,45,260
+0,unif,9,('$ ki te ki $'),34,45,260
+0,unif,9,('$ qI qI $'),35,18,260
+0,unif,9,('$ ki qE $'),36,18,260
+0,unif,9,('$ pI qE $'),37,18,260
+0,unif,9,('$ kI pa ki pI $'),38,51,265
+0,unif,9,('$ pe qi $'),39,18,265
+0,unif,9,('$ pa pi kE qI $'),40,60,265
+0,unif,9,('$ qE qa ke pi $'),41,49,267
+0,unif,9,('$ ki pI ti ta $'),42,60,268
+0,unif,9,('$ qI tI pa te $'),43,51,268
+0,unif,9,('$ kE tI pI $'),44,45,268
+0,unif,9,('$ qi ka pi ke $'),45,51,270
+0,unif,9,('$ kE pI $'),46,18,270
+0,unif,9,('$ tI pI pa $'),47,33,270
+0,unif,9,('$ qI qI ti ti $'),48,54,270
+0,unif,9,('$ ti qE pI tE $'),49,68,270
+0,unif,9,('$ pa pa pE ka $'),50,32,274
+0,unif,9,('$ qI qE tI tE $'),51,64,274
+0,unif,9,('$ qa ka $'),52,8,274
+0,unif,9,('$ tE ti ki $'),53,45,274
+0,unif,9,('$ pa qE kE $'),54,33,274
+0,unif,9,('$ pa kE qe $'),55,33,274
+0,unif,9,('$ ka qi qI $'),56,33,274
+0,unif,9,('$ tI te ka $'),57,33,274
+0,unif,9,('$ ke ka $'),58,12,274
+0,unif,9,('$ qE pa kI $'),59,30,277
+0,unif,9,('$ qe qe pe $'),60,45,277
+0,unif,9,('$ ta tE kE qa $'),61,45,277
+0,unif,9,('$ ta tI ki $'),62,33,278
+0,unif,9,('$ pi ke pE pe $'),63,64,279
+0,unif,9,('$ qI tI pi kE $'),64,66,279
+0,unif,9,('$ pi ka kE $'),65,30,279
+0,unif,9,('$ tE tE ta $'),66,33,279
+0,unif,9,('$ ta pe $'),67,12,279
+0,unif,9,('$ pe qe ke $'),68,45,279
+0,unif,9,('$ qI ka qa $'),69,22,279
+0,unif,9,('$ pI pa ke pI $'),70,51,279
+0,unif,9,('$ qE qa qE te $'),71,49,279
+0,unif,9,('$ tE kI ke ta $'),72,58,279
+0,unif,9,('$ pE qe pE pE $'),73,60,279
+0,unif,9,('$ pa ti $'),74,12,279
+0,train,9,('$ ke ke ta $'),0,33,33
+0,train,9,('$ ke $'),1,3,36
+0,train,9,('$ ti $'),2,3,37
+0,train,9,('$ pe ta tE kI $'),3,49,80
+0,train,9,('$ ke ka ta ti $'),4,36,94
+0,train,9,('$ qe qe $'),5,18,97
+0,train,9,('$ pe $'),6,3,97
+0,train,9,('$ pi ta qa $'),7,22,105
+0,train,9,('$ pE $'),8,3,106
+0,train,9,('$ kE pE qE $'),9,45,127
+0,train,9,('$ qE pE $'),10,18,127
+0,train,9,('$ ta kE kE $'),11,33,133
+0,train,9,('$ ki pa $'),12,12,135
+0,train,9,('$ qa ka $'),13,8,136
+0,train,9,('$ qi pi $'),14,18,145
+0,train,9,('$ kI qI $'),15,18,148
+0,train,9,('$ qi ta $'),16,12,148
+0,train,9,('$ kI $'),17,3,148
+0,train,9,('$ qi ta pI qI $'),18,51,164
+0,train,9,('$ pe te qa $'),19,33,164
+0,train,9,('$ qa pE $'),20,12,165
+0,train,9,('$ pi qi $'),21,18,165
+0,train,9,('$ qe $'),22,3,165
+0,train,9,('$ kE $'),23,3,165
+0,train,9,('$ pI tE ta kI $'),24,51,177
+0,train,9,('$ ke ta qa $'),25,22,177
+0,train,9,('$ ki $'),26,3,177
+0,train,9,('$ pi pe ta $'),27,33,179
+0,train,9,('$ tE qa ka $'),28,22,182
+0,train,9,('$ qe ke $'),29,18,182
+0,train,9,('$ ka qI $'),30,12,184
+0,train,9,('$ ta ke $'),31,12,185
+0,train,9,('$ te ke $'),32,18,185
+0,train,9,('$ kI qE $'),33,18,185
+0,train,9,('$ kI ta $'),34,12,186
+0,train,9,('$ qI ta qE tI tE $'),35,74,193
+0,train,9,('$ pa ki ke pa $'),36,48,203
+0,train,9,('$ kE ka qe pa $'),37,41,210
+0,train,9,('$ pi ta ti pe $'),38,51,214
+0,train,9,('$ tE $'),39,3,214
+0,train,9,('$ qa qe ta ke ke $'),40,54,214
+0,train,9,('$ qI $'),41,3,214
+0,train,9,('$ kI pE $'),42,18,214
+0,train,9,('$ qa $'),43,2,215
+0,train,9,('$ pI $'),44,3,215
+0,train,9,('$ tI tE pE qI qI $'),45,69,225
+0,train,9,('$ ka ki qe $'),46,33,225
+0,train,9,('$ tI $'),47,3,225
+0,train,9,('$ qE $'),48,3,225
+0,train,9,('$ qE kE tI $'),49,45,225
+0,train,9,('$ ki ta qI $'),50,30,225
+0,train,9,('$ te qe $'),51,18,225
+0,train,9,('$ qi ke ke $'),52,45,235
+0,train,9,('$ ta pe $'),53,12,235
+0,train,9,('$ pE pI kI $'),54,45,235
+0,train,9,('$ pi ta $'),55,12,235
+0,train,9,('$ te pi $'),56,18,235
+0,train,9,('$ qe qa $'),57,12,235
+0,train,9,('$ qI tE pa $'),58,33,235
+0,train,9,('$ qI pa pE $'),59,30,235
+0,train,9,('$ qa qi $'),60,12,235
+0,train,9,('$ tE pI $'),61,18,235
+0,train,9,('$ tE ka $'),62,12,235
+0,train,9,('$ qa ta ka qa tE $'),63,26,238
+0,train,9,('$ qi qi pe $'),64,45,245
+0,train,9,('$ pI kE $'),65,18,245
+0,train,9,('$ qE kI $'),66,18,245
+0,train,9,('$ qI pa pi pi ti qa ka qE tE $'),67,130,257
+0,train,9,('$ ke ta $'),68,12,257
+0,train,9,('$ pE pa $'),69,12,257
+0,train,9,('$ kI kI pa qe $'),70,51,258
+0,train,9,('$ pE ka $'),71,12,258
+0,train,9,('$ ka qi $'),72,12,258
+0,train,9,('$ te $'),73,3,258
+0,train,9,('$ pi $'),74,3,258
+NA,NA,NA,NA,NA,0,0
