@@ -11,6 +11,7 @@ import itertools as it
 from tqdm import tqdm
 from AnalyzeSyntheticData import is_ti
 
+from util import entropy
 
 N_EVAL = 50
 BOUNDARY = "$"
@@ -160,9 +161,12 @@ def main():
     eval_metrics = open("ModelEvalLogs.csv","w",encoding="utf8")
     eval_metrics.write("ent,good,bad,diff,acc,rej,Step,Run,Strategy,N_Init,IsTI,judgement,proposed_form\n") # including things it queried about
     for N_INIT in [0]:
-        for run in range(10):
+        num_runs = 1 
+        for run in range(num_runs):
             #for strategy in ["train","entropy","unif","max","std","diff"]: # ,"max","unif","interleave","diff","std"
-            for strategy in ["eig","entropy","unif","train"]: # only train, entropy, eig, and unif are well-defined here
+#            for strategy in ["", "eig", "unif","train"]: # only train, entropy, eig, and unif are well-defined here
+            for strategy in ["eig"]: # only train, entropy, eig, and unif are well-defined here
+                print("STRATEGY:", strategy)
                 #if strategy == "train":
                 #    run = 19
                 index_of_next_item = 0
@@ -215,13 +219,25 @@ def main():
                 #assert False
 
 
-                for i in range(75-N_INIT):
+#                for i in range(75-N_INIT):
+                for i in range(20-N_INIT):
+                    print("")
+                    print(f"i: {i}")
                     #learner.cost()
                     candidate = learner.propose(n_candidates=100, forbidden_data = forbidden_data_that_cannot_be_queried_about, length_norm=True)
                     judgment = informant.judge(candidate)
                     #prior_probability_of_accept = learner.cost(candidate)
 
+                    entropy_before = entropy(learner.hypotheses[0].probs)
                     learner.observe(candidate, judgment)
+                    entropy_after = entropy(learner.hypotheses[0].probs)
+                    print("entropy before: ", entropy_before) 
+                    print("entropy after: ", entropy_after) 
+                    print("information gain:", entropy_before-entropy_after)
+                    prob_positive = np.exp(learner.hypotheses[0].logprob(candidate, True))
+                    prob_negative = np.exp(learner.hypotheses[0].logprob(candidate, False))
+                    print("prob positive:", prob_positive)
+                    print("prob negative:", prob_negative)
 
                     p = learner.hypotheses[0].probs
 
@@ -325,8 +341,8 @@ def main():
                     #print(t)
                     #assert False
                     log.append(scores)
-                    print(strategy, run, N_INIT + i)
                     print()
+                    print(f"strategy: {strategy}, run: {run}/{num_runs}, step: {N_INIT + i}")
 
 
                     # print(learner.hypotheses[0].entropy(candidate, debug=True))

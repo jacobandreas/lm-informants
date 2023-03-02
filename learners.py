@@ -5,6 +5,7 @@ import numpy as np
 import scorers
 from tqdm import tqdm
 from scipy.special import logsumexp
+from copy import deepcopy 
 
 import torch
 from torch import nn, optim
@@ -113,8 +114,10 @@ class VBLearner(Learner):
         self.observations.append((seq, judgment))
         self.hypotheses[0].update(seq, judgment)
 
+    # TODO: only consider features in sequene as in scorer.entropy()? (Should be equivalent bc probs for features not in seq won't change?)
     def get_eig(self, seq):
-        learner_before_fussing_around = self.hypotheses[0]
+        orig_probs = deepcopy(self.hypotheses[0].probs)
+#        print("learner before fussing around:", learner_before_fussing_around.probs)
 
         # prob of the thing being positive or negative
         prob_being_positive_a = np.exp(self.hypotheses[0].logprob(seq, True))
@@ -125,19 +128,30 @@ class VBLearner(Learner):
 
         # entropy over features before seeing
         p = self.hypotheses[0].probs
-        entropy_over_features_before_observing_item = ((p * np.log(p) + (1 - p) * np.log(1 - p)).sum())
+        # TODO: confirm -1 after sum
+        entropy_over_features_before_observing_item = -1 * ((p * np.log(p) + (1 - p) * np.log(1 - p)).sum())
+        test_entropy_over_features_before_observing_item = (-1 * (p * np.log(p) + (1 - p) * np.log(1 - p))).sum()
+        assert entropy_over_features_before_observing_item > 0
+        assert entropy_over_features_before_observing_item == test_entropy_over_features_before_observing_item
+    
 
         # entropy over features after seeing if positive
 
-        p = self.hypotheses[0].update(seq, True)
-        entropy_over_features_after_observing_item_positive = ((p * np.log(p) + (1 - p) * np.log(1 - p)).sum())
-        self.hypotheses[0] = learner_before_fussing_around
+        p = self.hypotheses[0].update(seq, True, verbose=False)
+        entropy_over_features_after_observing_item_positive = -1 * ((p * np.log(p) + (1 - p) * np.log(1 - p)).sum())
+        assert entropy_over_features_after_observing_item_positive > 0
+        self.hypotheses[0].probs = orig_probs 
         # reset learner
         # entropy over features after seeing if negative
-        p = self.hypotheses[0].update(seq, False)
-        entropy_over_features_after_observing_item_negative = ((p * np.log(p) + (1 - p) * np.log(1 - p)).sum())
-        self.hypotheses[0] = learner_before_fussing_around
+        p = self.hypotheses[0].update(seq, False, verbose=False)
+        entropy_over_features_after_observing_item_negative = -1 * ((p * np.log(p) + (1 - p) * np.log(1 - p)).sum())
+        assert entropy_over_features_after_observing_item_negative > 0
+        self.hypotheses[0].probs = orig_probs 
         # reset learner
+#        print("learner after fussing around:", self.hypotheses[0].probs)
+        all_equal = (orig_probs== self.hypotheses[0].probs)
+        assert all_equal.all()
+
 
         # either:
         delta_positive = entropy_over_features_before_observing_item-entropy_over_features_after_observing_item_positive
@@ -147,6 +161,7 @@ class VBLearner(Learner):
         # OR
 
         # the kl-divergence between posteriors before --> observe yes*p(yes) + before --> observe no * p(no)
+
         return eig
 
     def get_kl(self, seq):
@@ -263,6 +278,10 @@ class VBLearner(Learner):
         #print(scored_candidates)
         #assert False
         #print(best[1])
+        # Print sorted scores
+        sorted_scores = sorted([x for x in scored_candidates], key=lambda tup: tup[1], reverse=True)
+        for c, s in sorted_scores:
+            print(c, s.item())
         return best[0]
 
 class LogisticLearner(Learner):

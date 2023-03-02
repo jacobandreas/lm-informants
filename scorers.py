@@ -54,12 +54,15 @@ class MeanFieldScorer: # this is us
         for ff in it.product(range(len(self.feature_vocab)), repeat=self.ORDER):
             self.ngram_features[ff] = len(self.ngram_features)
         self.probs = 0.2 * np.ones(len(self.ngram_features))
+        self.verbose = True 
 
-    def update_one_step(self, seq, judgment): # was originally called update
+    def update_one_step(self, seq, judgment, verbose=True): # was originally called update
         features = self._featurize(seq).nonzero()[0]
         #print(features,"are the features in ",seq)
         constraint_probs = self.probs[features]
         new_probs = self.probs.copy()
+
+        clip_val = 10
 
         for i in range(len(features)):
             this_prob = constraint_probs[i]
@@ -70,7 +73,7 @@ class MeanFieldScorer: # this is us
                 # frac satisfying if on is 0
                 log_score = (
                     np.log(this_prob) - np.log(1-this_prob)
-                    - np.exp(min(log_p_others + self.LOG_LOG_ALPHA_RATIO, 10))
+                    - np.exp(min(log_p_others + self.LOG_LOG_ALPHA_RATIO, clip_val))
                 )
 
             else:
@@ -78,12 +81,14 @@ class MeanFieldScorer: # this is us
                 # frac satisfying if on is 1
                 log_score = (
                     np.log(this_prob) - np.log(1-this_prob)
-                    + np.exp(min(log_p_others + self.LOG_LOG_ALPHA_RATIO, 10))
+                    + np.exp(min(log_p_others + self.LOG_LOG_ALPHA_RATIO, clip_val))
                 )
-            log_score = np.clip(log_score, -10, 10)
+            log_score = np.clip(log_score, -clip_val, clip_val)
 
             posterior = 1 / (1 + np.exp(-log_score))
             new_probs[features[i]] = posterior = np.clip(posterior, 0.000001, 0.999999)
+            if self.verbose and verbose:
+                print(f"feat: {i}, before: {this_prob}, after: {new_probs[features[i]]} ({new_probs[features[i]]-this_prob})")
 
         #print("extrema", new_probs.max(), new_probs.min(), new_probs.mean())
 
@@ -91,16 +96,24 @@ class MeanFieldScorer: # this is us
 
         return new_probs
 
-    def update(self, seq, judgment):
+    def update(self, seq, judgment, verbose=True):
+        orig_probs = self.probs.copy()
+        if self.verbose and verbose:
+            features = self._featurize(seq).nonzero()[0]
+            print(f"seq: {seq}")
+            print(f"featurized: {features}")
+            print(f"decoded seq: {self.dataset.vocab.decode(seq)}")
+            print(f"Judgment: {judgment}")
+#            print(f"Probs before updating: {orig_probs}")
         #   print("updating!")
         target_item = False
         if not target_item:
             old_probs = self.probs.copy()
-            new_probs = self.update_one_step(seq, judgment)
+            new_probs = self.update_one_step(seq, judgment, verbose=verbose)
             difference_vector = np.subtract(new_probs, old_probs)
         else:
             old_cost = self.logprob(seq, judgment)
-            new_probs = self.update_one_step(seq, judgment)
+            new_probs = self.update_one_step(seq, judgment, verbose=verbose)
             new_cost = self.logprob(seq, judgment)
 
 
@@ -108,7 +121,11 @@ class MeanFieldScorer: # this is us
             #print(old_cost,new_cost,"cost thing",difference_vector)
 
 
+        num_updates = 1
+
         error = abs(difference_vector).sum()
+        if self.verbose and verbose:
+            print("error: ", error)
         #print(error)
         tolerance = 0.001
         if judgment == True or judgment == False:
@@ -116,22 +133,29 @@ class MeanFieldScorer: # this is us
                 if not target_item:
                 #print(error)
                 #print(old_probs)
-                    old_probs = new_probs
-                    new_probs = self.update_one_step(seq, judgment)
+                    old_probs = new_probs.copy()
+                    new_probs = self.update_one_step(seq, judgment, verbose=verbose)
                     difference_vector = np.absolute(np.subtract(new_probs, old_probs))
                     error = abs(difference_vector).sum()
                     #print(error)
                     #print(new_probs)
                 else:
                     old_cost = new_cost
-                    new_probs = self.update_one_step(seq, judgment)
+                    new_probs = self.update_one_step(seq, judgment, verbose=verbose)
                     new_cost = self.logprob(seq, judgment)
 
                     difference_vector = np.subtract(new_cost, old_cost)
                     error = abs(difference_vector).sum()
                     #print(old_cost, new_cost, "cost thing", difference_vector)
 
+                num_updates += 1
+
         #print("converged!",error)
+        if self.verbose and verbose:
+#            print(f"Probs after updating: {new_probs}")
+            feature_prob_changes = new_probs[features]-orig_probs[features]
+            print(f"Update in probs of features in seq (new-orig): \n{(feature_prob_changes).round(5)}")
+            print(f"Num updates: {num_updates}")
         return new_probs
 
         #
