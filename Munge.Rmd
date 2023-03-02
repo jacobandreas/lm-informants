@@ -9,12 +9,18 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
-#library(tidylog)
+library(tidylog)
 library(jsonlite)
 library(cowplot)
 library(ggbeeswarm)
 library(janitor)
 library(tidyfast)
+library(purrr)
+library(modelr)
+library(broom)
+library(pROC)
+library(tidymodels)
+
 
 setwd("G:/My Drive/MIT/Research/Active Learning with Roger and Jacob Andreas/JacobCode/GridSearch/A")
 
@@ -631,7 +637,7 @@ heldout_performance_broad_addins <- read_csv("broad_test_set_annotated.csv") %>%
 
 
 
-heldout_performance <- read_csv("./GridSearch/A/HoldoutEvals.csv") %>% 
+heldout_performance <- read_csv("HoldoutEvals.csv") %>% 
   filter(TestType == "BroadTest")
 
 heldout_combined <- heldout_performance %>% 
@@ -661,11 +667,6 @@ want to predict IsLicit from Cost for each Step/Strategy/Run/N_Init
 ```{r}
 
 
-library(purrr)
-library(modelr)
-library(broom)
-library(pROC)
-library(tidymodels)
 sums <- heldout_combined %>% 
   group_by(Strategy,Step,Run) %>% 
   crossv_kfold(10) %>%
@@ -680,13 +681,14 @@ summarise(auc = roc(IsLicit2, .fitted, quiet = T)$auc[1])
 
   
 sums %>% 
+  #filter(Run == 0) %>% 
   ggplot(aes(x=Step, y = auc, group = Run))+
   geom_smooth()+
   facet_wrap(~Strategy)+
   theme_bw()
 
-write_csv(sums,"./GridSearch/A_summary.csv")
-ggsave("./GridSearch/A_auc.jpeg") 
+write_csv(sums,"./GridSearch/D_summary.csv")
+ggsave("./GridSearch/D_auc.jpeg") 
 
 
 ```
