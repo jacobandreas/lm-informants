@@ -128,7 +128,7 @@ class MeanFieldScorer: # this is us
             print("error: ", error)
         #print(error)
         tolerance = 0.001
-        if judgment == True or judgment == False:
+        if judgment == True or judgment == False: # asymmetric update; if you want asymmetric, comment out after true
             while error > tolerance:
                 if not target_item:
                 #print(error)
