@@ -54,7 +54,6 @@ class MeanFieldScorer: # this is us
         for ff in it.product(range(len(self.feature_vocab)), repeat=self.ORDER):
             self.ngram_features[ff] = len(self.ngram_features)
         self.probs = 0.2 * np.ones(len(self.ngram_features))
-        self.verbose = True 
 
     def update_one_step(self, seq, judgment, verbose=True): # was originally called update
         features = self._featurize(seq).nonzero()[0]
@@ -87,7 +86,7 @@ class MeanFieldScorer: # this is us
 
             posterior = 1 / (1 + np.exp(-log_score))
             new_probs[features[i]] = posterior = np.clip(posterior, 0.000001, 0.999999)
-            if self.verbose and verbose:
+            if verbose:
                 print(f"feat: {i}, before: {this_prob}, after: {new_probs[features[i]]} ({new_probs[features[i]]-this_prob})")
 
         #print("extrema", new_probs.max(), new_probs.min(), new_probs.mean())
@@ -98,7 +97,7 @@ class MeanFieldScorer: # this is us
 
     def update(self, seq, judgment, verbose=True):
         orig_probs = self.probs.copy()
-        if self.verbose and verbose:
+        if verbose:
             features = self._featurize(seq).nonzero()[0]
             print(f"seq: {seq}")
             print(f"featurized: {features}")
@@ -124,7 +123,7 @@ class MeanFieldScorer: # this is us
         num_updates = 1
 
         error = abs(difference_vector).sum()
-        if self.verbose and verbose:
+        if verbose:
             print("error: ", error)
         #print(error)
         tolerance = 0.001
@@ -151,7 +150,7 @@ class MeanFieldScorer: # this is us
                 num_updates += 1
 
         #print("converged!",error)
-        if self.verbose and verbose:
+        if verbose:
 #            print(f"Probs after updating: {new_probs}")
             feature_prob_changes = new_probs[features]-orig_probs[features]
             print(f"Update in probs of features in seq (new-orig): \n{(feature_prob_changes).round(5)}")

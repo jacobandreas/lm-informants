@@ -104,37 +104,3 @@ Feature,Candidate,Step,N_Init,Strategy,Run
 +atr :: -high :: +word_boundary,('$', 'ta', 'pi', 'te', '$'),1,0,eig,0
 +atr :: -low :: +word_boundary,('$', 'ta', 'pi', 'te', '$'),1,0,eig,0
 +atr :: +atr :: +word_boundary,('$', 'ta', 'pi', 'te', '$'),1,0,eig,0
-+word_boundary :: -high :: -high,('$', 'qa', 'qa', 'pI', 'pa', '$'),2,0,eig,0
-+word_boundary :: -high :: +low,('$', 'qa', 'qa', 'pI', 'pa', '$'),2,0,eig,0
-+word_boundary :: +low :: -high,('$', 'qa', 'qa', 'pI', 'pa', '$'),2,0,eig,0
-+word_boundary :: +low :: +low,('$', 'qa', 'qa', 'pI', 'pa', '$'),2,0,eig,0
--high :: -high :: +high,('$', 'qa', 'qa', 'pI', 'pa', '$'),2,0,eig,0
--high :: -high :: -low,('$', 'qa', 'qa', 'pI', 'pa', '$'),2,0,eig,0
--high :: -high :: -atr,('$', 'qa', 'qa', 'pI', 'pa', '$'),2,0,eig,0
--high :: +low :: +high,('$', 'qa', 'qa', 'pI', 'pa', '$'),2,0,eig,0
--high :: +low :: -low,('$', 'qa', 'qa', 'pI', 'pa', '$'),2,0,eig,0
--high :: +low :: -atr,('$', 'qa', 'qa', 'pI', 'pa', '$'),2,0,eig,0
-+low :: -high :: +high,('$', 'qa', 'qa', 'pI', 'pa', '$'),2,0,eig,0
-+low :: -high :: -low,('$', 'qa', 'qa', 'pI', 'pa', '$'),2,0,eig,0
-+low :: -high :: -atr,('$', 'qa', 'qa', 'pI', 'pa', '$'),2,0,eig,0
-+low :: +low :: +high,('$', 'qa', 'qa', 'pI', 'pa', '$'),2,0,eig,0
-+low :: +low :: -low,('$', 'qa', 'qa', 'pI', 'pa', '$'),2,0,eig,0
-+low :: +low :: -atr,('$', 'qa', 'qa', 'pI', 'pa', '$'),2,0,eig,0
--high :: +high :: -high,('$', 'qa', 'qa', 'pI', 'pa', '$'),2,0,eig,0
--high :: +high :: +low,('$', 'qa', 'qa', 'pI', 'pa', '$'),2,0,eig,0
--high :: -low :: -high,('$', 'qa', 'qa', 'pI', 'pa', '$'),2,0,eig,0
--high :: -low :: +low,('$', 'qa', 'qa', 'pI', 'pa', '$'),2,0,eig,0
--high :: -atr :: -high,('$', 'qa', 'qa', 'pI', 'pa', '$'),2,0,eig,0
--high :: -atr :: +low,('$', 'qa', 'qa', 'pI', 'pa', '$'),2,0,eig,0
-+low :: +high :: -high,('$', 'qa', 'qa', 'pI', 'pa', '$'),2,0,eig,0
-+low :: +high :: +low,('$', 'qa', 'qa', 'pI', 'pa', '$'),2,0,eig,0
-+low :: -low :: -high,('$', 'qa', 'qa', 'pI', 'pa', '$'),2,0,eig,0
-+low :: -low :: +low,('$', 'qa', 'qa', 'pI', 'pa', '$'),2,0,eig,0
-+low :: -atr :: -high,('$', 'qa', 'qa', 'pI', 'pa', '$'),2,0,eig,0
-+low :: -atr :: +low,('$', 'qa', 'qa', 'pI', 'pa', '$'),2,0,eig,0
-+high :: -high :: +word_boundary,('$', 'qa', 'qa', 'pI', 'pa', '$'),2,0,eig,0
-+high :: +low :: +word_boundary,('$', 'qa', 'qa', 'pI', 'pa', '$'),2,0,eig,0
--low :: -high :: +word_boundary,('$', 'qa', 'qa', 'pI', 'pa', '$'),2,0,eig,0
--low :: +low :: +word_boundary,('$', 'qa', 'qa', 'pI', 'pa', '$'),2,0,eig,0
--atr :: -high :: +word_boundary,('$', 'qa', 'qa', 'pI', 'pa', '$'),2,0,eig,0
--atr :: +low :: +word_boundary,('$', 'qa', 'qa', 'pI', 'pa', '$'),2,0,eig,0

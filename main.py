@@ -159,13 +159,13 @@ def main():
         out_human_evals = open("HoldoutEvals.csv","w",encoding="utf8")
         out_human_evals.write("Step,Run,Strategy,N_INIT,Item,Cost,Source,TestType\n")
     eval_metrics = open("ModelEvalLogs.csv","w",encoding="utf8")
-    eval_metrics.write("ent,good,bad,diff,acc,rej,Step,Run,Strategy,N_Init,IsTI,judgement,proposed_form\n") # including things it queried about
+    eval_metrics.write("ent,good,bad,diff,acc,rej,Step,Run,Strategy,N_Init,IsTI,judgement,proposed_form,entropy_before,entropy_after,entropy_diff\n") # including things it queried about
     for N_INIT in [0]:
-        num_runs = 1 
+        num_runs = 5 
         for run in range(num_runs):
             #for strategy in ["train","entropy","unif","max","std","diff"]: # ,"max","unif","interleave","diff","std"
 #            for strategy in ["", "eig", "unif","train"]: # only train, entropy, eig, and unif are well-defined here
-            for strategy in ["eig"]: # only train, entropy, eig, and unif are well-defined here
+            for strategy in ["eig", "entropy"]: # only train, entropy, eig, and unif are well-defined here
                 print("STRATEGY:", strategy)
                 #if strategy == "train":
                 #    run = 19
@@ -220,7 +220,7 @@ def main():
 
 
 #                for i in range(75-N_INIT):
-                for i in range(20-N_INIT):
+                for i in range(75-N_INIT):
                     print("")
                     print(f"i: {i}")
                     #learner.cost()
@@ -232,8 +232,9 @@ def main():
                     learner.observe(candidate, judgment)
                     entropy_after = entropy(learner.hypotheses[0].probs)
                     print("entropy before: ", entropy_before) 
-                    print("entropy after: ", entropy_after) 
-                    print("information gain:", entropy_before-entropy_after)
+                    print("entropy after: ", entropy_after)
+                    entropy_diff = entropy_before-entropy_after
+                    print("information gain:", entropy_diff)
                     prob_positive = np.exp(learner.hypotheses[0].logprob(candidate, True))
                     prob_negative = np.exp(learner.hypotheses[0].logprob(candidate, False))
                     print("prob positive:", prob_positive)
@@ -306,7 +307,7 @@ def main():
                     for k, v in scores.items():
                         #print(f"{k:8s} {v:.4f}")
                         eval_metrics.write(str(v)+',')
-                    eval_metrics.write(str(N_INIT+i)+','+str(run)+','+str(strategy)+','+str(N_INIT)+","+str(is_ti(str(dataset.vocab.decode(candidate)).replace(",","")))+","+str(judgment)+","+str(dataset.vocab.decode(candidate)).replace(",","")+'\n')
+                    eval_metrics.write(str(N_INIT+i)+','+str(run)+','+str(strategy)+','+str(N_INIT)+","+str(is_ti(str(dataset.vocab.decode(candidate)).replace(",","")))+","+str(judgment)+","+str(dataset.vocab.decode(candidate)).replace(",","")+","+str(entropy_before)+","+str(entropy_after)+","+str(entropy_diff)+'\n')
                     eval_metrics.flush()
 
                     #for feat, cost in learner.top_features():

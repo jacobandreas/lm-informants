@@ -280,7 +280,7 @@ class VBLearner(Learner):
         #print(best[1])
         # Print sorted scores
         sorted_scores = sorted([x for x in scored_candidates], key=lambda tup: tup[1], reverse=True)
-        for c, s in sorted_scores:
+        for c, s in sorted_scores[:5]:
             print(c, s.item())
         return best[0]
 
