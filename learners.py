@@ -281,7 +281,10 @@ class VBLearner(Learner):
         # Print sorted scores
         sorted_scores = sorted([x for x in scored_candidates], key=lambda tup: tup[1], reverse=True)
         for c, s in sorted_scores[:5]:
-            print(c, s.item())
+            try:
+                print(c, s.item())
+            except:
+                pass
         return best[0]
 
 class LogisticLearner(Learner):

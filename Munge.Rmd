@@ -529,8 +529,15 @@ sums %>%
   facet_wrap(~Strategy)+
   theme_bw()
 
-write_csv(sums,"./GridSearch/D_summary.csv")
-ggsave("./GridSearch/D_auc.jpeg") 
+
+sums %>% 
+  #filter(Run == 0) %>% 
+  ggplot(aes(x=Step, y = auc, group = Strategy, color = Strategy, fill = Strategy))+
+  geom_smooth()+
+  #facet_wrap(~Strategy)+
+  theme_bw()
+#write_csv(sums,"./GridSearch/D_summary.csv")
+#ggsave("./GridSearch/D_auc.jpeg") 
 
 
 ```
@@ -565,5 +572,18 @@ a <- read_csv("all_feats_in_data.csv", col_names = F) %>%
   distinct()
 
 write_csv(a,"all_features_in_data_unique.csv")
+```
+
+# now look at info gain
+
+```{r}
+a <- read_csv("ModelEvalLogs.csv") %>% 
+  select(Step,Run,Strategy,N_Init,judgement,entropy_diff) 
+
+a %>% 
+  ggplot(aes(x=Step, y = entropy_diff, color = judgement))+
+  geom_point()+
+  facet_wrap(~Strategy*Run, nrow =4 )+
+  theme_bw()
 ```
 
