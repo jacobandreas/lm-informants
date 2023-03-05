@@ -86,7 +86,7 @@ class MeanFieldScorer: # this is us
 
             posterior = 1 / (1 + np.exp(-log_score))
             new_probs[features[i]] = posterior = np.clip(posterior, 0.000001, 0.999999)
-            if verbose:
+            if verbose and i < 5:
                 print(f"feat: {i}, before: {this_prob}, after: {new_probs[features[i]]} ({new_probs[features[i]]-this_prob})")
 
         #print("extrema", new_probs.max(), new_probs.min(), new_probs.mean())
@@ -105,7 +105,7 @@ class MeanFieldScorer: # this is us
             print(f"Judgment: {judgment}")
 #            print(f"Probs before updating: {orig_probs}")
         #   print("updating!")
-        target_item = False
+        target_item = False 
         if not target_item:
             old_probs = self.probs.copy()
             new_probs = self.update_one_step(seq, judgment, verbose=verbose)
@@ -127,7 +127,8 @@ class MeanFieldScorer: # this is us
             print("error: ", error)
         #print(error)
         tolerance = 0.001
-        if judgment == True or judgment == False: # asymmetric update; if you want asymmetric, comment out after true
+#        if judgment == True or judgment == False: # asymmetric update; if you want asymmetric, comment out after true
+        if judgment == True: 
             while error > tolerance:
                 if not target_item:
                 #print(error)
@@ -238,6 +239,14 @@ class MeanFieldScorer: # this is us
             return feat_entropies.sum()/len(constraint_probs)
         else:
             return feat_entropies.sum()
+
+    def entropy_pred(self, seq):
+        # cost is -log_prob, c is log_prob
+        c = -1 * self.cost(seq)
+        # p is prob
+        p = np.exp(c)
+        ent = -p*np.log(p)-((1-p) * np.log(1-p))
+        return ent 
 
 class LogisticSeqScorer(nn.Module):
     _feature_cache = {}

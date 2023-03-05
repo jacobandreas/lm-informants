@@ -57,7 +57,7 @@ class Learner:
                 return 0
             self.strategy = fn
             self.propose_train = 1
-        elif strategy == "entropy":
+        elif strategy in ["entropy", "entropy_pred"]:
             pass
         elif strategy == "eig":
             pass
@@ -129,7 +129,7 @@ class VBLearner(Learner):
         # entropy over features before seeing
         p = self.hypotheses[0].probs
         # TODO: confirm -1 after sum
-        entropy_over_features_before_observing_item = -1 * ((p * np.log(p) + (1 - p) * np.log(1 - p)).sum())
+        entropy_over_features_before_observing_item = -1 * ((p * np.log(p) + (1 - p) * np.log(1 - p))).sum()
         test_entropy_over_features_before_observing_item = (-1 * (p * np.log(p) + (1 - p) * np.log(1 - p))).sum()
         assert entropy_over_features_before_observing_item > 0
         assert entropy_over_features_before_observing_item == test_entropy_over_features_before_observing_item
@@ -138,24 +138,24 @@ class VBLearner(Learner):
         # entropy over features after seeing if positive
 
         p = self.hypotheses[0].update(seq, True, verbose=False)
-        entropy_over_features_after_observing_item_positive = -1 * ((p * np.log(p) + (1 - p) * np.log(1 - p)).sum())
+        entropy_over_features_after_observing_item_positive = -1 * ((p * np.log(p) + (1 - p) * np.log(1 - p))).sum()
         assert entropy_over_features_after_observing_item_positive > 0
         self.hypotheses[0].probs = orig_probs 
         # reset learner
         # entropy over features after seeing if negative
         p = self.hypotheses[0].update(seq, False, verbose=False)
-        entropy_over_features_after_observing_item_negative = -1 * ((p * np.log(p) + (1 - p) * np.log(1 - p)).sum())
+        entropy_over_features_after_observing_item_negative = -1 * ((p * np.log(p) + (1 - p) * np.log(1 - p))).sum()
         assert entropy_over_features_after_observing_item_negative > 0
         self.hypotheses[0].probs = orig_probs 
         # reset learner
 #        print("learner after fussing around:", self.hypotheses[0].probs)
-        all_equal = (orig_probs== self.hypotheses[0].probs)
+        all_equal = (orig_probs == self.hypotheses[0].probs)
         assert all_equal.all()
 
 
         # either:
-        delta_positive = entropy_over_features_before_observing_item-entropy_over_features_after_observing_item_positive
-        delta_negative = entropy_over_features_before_observing_item-entropy_over_features_after_observing_item_negative
+        delta_positive = (entropy_over_features_before_observing_item-entropy_over_features_after_observing_item_positive)
+        delta_negative = (entropy_over_features_before_observing_item-entropy_over_features_after_observing_item_negative)
         eig = delta_positive*prob_being_positive + delta_negative*prob_being_negative # reduce my entropy
 
         # OR
@@ -266,6 +266,8 @@ class VBLearner(Learner):
                 self.hypotheses[0].entropy(c, length_norm=length_norm)
                 for c in candidates
             ]
+        elif self.strategy_name == "entropy_pred":
+            scores = [self.hypotheses[0].entropy_pred(c) for c in candidates]
         elif self.strategy_name == "unif" or self.propose_train > 0:
             scores = [0 for c in candidates]
         elif self.strategy_name == "eig":
@@ -280,8 +282,9 @@ class VBLearner(Learner):
         #print(best[1])
         # Print sorted scores
         sorted_scores = sorted([x for x in scored_candidates], key=lambda tup: tup[1], reverse=True)
+        print(f"# candidates: {len(sorted_scores)}")
         for c, s in sorted_scores[:5]:
-            print(c, s.item())
+            print(c, s)
         return best[0]
 
 class LogisticLearner(Learner):

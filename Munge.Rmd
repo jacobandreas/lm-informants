@@ -22,7 +22,7 @@ library(pROC)
 library(tidymodels)
 
 
-setwd("G:/My Drive/MIT/Research/lm-informants/")
+setwd("~/Desktop/research/lm-informants")
 
 ```
 
@@ -109,11 +109,26 @@ setwd("G:/My Drive/MIT/Research/lm-informants/")
 
 <!-- ``` -->
 
+```{r}
+
+all_metrics <- read_csv("./ModelEvalLogs.csv")
+
+all_metrics %>%
+  group_by(Step, Strategy) %>%
+  summarise(mean_good = mean(good),
+            mean_change_probs = mean(change_in_probs))
+
+all_metrics %>%
+  ggplot(aes(x = Step, y = change_in_probs, color = Strategy)) +
+    geom_smooth() 
+    #geom_point()
+```
+
 # now do model evals
 
 ```{r}
 
-eval_metrics_ur <- read_csv("./GridSearch/D/ModelEvalLogs.csv") %>% 
+eval_metrics_ur <- read_csv("./ModelEvalLogs.csv") %>% 
   mutate(vowel_skeleton = str_replace_all(proposed_form, "[$\' ()ptkq]","")) %>% 
   mutate(clean_vowels = case_when(
     str_detect(vowel_skeleton, "iI") ~ 0,
@@ -397,7 +412,7 @@ ggsave("./GridSearch/D_feature_discovery.jpeg")
 look at the model characteristics over time
 
 ```{r}
-chars <- read_csv("./GridSearch/A/ModelEvalLogs.csv") %>% 
+chars <- read_csv("./ModelEvalLogs.csv") %>% 
   mutate(IsAccepted = if_else(judgement == FALSE, 0, 1),
          IsRejected = if_else(judgement == TRUE, 0,1)) %>% 
   group_by(Run,Strategy,N_Init) %>% 
@@ -539,7 +554,7 @@ ggsave("./GridSearch/D_auc.jpeg")
 now the narrow set
 
 ```{r}
-narrow_test_set <- read_csv("./GridSearch/E/HoldoutEvals.csv") %>% 
+narrow_test_set <- read_csv("./HoldoutEvals.csv") %>% 
   filter(TestType != "BroadTest") %>% 
     mutate(Length = str_count(Item, " ")+1) 
 
