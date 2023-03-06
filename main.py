@@ -120,7 +120,7 @@ def main(args):
         prior_probs_writer.writerow(["Word", "ProbAcceptable"])
     if write_out_feat_probs:
         feat_evals = get_out_file("FeatureProbs.csv", args.exp_dir)
-        feat_evals.write("N_Init, feature, cost, Step, Candidate, Judgment, Strategy, IsTI, Run\n")
+        feat_evals.write("N_Init,feature,cost,Step,Candidate,Judgment,Strategy, IsTI,Run\n")
     if eval_humans:
         narrow_test_set_t = read_in_blicks("TI_test.csv")
         narrow_test_set = []
@@ -183,7 +183,7 @@ def main(args):
     eval_metrics = get_out_file("ModelEvalLogs.csv", args.exp_dir)
     eval_metrics.write("ent,good,bad,diff,acc,rej,Step,Run,Strategy,N_Init,IsTI,judgement,proposed_form,entropy_before,entropy_after,entropy_diff,change_in_probs\n") # including things it queried about
     for N_INIT in [0]:
-        num_runs = 15
+        num_runs = 5
         for run in range(num_runs):
             #for strategy in ["train","entropy","unif","max","std","diff"]: # ,"max","unif","interleave","diff","std"
 #            for strategy in ["", "eig", "unif","train"]: # only train, entropy, eig, and unif are well-defined here

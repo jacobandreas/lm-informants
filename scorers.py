@@ -47,7 +47,11 @@ class BilinearScorer:
 class MeanFieldScorer: # this is us
     def __init__(self, dataset):
         self.ORDER = 3
-        self.LOG_LOG_ALPHA_RATIO = 45 # 45 is what Jacob set # was 500
+#        self.LOG_LOG_ALPHA_RATIO = 45 # 45 is what Jacob set # was 500
+#        alpha = 0.9999999999999999
+#        self.LOG_LOG_ALPHA_RATIO = np.log(np.log(alpha/(1-alpha))) # 45 is what Jacob set # was 500
+        self.LOG_LOG_ALPHA_RATIO = 45 
+        print("log log alpha ratio: ", self.LOG_LOG_ALPHA_RATIO)
         self.dataset = dataset
         self.phoneme_features, self.feature_vocab = _load_phoneme_features(dataset)
         self.ngram_features = {}
@@ -67,13 +71,16 @@ class MeanFieldScorer: # this is us
             this_prob = constraint_probs[i]
             other_probs = np.concatenate([constraint_probs[:i], constraint_probs[i+1:]])
             log_p_others = np.log(1-other_probs).sum()
+            p_others = (1-other_probs).prod()
             if judgment:
                 # frac satisfying if off is prob that the others are all off
                 # frac satisfying if on is 0
                 log_score = (
                     np.log(this_prob) - np.log(1-this_prob)
                     - np.exp(min(log_p_others + self.LOG_LOG_ALPHA_RATIO, clip_val))
+#                    - p_others * np.exp(self.LOG_LOG_ALPHA_RATIO)
                 )
+                log_score = -10000 
 
             else:
                 # frac satifying if off is prob that any other is on
@@ -81,6 +88,7 @@ class MeanFieldScorer: # this is us
                 log_score = (
                     np.log(this_prob) - np.log(1-this_prob)
                     + np.exp(min(log_p_others + self.LOG_LOG_ALPHA_RATIO, clip_val))
+#                    + p_others * np.exp(self.LOG_LOG_ALPHA_RATIO)
                 )
             log_score = np.clip(log_score, -clip_val, clip_val)
 
@@ -93,6 +101,9 @@ class MeanFieldScorer: # this is us
                     print(f"feat: {i}, before: {this_prob.round(3)}, after: {(new_prob).round(3)} ({(change).round(3)})")
                     print(f" | before sigmoid: {log_score}")
                     print(f" | prior terms: {np.log(this_prob) - np.log(1-this_prob)}")
+                    print(f" | p others: {p_others}")
+                    print(f" | log p others: {log_p_others}")
+                    print(f" | log alpha: {np.exp(self.LOG_LOG_ALPHA_RATIO)}")
                     print(f" | m term unclipped: {np.exp((log_p_others + self.LOG_LOG_ALPHA_RATIO))}")
                     print(f" | m term: {np.exp(min(log_p_others + self.LOG_LOG_ALPHA_RATIO, clip_val))}")
 
@@ -136,6 +147,7 @@ class MeanFieldScorer: # this is us
         tolerance = 0.001
 #        if judgment == True or judgment == False: # asymmetric update; if you want asymmetric, comment out after true
         if judgment == True: 
+#        if False:
             while error > tolerance:
                 if not target_item:
                 #print(error)
