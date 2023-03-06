@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 
 import datasets
+import os
 import informants
 import learners
 import scorers
-
+import argparse
+import pandas as pd
 import json
 import numpy as np
 import itertools as it
@@ -12,6 +14,7 @@ from tqdm import tqdm
 from AnalyzeSyntheticData import is_ti
 
 from util import entropy
+import csv
 
 N_EVAL = 50
 BOUNDARY = "$"
@@ -20,6 +23,9 @@ np.random.seed(0)
 
 #@profile
 
+def get_broad_annotations():
+    df = pd.read_csv("broad_test_set_annotated.csv") 
+    return dict(zip(df.Word, df.IsLicit)), dict(zip(df.Word, df.IsTI))
 
 def evaluate(dataset, informant, learner):
     random = np.random.RandomState(0)
@@ -83,8 +89,18 @@ def read_in_blicks(path_to_wugs):
     #print("returning blicks", intext,"from path",path_to_wugs)
     return [item.split(' ') for item in intext]
 
+def get_out_file(file_name, out_dir):
+    if not os.path.exists(out_dir):
+        os.makedirs(out_dir)
+    return open(os.path.join(out_dir, file_name), "w", encoding='utf8', buffering=1)
+
+def get_csv_writer(file_name, out_dir):
+    f = get_out_file(file_name, out_dir)
+    writer = csv.writer(f, delimiter=",")
+    return writer 
+
 #@profile
-def main():
+def main(args):
     list_of_words_to_get_features_from = open("all_sylls.csv","r").read().split('\n')
     list_of_words_to_get_features_from = [i for i in list_of_words_to_get_features_from if i]
     print(list_of_words_to_get_features_from)
@@ -93,18 +109,18 @@ def main():
     eval_humans = True
     write_out_feat_probs = True
     get_prior_prob_of_test_set = True
-    feature_query_log = open("feature_query_log.csv","w",encoding='utf8')
+    feature_query_log = get_out_file("feature_query_log.csv", args.exp_dir) 
     feature_query_log.write("Feature,Candidate,Step,N_Init,Strategy,Run\n")
-    alL_features_log = open("all_features_log.csv","w",encoding='utf8')
+    alL_features_log = get_out_file("all_features_log.csv", args.exp_dir) 
     dataset = datasets.load_atr_harmony()
 
     random = np.random.RandomState(0)
     if get_prior_prob_of_test_set:
-        prior_probs = open("prior_probabilities_of_test_set_items.csv","w",encoding="utf8")
-        prior_probs.write("Word,ProbAcceptable\n")
+        prior_probs_writer = get_csv_writer("prior_probabilities_of_test_set_items.csv", args.exp_dir)
+        prior_probs_writer.writerow(["Word", "ProbAcceptable"])
     if write_out_feat_probs:
-        feat_evals = open("FeatureProbs.csv","w",encoding="utf8")
-        feat_evals.write("N_Init, feature, cost, Step, Candidate, Judgment, Strategy, IsTI, Run\n")
+        feat_evals = get_out_file("FeatureProbs.csv", args.exp_dir)
+        feat_evals.write("N_Init,feature,cost,Step,Candidate,Judgment,Strategy, IsTI,Run\n")
     if eval_humans:
         narrow_test_set_t = read_in_blicks("TI_test.csv")
         narrow_test_set = []
@@ -121,6 +137,10 @@ def main():
             # print(phonemes,"is phonemes")
             encoded_word = dataset.vocab.encode(phonemes)  # expects a list of arpabet chars
             broad_test_set.append((item, encoded_word))
+
+        broad_licit_annotations, broad_TI_annotations = get_broad_annotations()
+      
+        
         # good_dataset_t = read_in_blicks("./data/Blicks/hw_holdout_good.txt")
         # good_dataset = []
         # for item in good_dataset_t:
@@ -156,10 +176,12 @@ def main():
 
     logs = {}
     if eval_humans:
-        out_human_evals = open("HoldoutEvals.csv","w",encoding="utf8")
+        out_human_evals = get_out_file("HoldoutEvals.csv", args.exp_dir) 
         out_human_evals.write("Step,Run,Strategy,N_INIT,Item,Cost,Source,TestType\n")
-    eval_metrics = open("ModelEvalLogs.csv","w",encoding="utf8")
-    eval_metrics.write("ent,good,bad,diff,acc,rej,Step,Run,Strategy,N_Init,IsTI,judgement,proposed_form,entropy_before,entropy_after,entropy_diff\n") # including things it queried about
+        broad_human_evals_writer = get_csv_writer("BroadHoldoutEvals.csv", args.exp_dir) 
+        broad_human_evals_writer.writerow(["Step", "Run", "Strategy", "N_INIT", "Items", "Costs", "IsLicit", "IsTI"])
+    eval_metrics = get_out_file("ModelEvalLogs.csv", args.exp_dir)
+    eval_metrics.write("ent,good,bad,diff,acc,rej,Step,Run,Strategy,N_Init,IsTI,judgement,proposed_form,entropy_before,entropy_after,entropy_diff,change_in_probs\n") # including things it queried about
     for N_INIT in [0]:
         num_runs = 10
         for run in range(num_runs):
@@ -214,7 +236,7 @@ def main():
                         #print(broad_test_set_t[i])# human readible item
                         c = np.exp(learner.hypotheses[0].logprob(broad_test_set[i][1],True,length_norm=False))
 # this can't be, b/c we're interested in the actual prob
-                        prior_probs.write(str(broad_test_set_t[i]).replace(","," ")+','+str(c)+'\n')
+                        prior_probs_writer.writerow([str(broad_test_set_t[i]).replace(","," "), str(c)])
                     get_prior_prob_of_test_set = False
                 #assert False
 
@@ -223,18 +245,23 @@ def main():
                 for i in range(75-N_INIT):
                     print("")
                     print(f"i: {i}")
+                    step=N_INIT+i
                     #learner.cost()
                     candidate = learner.propose(n_candidates=100, forbidden_data = forbidden_data_that_cannot_be_queried_about, length_norm=True)
                     judgment = informant.judge(candidate)
                     #prior_probability_of_accept = learner.cost(candidate)
 
                     entropy_before = entropy(learner.hypotheses[0].probs)
+                    probs_before = learner.hypotheses[0].probs.copy()
                     learner.observe(candidate, judgment)
+                    probs_after = learner.hypotheses[0].probs.copy()
                     entropy_after = entropy(learner.hypotheses[0].probs)
+                    change_in_probs = np.linalg.norm(probs_after-probs_before)
                     print("entropy before: ", entropy_before) 
                     print("entropy after: ", entropy_after)
                     entropy_diff = entropy_before-entropy_after
                     print("information gain:", entropy_diff)
+                    print("change in probs (norm):", change_in_probs)
                     prob_positive = np.exp(learner.hypotheses[0].logprob(candidate, True))
                     prob_negative = np.exp(learner.hypotheses[0].logprob(candidate, False))
                     print("prob positive:", prob_positive)
@@ -295,7 +322,7 @@ def main():
                     #print(len(total_features_2),total_features_2)
                     #print("here are all the features")
                     for thing in total_features_2:
-                        feature_query_log.write(str(thing)+','+str(dataset.vocab.decode(candidate))+","+str(N_INIT+i)+","+str(N_INIT)+","+str(strategy)+","+str(run)+"\n")
+                        feature_query_log.write(str(thing)+','+str(dataset.vocab.decode(candidate))+","+str(step)+","+str(N_INIT)+","+str(strategy)+","+str(run)+"\n")
                     if write_out_all_features_first_time == False:
                         for thing in total_features:
                             alL_features_log.write(str(thing)+"\n")
@@ -307,7 +334,7 @@ def main():
                     for k, v in scores.items():
                         #print(f"{k:8s} {v:.4f}")
                         eval_metrics.write(str(v)+',')
-                    eval_metrics.write(str(N_INIT+i)+','+str(run)+','+str(strategy)+','+str(N_INIT)+","+str(is_ti(str(dataset.vocab.decode(candidate)).replace(",","")))+","+str(judgment)+","+str(dataset.vocab.decode(candidate)).replace(",","")+","+str(entropy_before)+","+str(entropy_after)+","+str(entropy_diff)+'\n')
+                    eval_metrics.write(str(step)+','+str(run)+','+str(strategy)+','+str(N_INIT)+","+str(is_ti(str(dataset.vocab.decode(candidate)).replace(",","")))+","+str(judgment)+","+str(dataset.vocab.decode(candidate)).replace(",","")+","+str(entropy_before)+","+str(entropy_after)+","+str(entropy_diff)+","+str(change_in_probs)+'\n')
                     eval_metrics.flush()
 
                     #for feat, cost in learner.top_features():
@@ -315,7 +342,7 @@ def main():
                     #print()
                     if write_out_feat_probs:
                         for cost, feat in learner.all_features():
-                            feat_evals.write(str(N_INIT)+","+str(feat)+','+str(cost)+","+str(N_INIT+i)+","+str(dataset.vocab.decode(candidate)).replace(",","")+","+str(judgment)+","+str(strategy)+","+str(is_ti(str(dataset.vocab.decode(candidate)).replace(",","")))+','+str(run)+ '\n')
+                            feat_evals.write(str(N_INIT)+","+str(feat)+','+str(cost)+","+str(step)+","+str(dataset.vocab.decode(candidate)).replace(",","")+","+str(judgment)+","+str(strategy)+","+str(is_ti(str(dataset.vocab.decode(candidate)).replace(",","")))+','+str(run)+ '\n')
                             feat_evals.flush()
                     # "ent,good,bad,diff,acc,rej,Step,Run,Strategy,N_Init\n"
 #
@@ -326,15 +353,29 @@ def main():
                             c = learner.cost(encoded_word)
                             #j = informant.cost(encoded_word)
                             #corral_of_judged_human_forms.append((item,c))
-                            out_human_evals.write(str(N_INIT+i)+','+str(run)+','+str(strategy)+','+str(N_INIT)+","+str(" ".join(item))+","+str(c)+","+str("LEARNER")+",NarrowTest"+'\n')
+                            str_item = " ".join(item)
+                            out_human_evals.write(str(step)+','+str(run)+','+str(strategy)+','+str(N_INIT)+","+str_item+","+str(c)+","+str("LEARNER")+",NarrowTest"+'\n')
                             out_human_evals.flush()
 
-                        for item, encoded_word in broad_test_set:
+                        items, labels, TIs, costs = [], [], [], []
+                        for item_idx, (item, encoded_word) in enumerate(broad_test_set):
                             c = learner.cost(encoded_word)
+                            if item_idx == 0:
+                                print(f"item {item_idx}: {item}; cost: {c}")
+                            costs.append(c)
                             #j = informant.cost(encoded_word)
                             #corral_of_judged_human_forms.append((item,c))
-                            out_human_evals.write(str(N_INIT+i)+','+str(run)+','+str(strategy)+','+str(N_INIT)+","+str(" ".join(item))+","+str(c)+","+str("LEARNER")+",BroadTest"+'\n')
+                            str_item = " ".join(item)
+                            out_human_evals.write(str(step)+','+str(run)+','+str(strategy)+','+str(N_INIT)+","+str_item+","+str(c)+","+str("LEARNER")+",BroadTest"+'\n')
+                            isLicit = int(broad_licit_annotations[str_item])
+                            isTI = int(broad_TI_annotations[str_item])
+                            labels.append(isLicit)
+                            items.append(str_item)
+                            TIs.append(isTI)
+                            
                             out_human_evals.flush()
+                        broad_human_evals_writer.writerow([step, run, strategy, N_INIT, items, costs, labels, TIs])
+                        print(f"avg cost for broad test set: {np.mean(costs)}")
 
                     #scores["external_wugs"] = corral_of_judged_human_forms
                     scores["step"] = N_INIT + i
@@ -353,4 +394,9 @@ def main():
                     json.dump(logs, writer)
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--exp_dir", type=str, default="./")
+
+    args = parser.parse_args()
+
+    main(args)
