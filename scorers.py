@@ -61,7 +61,7 @@ class MeanFieldScorer: # this is us
         constraint_probs = self.probs[features]
         new_probs = self.probs.copy()
 
-        clip_val = 10
+        clip_val = 10 
 
         for i in range(len(features)):
             this_prob = constraint_probs[i]
@@ -86,8 +86,15 @@ class MeanFieldScorer: # this is us
 
             posterior = 1 / (1 + np.exp(-log_score))
             new_probs[features[i]] = posterior = np.clip(posterior, 0.000001, 0.999999)
-            if verbose and i < 5:
-                print(f"feat: {i}, before: {this_prob}, after: {new_probs[features[i]]} ({new_probs[features[i]]-this_prob})")
+            if verbose:
+                new_prob = new_probs[features[i]]
+                change = new_prob-this_prob
+                if abs(change) > 0.0001:
+                    print(f"feat: {i}, before: {this_prob.round(3)}, after: {(new_prob).round(3)} ({(change).round(3)})")
+                    print(f" | before sigmoid: {log_score}")
+                    print(f" | prior terms: {np.log(this_prob) - np.log(1-this_prob)}")
+                    print(f" | m term unclipped: {np.exp((log_p_others + self.LOG_LOG_ALPHA_RATIO))}")
+                    print(f" | m term: {np.exp(min(log_p_others + self.LOG_LOG_ALPHA_RATIO, clip_val))}")
 
         #print("extrema", new_probs.max(), new_probs.min(), new_probs.mean())
 

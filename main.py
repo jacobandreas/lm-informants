@@ -92,7 +92,12 @@ def read_in_blicks(path_to_wugs):
 def get_out_file(file_name, out_dir):
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
-    return open(os.path.join(out_dir, file_name), "w", encoding='utf8')
+    return open(os.path.join(out_dir, file_name), "w", encoding='utf8', buffering=1)
+
+def get_csv_writer(file_name, out_dir):
+    f = get_out_file(file_name, out_dir)
+    writer = csv.writer(f, delimiter=",")
+    return writer 
 
 #@profile
 def main(args):
@@ -111,8 +116,8 @@ def main(args):
 
     random = np.random.RandomState(0)
     if get_prior_prob_of_test_set:
-        prior_probs = get_out_file("prior_probabilities_of_test_set_items.csv", args.exp_dir)
-        prior_probs.write("Word,ProbAcceptable\n")
+        prior_probs_writer = get_csv_writer("prior_probabilities_of_test_set_items.csv", args.exp_dir)
+        prior_probs_writer.writerow(["Word", "ProbAcceptable"])
     if write_out_feat_probs:
         feat_evals = get_out_file("FeatureProbs.csv", args.exp_dir)
         feat_evals.write("N_Init, feature, cost, Step, Candidate, Judgment, Strategy, IsTI, Run\n")
@@ -173,8 +178,7 @@ def main(args):
     if eval_humans:
         out_human_evals = get_out_file("HoldoutEvals.csv", args.exp_dir) 
         out_human_evals.write("Step,Run,Strategy,N_INIT,Item,Cost,Source,TestType\n")
-        broad_human_evals = get_out_file("BroadHoldoutEvals.csv", args.exp_dir) 
-        broad_human_evals_writer = csv.writer(broad_human_evals, delimiter=",")
+        broad_human_evals_writer = get_csv_writer("BroadHoldoutEvals.csv", args.exp_dir) 
         broad_human_evals_writer.writerow(["Step", "Run", "Strategy", "N_INIT", "Items", "Costs", "IsLicit", "IsTI"])
     eval_metrics = get_out_file("ModelEvalLogs.csv", args.exp_dir)
     eval_metrics.write("ent,good,bad,diff,acc,rej,Step,Run,Strategy,N_Init,IsTI,judgement,proposed_form,entropy_before,entropy_after,entropy_diff,change_in_probs\n") # including things it queried about
@@ -183,7 +187,7 @@ def main(args):
         for run in range(num_runs):
             #for strategy in ["train","entropy","unif","max","std","diff"]: # ,"max","unif","interleave","diff","std"
 #            for strategy in ["", "eig", "unif","train"]: # only train, entropy, eig, and unif are well-defined here
-            for strategy in ["eig", "entropy", "train", "unif"]: # only train, entropy, eig, and unif are well-defined here
+            for strategy in ["eig", "entropy_pred", "entropy", "train", "unif"]: # only train, entropy, eig, and unif are well-defined here
                 print("\n\nstarting run for strategy:", strategy)
                 #if strategy == "train":
                 #    run = 19
@@ -232,7 +236,7 @@ def main(args):
                         #print(broad_test_set_t[i])# human readible item
                         c = np.exp(learner.hypotheses[0].logprob(broad_test_set[i][1],True,length_norm=False))
 # this can't be, b/c we're interested in the actual prob
-                        prior_probs.write(str(broad_test_set_t[i]).replace(","," ")+','+str(c)+'\n')
+                        prior_probs_writer.writerow([str(broad_test_set_t[i]).replace(","," "), str(c)])
                     get_prior_prob_of_test_set = False
                 #assert False
 
@@ -371,7 +375,6 @@ def main(args):
                             
                             out_human_evals.flush()
                         broad_human_evals_writer.writerow([step, run, strategy, N_INIT, items, costs, labels, TIs])
-                        broad_human_evals.flush()
                         print(f"avg cost for broad test set: {np.mean(costs)}")
 
                     #scores["external_wugs"] = corral_of_judged_human_forms
