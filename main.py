@@ -183,12 +183,12 @@ def main(args):
     eval_metrics = get_out_file("ModelEvalLogs.csv", args.exp_dir)
     eval_metrics.write("ent,good,bad,diff,acc,rej,Step,Run,Strategy,N_Init,IsTI,judgement,proposed_form,entropy_before,entropy_after,entropy_diff,change_in_probs\n") # including things it queried about
     for N_INIT in [0]:
-        num_runs = 5
+        num_runs = 10
         for run in range(num_runs):
             #for strategy in ["train","entropy","unif","max","std","diff"]: # ,"max","unif","interleave","diff","std"
 #            for strategy in ["", "eig", "unif","train"]: # only train, entropy, eig, and unif are well-defined here
-            for strategy in ["eig", "entropy_pred", "entropy", "train", "unif"]: # only train, entropy, eig, and unif are well-defined here
-                print("\n\nstarting run for strategy:", strategy)
+            for strategy in ["train","unif","eig", "entropy"]: # only train, entropy, eig, and unif are well-defined here
+                print("STRATEGY:", strategy)
                 #if strategy == "train":
                 #    run = 19
                 index_of_next_item = 0
