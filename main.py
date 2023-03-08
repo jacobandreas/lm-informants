@@ -112,6 +112,9 @@ def main(args):
     feature_query_log = get_out_file("feature_query_log.csv", args.exp_dir) 
     feature_query_log.write("Feature,Candidate,Step,N_Init,Strategy,Run\n")
     alL_features_log = get_out_file("all_features_log.csv", args.exp_dir) 
+#    temp_dataset = datasets.load_atr_harmony()
+#    dataset = datasets.load_manual()
+#    dataset.vocab = temp_dataset.vocab
     dataset = datasets.load_atr_harmony()
 
     random = np.random.RandomState(0)
@@ -182,6 +185,8 @@ def main(args):
         broad_human_evals_writer.writerow(["Step", "Run", "Strategy", "N_INIT", "Items", "Costs", "IsLicit", "IsTI"])
     eval_metrics = get_out_file("ModelEvalLogs.csv", args.exp_dir)
     eval_metrics.write("ent,good,bad,diff,acc,rej,Step,Run,Strategy,N_Init,IsTI,judgement,proposed_form,entropy_before,entropy_after,entropy_diff,change_in_probs\n") # including things it queried about
+    results_by_observations_writer = get_csv_writer("ResultsByObservations.csv", args.exp_dir)
+    results_by_observations_writer.writerow(["Step", "Run", "strategy", "candidate", "judgment", "new_probs", "log_p_others", "update_unclipped", "update_clipped"])
     for N_INIT in [0]:
         num_runs = 10
         for run in range(num_runs):
@@ -254,6 +259,9 @@ def main(args):
                     entropy_before = entropy(learner.hypotheses[0].probs)
                     probs_before = learner.hypotheses[0].probs.copy()
                     learner.observe(candidate, judgment)
+                    last_result = learner.results_by_observations[-1] 
+                    last_result_DL = {k: [dic[k] for dic in last_result] for k in last_result[0]}
+                    results_by_observations_writer.writerow([i, run, strategy, dataset.vocab.decode(candidate), judgment, last_result_DL["new_probs"], last_result_DL["log_p_others"], last_result_DL["update_unclipped"], last_result_DL["update_clipped"]])
                     probs_after = learner.hypotheses[0].probs.copy()
                     entropy_after = entropy(learner.hypotheses[0].probs)
                     change_in_probs = np.linalg.norm(probs_after-probs_before)

@@ -104,6 +104,7 @@ class Learner:
 class VBLearner(Learner):
     def __init__(self, dataset, strategy, linear_train_dataset,index_of_next_item):
         super().__init__(dataset, strategy, linear_train_dataset, index_of_next_item )
+        self.results_by_observations = []
 
     def initialize_hyp(self):
         return scorers.MeanFieldScorer(self.dataset)
@@ -112,7 +113,8 @@ class VBLearner(Learner):
         assert len(self.hypotheses) == 1
         assert update
         self.observations.append((seq, judgment))
-        self.hypotheses[0].update(seq, judgment)
+        _, results = self.hypotheses[0].update(seq, judgment)
+        self.results_by_observations.append(results)
 
     # TODO: only consider features in sequene as in scorer.entropy()? (Should be equivalent bc probs for features not in seq won't change?)
     def get_eig(self, seq):
@@ -137,13 +139,13 @@ class VBLearner(Learner):
 
         # entropy over features after seeing if positive
 
-        p = self.hypotheses[0].update(seq, True, verbose=False)
+        p, _ = self.hypotheses[0].update(seq, True, verbose=False)
         entropy_over_features_after_observing_item_positive = -1 * ((p * np.log(p) + (1 - p) * np.log(1 - p))).sum()
         assert entropy_over_features_after_observing_item_positive > 0
         self.hypotheses[0].probs = orig_probs 
         # reset learner
         # entropy over features after seeing if negative
-        p = self.hypotheses[0].update(seq, False, verbose=False)
+        p, _ = self.hypotheses[0].update(seq, False, verbose=False)
         entropy_over_features_after_observing_item_negative = -1 * ((p * np.log(p) + (1 - p) * np.log(1 - p))).sum()
         assert entropy_over_features_after_observing_item_negative > 0
         self.hypotheses[0].probs = orig_probs 
@@ -180,12 +182,12 @@ class VBLearner(Learner):
 
         # entropy over features after seeing if positive
 
-        p = self.hypotheses[0].update(seq, True)
+        p, _ = self.hypotheses[0].update(seq, True)
         entropy_over_features_after_observing_item_positive = ((p * np.log(p) + (1 - p) * np.log(1 - p)).sum())
         self.hypotheses[0] = learner_before_fussing_around
         # reset learner
         # entropy over features after seeing if negative
-        p = self.hypotheses[0].update(seq, False)
+        p, _ = self.hypotheses[0].update(seq, False)
         entropy_over_features_after_observing_item_negative = ((p * np.log(p) + (1 - p) * np.log(1 - p)).sum())
         self.hypotheses[0] = learner_before_fussing_around
         # reset learner

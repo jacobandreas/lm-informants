@@ -50,7 +50,7 @@ class MeanFieldScorer: # this is us
 #        self.LOG_LOG_ALPHA_RATIO = 45 # 45 is what Jacob set # was 500
 #        alpha = 0.9999999999999999
 #        self.LOG_LOG_ALPHA_RATIO = np.log(np.log(alpha/(1-alpha))) # 45 is what Jacob set # was 500
-        self.LOG_LOG_ALPHA_RATIO = 45 
+        self.LOG_LOG_ALPHA_RATIO = 1 
         print("log log alpha ratio: ", self.LOG_LOG_ALPHA_RATIO)
         self.dataset = dataset
         self.phoneme_features, self.feature_vocab = _load_phoneme_features(dataset)
@@ -110,10 +110,19 @@ class MeanFieldScorer: # this is us
         #print("extrema", new_probs.max(), new_probs.min(), new_probs.mean())
 
         self.probs = new_probs
-
-        return new_probs
+        sign = int(judgment) * -1 # add if judgment is False, subtract if True
+        update_unclipped = sign * np.exp(min(log_p_others + self.LOG_LOG_ALPHA_RATIO, clip_val))
+        update_clipped = sign * np.exp(log_p_others + self.LOG_LOG_ALPHA_RATIO)
+        results = {
+                "new_probs": new_probs, 
+                "log_p_others": log_p_others, 
+                "update_unclipped": update_unclipped, 
+                "update_clipped": update_clipped,} 
+        return results 
 
     def update(self, seq, judgment, verbose=True):
+        results = []
+
         orig_probs = self.probs.copy()
         if verbose:
             features = self._featurize(seq).nonzero()[0]
@@ -126,11 +135,15 @@ class MeanFieldScorer: # this is us
         target_item = False 
         if not target_item:
             old_probs = self.probs.copy()
-            new_probs = self.update_one_step(seq, judgment, verbose=verbose)
+            step_results = self.update_one_step(seq, judgment, verbose=verbose)
+            results.append(step_results)
+            new_probs = step_results["new_probs"]
             difference_vector = np.subtract(new_probs, old_probs)
         else:
             old_cost = self.logprob(seq, judgment)
-            new_probs = self.update_one_step(seq, judgment, verbose=verbose)
+            step_results = self.update_one_step(seq, judgment, verbose=verbose)
+            results.append(step_results)
+            new_probs = step_results["new_probs"]
             new_cost = self.logprob(seq, judgment)
 
 
@@ -145,22 +158,26 @@ class MeanFieldScorer: # this is us
             print("error: ", error)
         #print(error)
         tolerance = 0.001
-#        if judgment == True or judgment == False: # asymmetric update; if you want asymmetric, comment out after true
-        if judgment == True: 
+        if judgment == True or judgment == False: # asymmetric update; if you want asymmetric, comment out after true
+#        if judgment == True: 
 #        if False:
             while error > tolerance:
                 if not target_item:
                 #print(error)
                 #print(old_probs)
                     old_probs = new_probs.copy()
-                    new_probs = self.update_one_step(seq, judgment, verbose=verbose)
+                    step_results = self.update_one_step(seq, judgment, verbose=verbose)
+                    new_probs = step_results["new_probs"]
+                    results.append(step_results)
                     difference_vector = np.absolute(np.subtract(new_probs, old_probs))
                     error = abs(difference_vector).sum()
                     #print(error)
                     #print(new_probs)
                 else:
                     old_cost = new_cost
-                    new_probs = self.update_one_step(seq, judgment, verbose=verbose)
+                    step_results = self.update_one_step(seq, judgment, verbose=verbose)
+                    new_probs = step_results["new_probs"]
+                    results.append(step_results)
                     new_cost = self.logprob(seq, judgment)
 
                     difference_vector = np.subtract(new_cost, old_cost)
@@ -175,7 +192,7 @@ class MeanFieldScorer: # this is us
             feature_prob_changes = new_probs[features]-orig_probs[features]
             print(f"Update in probs of features in seq (new-orig): \n{(feature_prob_changes).round(5)}")
             print(f"Num updates: {num_updates}")
-        return new_probs
+        return new_probs, results
 
         #
         # features = self._featurize(seq).nonzero()[0]
