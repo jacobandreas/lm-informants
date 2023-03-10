@@ -466,7 +466,7 @@ want to predict IsLicit from Cost for each Step/Strategy/Run/N_Init
 
 sums <- heldout_combined %>% 
   #group_by(Strategy,Step,Run) %>% 
-  #crossv_kfold(10) #%>%
+  #crossv_kfold(10) %>%
   # mutate(model = purrr::map(train, ~glm(IsLicit ~ Cost, data=., family=binomial))) %>% 
   # unnest( fitted = map2(model, test, ~augment(.x, newdata = .y)),
   #         pred = map2( model, test, ~predict( .x, .y, type = "response")) ) %>%
@@ -537,6 +537,7 @@ a %>%
 
 ```{r}
 prob_logs <- read_csv("ResultsByObservations.csv")
+
 ```
 
 

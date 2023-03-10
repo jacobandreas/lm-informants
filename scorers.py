@@ -50,7 +50,7 @@ class MeanFieldScorer: # this is us
 #        self.LOG_LOG_ALPHA_RATIO = 45 # 45 is what Jacob set # was 500
 #        alpha = 0.9999999999999999
 #        self.LOG_LOG_ALPHA_RATIO = np.log(np.log(alpha/(1-alpha))) # 45 is what Jacob set # was 500
-        self.LOG_LOG_ALPHA_RATIO = 1 
+        self.LOG_LOG_ALPHA_RATIO = .1
         print("log log alpha ratio: ", self.LOG_LOG_ALPHA_RATIO)
         self.dataset = dataset
         self.phoneme_features, self.feature_vocab = _load_phoneme_features(dataset)
@@ -63,8 +63,8 @@ class MeanFieldScorer: # this is us
         features = self._featurize(seq).nonzero()[0]
         #print(features,"are the features in ",seq)
         constraint_probs = self.probs[features]
-        new_probs = self.probs.copy()
-
+        #new_probs = self.probs.copy()
+        new_probs = copy.deepcopy(self.probs)
         clip_val = 10 
 
         for i in range(len(features)):
@@ -123,7 +123,8 @@ class MeanFieldScorer: # this is us
     def update(self, seq, judgment, verbose=True):
         results = []
 
-        orig_probs = self.probs.copy()
+        orig_probs = copy.deepcopy(self.probs)
+
         if verbose:
             features = self._featurize(seq).nonzero()[0]
             print(f"seq: {seq}")
@@ -134,13 +135,13 @@ class MeanFieldScorer: # this is us
         #   print("updating!")
         target_item = False 
         if not target_item:
-            old_probs = self.probs.copy()
+            old_probs = copy.deepcopy(self.probs)
             step_results = self.update_one_step(seq, judgment, verbose=verbose)
             results.append(step_results)
             new_probs = step_results["new_probs"]
             difference_vector = np.subtract(new_probs, old_probs)
         else:
-            old_cost = self.logprob(seq, judgment)
+            old_cost = copy.deepcopy(self.logprob(seq, judgment))
             step_results = self.update_one_step(seq, judgment, verbose=verbose)
             results.append(step_results)
             new_probs = step_results["new_probs"]
@@ -165,7 +166,7 @@ class MeanFieldScorer: # this is us
                 if not target_item:
                 #print(error)
                 #print(old_probs)
-                    old_probs = new_probs.copy()
+                    old_probs = copy.deepcopy(new_probs)
                     step_results = self.update_one_step(seq, judgment, verbose=verbose)
                     new_probs = step_results["new_probs"]
                     results.append(step_results)
@@ -174,7 +175,7 @@ class MeanFieldScorer: # this is us
                     #print(error)
                     #print(new_probs)
                 else:
-                    old_cost = new_cost
+                    old_cost = copy.deepcopy(new_cost)
                     step_results = self.update_one_step(seq, judgment, verbose=verbose)
                     new_probs = step_results["new_probs"]
                     results.append(step_results)
