@@ -26,89 +26,6 @@ setwd("~/Desktop/research/lm-informants")
 
 ```
 
-
-
-<!-- ```{r} -->
-<!-- words <- read_csv("WordsAndScores.csv") -->
-<!-- scores <- read_csv("HumanEvalLogs.csv") %>%  -->
-<!--   rename(Word = Item) -->
-
-<!-- oracle <- scores %>%  -->
-<!--   filter(Source == "JUDGE")  -->
-
-<!-- learner <- scores %>%  -->
-<!--   filter(Source == "LEARNER") -->
-
-<!-- full <- left_join(words,learner, by = "Word") %>%  -->
-<!--   distinct() %>%  -->
-<!--   rename(Source = Source.x) -->
-
-<!-- oracles <- left_join(words,oracle,by = "Word") %>%  -->
-<!--   distinct() %>%  -->
-<!--   rename(Source = Source.x) %>%  -->
-<!--   group_by(Source,Step,Strategy,N_INIT) %>%  -->
-<!--   summarise(r=cor(Score,Cost)) %>%  -->
-<!--   ungroup() %>%  -->
-<!--   select(Source, r) %>%  -->
-<!--   distinct() -->
-
-<!-- a <- full %>%  -->
-<!--   group_by(Source,Step,Strategy,N_INIT) %>%  -->
-<!--   summarise(r=cor(Score,Cost)) -->
-
-<!-- a %>%  -->
-<!--   ggplot(aes(x=Step,y=r, group=Strategy, color = Strategy))+ -->
-<!--   geom_smooth()+ -->
-<!--   theme_bw()+ -->
-<!--   facet_wrap(~N_INIT*Source,ncol = 3) -->
-
-<!-- ggsave("EvalJudgments.jpeg",height=10,width=10) -->
-
-
-<!-- ah <- a %>%  -->
-<!--   filter(Source == "AH_2003", -->
-<!--   #       Strategy == "train" -->
-<!--   ) %>%  -->
-<!--   ggplot(aes(x=Step,y=r, group=Strategy, color = Strategy))+ -->
-<!--   geom_hline(yintercept = as.numeric(oracles[1,2])*-1, linetype = "dashed", color = "red")+ -->
-<!--   geom_smooth()+ -->
-<!--   ylim(-1,1)+ -->
-<!--   theme_bw()+ -->
-<!--   theme(legend.position = "none")+ -->
-<!--   facet_wrap(~Source) -->
-<!-- ah -->
-<!-- jlhw <- a %>%  -->
-<!--   filter(Source == "JLHW_Canaan", -->
-<!--   #       Strategy == "train" -->
-<!--   ) %>%  -->
-<!--   ggplot(aes(x=Step,y=r, group=Strategy, color = Strategy))+ -->
-<!--   geom_hline(yintercept = as.numeric(oracles[2,2])*-1, linetype = "dashed", color = "red")+ -->
-<!--   geom_smooth()+ -->
-<!--   ylim(-1,1)+ -->
-<!--   theme_bw()+ -->
-<!--   theme(legend.position = "none")+ -->
-<!--   facet_wrap(~Source) -->
-<!-- jlhw -->
-<!-- scholes <- a %>%  -->
-<!--   filter(Source == "Scholes", -->
-<!--   #       Strategy == "train" -->
-<!--   ) %>%  -->
-<!--   ggplot(aes(x=Step,y=r, group=Strategy, color = Strategy))+ -->
-<!--   geom_hline(yintercept = as.numeric(oracles[3,2])*-1, linetype = "dashed", color = "red")+ -->
-<!--   geom_smooth()+ -->
-<!--   ylim(-1,1)+ -->
-<!--   theme_bw()+ -->
-<!--   theme(legend.position = "right")+ -->
-<!--   facet_wrap(~Source) -->
-<!-- scholes -->
-
-<!-- p <- plot_grid(ah,jlhw,scholes, nrow = 1, rel_widths = c(1,1,1.5)) -->
-<!-- p -->
-
-<!-- ggsave("EvalJudgments_WithInformant.jpeg",height=7,width=10) -->
-
-<!-- ``` -->
-
 ```{r}
 
 all_metrics <- read_csv("./ModelEvalLogs.csv")
@@ -155,20 +72,20 @@ eval_metrics %>%
 facet_wrap(~N_Init, scales = "free_x")
 
 
-ggsave("./GridSearch/D_firsts.jpeg")
+#ggsave("./GridSearch/D_firsts.jpeg")
 # so it looks like the entropy measures is asking about discerning forms first.
 
 # what is the distribution of average firsts like across runs?
 
 s <- eval_metrics %>% 
-  filter(Strategy != "train") %>% 
+  #filter(Strategy != "train") %>% 
   group_by(Run,Strategy,N_Init) %>% 
   summarise(t = min(Step-N_Init)) %>% 
   ungroup() %>% 
   group_by(Strategy,N_Init) %>% 
   summarise(mean_queries_before_critical = mean(t)) 
 
-write_csv(s,"./GridSearch/D_average_first.csv")
+#write_csv(s,"./GridSearch/D_average_first.csv")
 
 ```
 
@@ -307,7 +224,7 @@ I guess the question is how often until we discover that; right? its easy to lea
 
 ```{r}
 
-features_queried_about_ur <- read_file("./GridSearch/D/feature_query_log.csv")
+features_queried_about_ur <- read_file("feature_query_log.csv")
 
 features_queried_about <- features_queried_about_ur %>% 
   str_replace_all("\', \'"," ") %>% 
@@ -568,9 +485,9 @@ sums %>%
   theme_bw()
 
 
-ggsave("P_.1_LLA_1_TI_False.jpeg") 
+#ggsave("P_.1_LLA_1_TI_False.jpeg") 
 
-
+```
 
 
 now the narrow set
@@ -615,6 +532,11 @@ a %>%
   geom_point()+
   facet_wrap(~Strategy*Run, ncol =10)+
   theme_bw()
+```
+# more model logs
+
+```{r}
+prob_logs <- read_csv("ResultsByObservations.csv")
 ```
 
 

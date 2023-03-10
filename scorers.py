@@ -80,7 +80,7 @@ class MeanFieldScorer: # this is us
                     - np.exp(min(log_p_others + self.LOG_LOG_ALPHA_RATIO, clip_val))
 #                    - p_others * np.exp(self.LOG_LOG_ALPHA_RATIO)
                 )
-                log_score = -10000 
+                #log_score = -10000
 
             else:
                 # frac satifying if off is prob that any other is on
@@ -158,7 +158,7 @@ class MeanFieldScorer: # this is us
             print("error: ", error)
         #print(error)
         tolerance = 0.001
-        if judgment == True or judgment == False: # asymmetric update; if you want asymmetric, comment out after true
+        if judgment == True or judgment == False: # symmetric update; if you want asymmetric, comment out after true
 #        if judgment == True: 
 #        if False:
             while error > tolerance:
