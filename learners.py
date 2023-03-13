@@ -102,12 +102,14 @@ class Learner:
 
 
 class VBLearner(Learner):
-    def __init__(self, dataset, strategy, linear_train_dataset,index_of_next_item):
-        super().__init__(dataset, strategy, linear_train_dataset, index_of_next_item )
+    def __init__(self, dataset, strategy, linear_train_dataset,index_of_next_item, log_log_alpha_ratio=1, prior_prob=0.5):
+        super().__init__(dataset, strategy, linear_train_dataset, index_of_next_item)
         self.results_by_observations = []
+        self.log_log_alpha_ratio = log_log_alpha_ratio
+        self.prior_prob = prior_prob
 
     def initialize_hyp(self):
-        return scorers.MeanFieldScorer(self.dataset)
+        return scorers.MeanFieldScorer(self.dataset, log_log_alpha_ratio=self.log_log_alpha_ratio, prior_prob=self.prior_prob)
 
     def observe(self, seq, judgment, update=True):
         assert len(self.hypotheses) == 1

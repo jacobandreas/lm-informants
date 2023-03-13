@@ -45,19 +45,19 @@ class BilinearScorer:
 
 
 class MeanFieldScorer: # this is us
-    def __init__(self, dataset):
+    def __init__(self, dataset, log_log_alpha_ratio=1, prior_prob=0.5):
         self.ORDER = 3
 #        self.LOG_LOG_ALPHA_RATIO = 45 # 45 is what Jacob set # was 500
 #        alpha = 0.9999999999999999
 #        self.LOG_LOG_ALPHA_RATIO = np.log(np.log(alpha/(1-alpha))) # 45 is what Jacob set # was 500
-        self.LOG_LOG_ALPHA_RATIO = 0.5 
+        self.LOG_LOG_ALPHA_RATIO = log_log_alpha_ratio 
         print("log log alpha ratio: ", self.LOG_LOG_ALPHA_RATIO)
         self.dataset = dataset
         self.phoneme_features, self.feature_vocab = _load_phoneme_features(dataset)
         self.ngram_features = {}
         for ff in it.product(range(len(self.feature_vocab)), repeat=self.ORDER):
             self.ngram_features[ff] = len(self.ngram_features)
-        self.probs = 0.5 * np.ones(len(self.ngram_features))
+        self.probs = prior_prob * np.ones(len(self.ngram_features))
         self.prior = self.probs.copy()
 
     def update_one_step(self, seqs, verbose=True): # was originally called update
@@ -94,15 +94,15 @@ class MeanFieldScorer: # this is us
             log_score = (
                 np.log(this_prob) - np.log(1-this_prob) - update_sum
             )
-            if verbose:
-                print(f"  Feat: {curr_feat}")
-                print(f"\t | feats (batch): {[feats for (_, feats, _) in seqs]}")
-                print(f"\t | other_probs (batch): {other_probs}")
-                print(f"\t | log_probs_all_off (batch): {log_probs_all_off.round(5)}")
-                print(f"\t | probs_all_off (batch): {probs_all_off.round(5)}")
-                print(f"\t | judgments (batch): {judgments}")
-                print(f"\t | update_vector (batch): {update_vector.round(5)}")
-                print(f"\t | update_sum (batch): {update_sum}")
+#            if verbose:
+#                print(f"  Feat: {curr_feat}")
+#                print(f"\t | feats (batch): {[feats for (_, feats, _) in seqs]}")
+#                print(f"\t | other_probs (batch): {other_probs}")
+#                print(f"\t | log_probs_all_off (batch): {log_probs_all_off.round(5)}")
+#                print(f"\t | probs_all_off (batch): {probs_all_off.round(5)}")
+#                print(f"\t | judgments (batch): {judgments}")
+#                print(f"\t | update_vector (batch): {update_vector.round(5)}")
+#                print(f"\t | update_sum (batch): {update_sum}")
 
             """
             if judgment:

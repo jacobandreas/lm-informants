@@ -12,6 +12,8 @@ import numpy as np
 import itertools as it
 from tqdm import tqdm
 from AnalyzeSyntheticData import is_ti
+import wandb
+import matplotlib.pyplot as plt
 
 from util import entropy
 import csv
@@ -26,6 +28,23 @@ np.random.seed(0)
 def get_broad_annotations():
     df = pd.read_csv("broad_test_set_annotated.csv") 
     return dict(zip(df.Word, df.IsLicit)), dict(zip(df.Word, df.IsTI))
+
+def plot_feature_probs(features, costs, last_costs, step):
+
+    fig = plt.figure(figsize=(12, 3))
+
+    colors = ["blue" if c == lc else "red" for c, lc in zip(costs, last_costs)] 
+
+    # Create the plot
+    plt.clf()
+    plt.scatter(features, costs, linestyle='None', marker='o', c=colors, s=3)
+    plt.xlabel('Feature')
+    plt.xticks(rotation=90)
+    plt.ylim(-0.1, 1.1)
+    plt.ylabel('Prob')
+    plt.rc('xtick',labelsize=5)
+    plt.title('Prob vs Feature for Step {}'.format(step))
+    return fig
 
 def evaluate(dataset, informant, learner):
     random = np.random.RandomState(0)
@@ -178,6 +197,9 @@ def main(args):
     #informant = informants.InteractiveInformant(dataset)
 
     logs = {}
+    unique_features = pd.read_csv('all_features_in_data_unique.csv')['X1'].unique()
+    last_costs = [None] * len(unique_features)
+
     if eval_humans:
         out_human_evals = get_out_file("HoldoutEvals.csv", args.exp_dir) 
         out_human_evals.write("Step,Run,Strategy,N_INIT,Item,Cost,Source,TestType\n")
@@ -187,6 +209,10 @@ def main(args):
     eval_metrics.write("ent,good,bad,diff,acc,rej,Step,Run,Strategy,N_Init,IsTI,judgement,proposed_form,entropy_before,entropy_after,entropy_diff,change_in_probs\n") # including things it queried about
     results_by_observations_writer = get_csv_writer("ResultsByObservations.csv", args.exp_dir)
     results_by_observations_writer.writerow(["Step", "Run", "strategy", "candidate", "judgment", "new_probs", "p_all_off", "update_unclipped", "update_clipped"])
+
+    if args.do_plot_wandb:
+        import wandb
+
     for N_INIT in [0]:
         num_runs = 1 
         for run in range(num_runs):
@@ -194,6 +220,9 @@ def main(args):
 #            for strategy in ["", "eig", "unif","train"]: # only train, entropy, eig, and unif are well-defined here
             for strategy in ["unif", "entropy"]: # only train, entropy, eig, and unif are well-defined here
                 print("STRATEGY:", strategy)
+                if args.do_plot_wandb:
+                    config = {"n_init": N_INIT, "run": run, "strategy": strategy, "log_log_alpha_ratio": args.log_log_alpha_ratio, "prior_prob": args.prior_prob}
+                    run = wandb.init(config=config, project=args.wandb_project, name=strategy, reinit=True)
                 #if strategy == "train":
                 #    run = 19
                 index_of_next_item = 0
@@ -213,7 +242,7 @@ def main(args):
                     logs[strategy] = []
                 log = []
                 #learner = learners.LogisticLearner(dataset, strategy=strategy)
-                learner = learners.VBLearner(dataset, strategy=strategy, linear_train_dataset = linear_train_dataset, index_of_next_item = index_of_next_item)
+                learner = learners.VBLearner(dataset, strategy=strategy, linear_train_dataset = linear_train_dataset, index_of_next_item = index_of_next_item, log_log_alpha_ratio=args.log_log_alpha_ratio, prior_prob=args.prior_prob)
                 learner.initialize(n_hyps=1)
                 if len(init_examples) > 0:
                     for example in init_examples[:-1]:
@@ -251,6 +280,14 @@ def main(args):
                     print("")
                     print(f"i: {i}")
                     step=N_INIT+i
+                    if args.do_plot_wandb:
+                        all_features = [(c, f) for (c, f) in learner.all_features() if f in unique_features]
+                        all_features.sort(key=lambda x: x[1])
+                        costs = [x[0] for x in all_features]
+                        features = [x[1] for x in all_features]
+                        feature_probs_plot = plot_feature_probs(features, costs, last_costs, step)
+                        last_costs = costs.copy()
+                        wandb.log({"feature_probs/plot": wandb.Image(feature_probs_plot)})
                     #learner.cost()
                     candidate = learner.propose(n_candidates=100, forbidden_data = forbidden_data_that_cannot_be_queried_about, length_norm=True)
                     judgment = informant.judge(candidate)
@@ -351,7 +388,9 @@ def main(args):
                     if write_out_feat_probs:
                         for cost, feat in learner.all_features():
                             feat_evals.write(str(N_INIT)+","+str(feat)+','+str(cost)+","+str(step)+","+str(dataset.vocab.decode(candidate)).replace(",","")+","+str(judgment)+","+str(strategy)+","+str(is_ti(str(dataset.vocab.decode(candidate)).replace(",","")))+','+str(run)+ '\n')
+                            
                             feat_evals.flush()
+
                     # "ent,good,bad,diff,acc,rej,Step,Run,Strategy,N_Init\n"
 #
                     #print("Judging human forms...")
@@ -404,7 +443,14 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--exp_dir", type=str, default="./")
-
+    parser.add_argument("--wandb_project", type=str, default=None)
+    parser.add_argument("--log_log_alpha_ratio", type=float, default=1)
+    parser.add_argument("--prior_prob", type=float, default=0.5)
     args = parser.parse_args()
+
+    if args.wandb_project is not None:
+        args.do_plot_wandb = True
+    else:
+        args.do_plot_wandb=False
 
     main(args)
