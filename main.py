@@ -37,7 +37,7 @@ def plot_feature_probs(features, costs, last_costs, step):
 
     # Create the plot
     plt.clf()
-    plt.scatter(features, costs, linestyle='None', marker='o', c=colors, s=3)
+    plt.scatter(features, costs, linestyle='None', marker='o', c=colors, s=3, alpha=0.5)
     plt.xlabel('Feature')
     plt.xticks(rotation=90)
     plt.ylim(-0.1, 1.1)
@@ -214,15 +214,15 @@ def main(args):
         import wandb
 
     for N_INIT in [0]:
-        num_runs = 1 
+        num_runs = 2 
         for run in range(num_runs):
             #for strategy in ["train","entropy","unif","max","std","diff"]: # ,"max","unif","interleave","diff","std"
 #            for strategy in ["", "eig", "unif","train"]: # only train, entropy, eig, and unif are well-defined here
-            for strategy in ["unif", "entropy"]: # only train, entropy, eig, and unif are well-defined here
+            for strategy in ["entropy", "train", "unif"]: # only train, entropy, eig, and unif are well-defined here
                 print("STRATEGY:", strategy)
                 if args.do_plot_wandb:
                     config = {"n_init": N_INIT, "run": run, "strategy": strategy, "log_log_alpha_ratio": args.log_log_alpha_ratio, "prior_prob": args.prior_prob}
-                    run = wandb.init(config=config, project=args.wandb_project, name=strategy, reinit=True)
+                    wandb_run = wandb.init(config=config, project=args.wandb_project, name=strategy, reinit=True)
                 #if strategy == "train":
                 #    run = 19
                 index_of_next_item = 0
@@ -242,12 +242,12 @@ def main(args):
                     logs[strategy] = []
                 log = []
                 #learner = learners.LogisticLearner(dataset, strategy=strategy)
-                learner = learners.VBLearner(dataset, strategy=strategy, linear_train_dataset = linear_train_dataset, index_of_next_item = index_of_next_item, log_log_alpha_ratio=args.log_log_alpha_ratio, prior_prob=args.prior_prob)
-                learner.initialize(n_hyps=1)
+                learner = learners.VBLearner(dataset, strategy=strategy, linear_train_dataset = linear_train_dataset, index_of_next_item = index_of_next_item) 
+                learner.initialize(n_hyps=1, log_log_alpha_ratio=args.log_log_alpha_ratio, prior_prob=args.prior_prob)
                 if len(init_examples) > 0:
                     for example in init_examples[:-1]:
-                        learner.observe(example, True, update=True)
-                    learner.observe(init_examples[-1], True, update=True)
+                        learner.observe(example, True, update=True, verbose=args.verbose, batch=args.batch)
+                    learner.observe(init_examples[-1], True, update=True, verbose=args.verbose)
                 #scores = evaluate_with_external_data(good_dataset,bad_dataset, eval_informant, learner)
                 scores = evaluate(dataset, eval_informant, learner)
 
@@ -280,6 +280,8 @@ def main(args):
                     print("")
                     print(f"i: {i}")
                     step=N_INIT+i
+                    p = learner.hypotheses[0].probs
+
                     if args.do_plot_wandb:
                         all_features = [(c, f) for (c, f) in learner.all_features() if f in unique_features]
                         all_features.sort(key=lambda x: x[1])
@@ -293,26 +295,6 @@ def main(args):
                     judgment = informant.judge(candidate)
                     #prior_probability_of_accept = learner.cost(candidate)
 
-                    entropy_before = entropy(learner.hypotheses[0].probs)
-                    probs_before = learner.hypotheses[0].probs.copy()
-                    learner.observe(candidate, judgment)
-                    last_result = learner.results_by_observations[-1] 
-                    last_result_DL = {k: [dic[k] for dic in last_result] for k in last_result[0]}
-                    results_by_observations_writer.writerow([i, run, strategy, dataset.vocab.decode(candidate), judgment, last_result_DL["new_probs"], last_result_DL["p_all_off"], last_result_DL["update_unclipped"], last_result_DL["update_clipped"]])
-                    probs_after = learner.hypotheses[0].probs.copy()
-                    entropy_after = entropy(learner.hypotheses[0].probs)
-                    change_in_probs = np.linalg.norm(probs_after-probs_before)
-                    print("entropy before: ", entropy_before) 
-                    print("entropy after: ", entropy_after)
-                    entropy_diff = entropy_before-entropy_after
-                    print("information gain:", entropy_diff)
-                    print("change in probs (norm):", change_in_probs)
-                    prob_positive = np.exp(learner.hypotheses[0].logprob(candidate, True))
-                    prob_negative = np.exp(learner.hypotheses[0].logprob(candidate, False))
-                    print("prob positive:", prob_positive)
-                    print("prob negative:", prob_negative)
-
-                    p = learner.hypotheses[0].probs
 
                     #print("ent", (p * np.log(p) + (1-p) * np.log(1-p)).mean())
                     #scores = evaluate_with_external_data(good_dataset,bad_dataset, eval_informant, learner)
@@ -375,26 +357,6 @@ def main(args):
 
                     #print(len(total_features),total_features)
                     #print("____________")
-                    eval_metrics.write(str((p * np.log(p) + (1-p) * np.log(1-p)).mean())+",")
-                    for k, v in scores.items():
-                        #print(f"{k:8s} {v:.4f}")
-                        eval_metrics.write(str(v)+',')
-                    eval_metrics.write(str(step)+','+str(run)+','+str(strategy)+','+str(N_INIT)+","+str(is_ti(str(dataset.vocab.decode(candidate)).replace(",","")))+","+str(judgment)+","+str(dataset.vocab.decode(candidate)).replace(",","")+","+str(entropy_before)+","+str(entropy_after)+","+str(entropy_diff)+","+str(change_in_probs)+'\n')
-                    eval_metrics.flush()
-
-                    #for feat, cost in learner.top_features():
-                    #    print(feat, cost)
-                    #print()
-                    if write_out_feat_probs:
-                        for cost, feat in learner.all_features():
-                            feat_evals.write(str(N_INIT)+","+str(feat)+','+str(cost)+","+str(step)+","+str(dataset.vocab.decode(candidate)).replace(",","")+","+str(judgment)+","+str(strategy)+","+str(is_ti(str(dataset.vocab.decode(candidate)).replace(",","")))+','+str(run)+ '\n')
-                            
-                            feat_evals.flush()
-
-                    # "ent,good,bad,diff,acc,rej,Step,Run,Strategy,N_Init\n"
-#
-                    #print("Judging human forms...")
-                    #corral_of_judged_human_forms = []
                     if eval_humans:
                         for item, encoded_word in narrow_test_set:
                             c = learner.cost(encoded_word)
@@ -432,13 +394,54 @@ def main(args):
                     log.append(scores)
                     print()
                     print(f"strategy: {strategy}, run: {run}/{num_runs}, step: {N_INIT + i}")
+                    
+                    #for feat, cost in learner.top_features():
+                    #    print(feat, cost)
+                    #print()
+                    if write_out_feat_probs:
+                        for cost, feat in learner.all_features():
+                            feat_evals.write(str(N_INIT)+","+str(feat)+','+str(cost)+","+str(step)+","+str(dataset.vocab.decode(candidate)).replace(",","")+","+str(judgment)+","+str(strategy)+","+str(is_ti(str(dataset.vocab.decode(candidate)).replace(",","")))+','+str(run)+ '\n')
+                            
+                            feat_evals.flush()
 
+                    # "ent,good,bad,diff,acc,rej,Step,Run,Strategy,N_Init\n"
+                    
+                    entropy_before = entropy(learner.hypotheses[0].probs)
+                    probs_before = learner.hypotheses[0].probs.copy()
+                    learner.observe(candidate, judgment, verbose=args.verbose)
+                    last_result = learner.results_by_observations[-1] 
+                    last_result_DL = {k: [dic[k] for dic in last_result] for k in last_result[0]}
+                    results_by_observations_writer.writerow([i, run, strategy, dataset.vocab.decode(candidate), judgment, last_result_DL["new_probs"], last_result_DL["p_all_off"], last_result_DL["update_unclipped"], last_result_DL["update_clipped"]])
+                    
+                    probs_after = learner.hypotheses[0].probs.copy()
+                    entropy_after = entropy(learner.hypotheses[0].probs)
+                    change_in_probs = np.linalg.norm(probs_after-probs_before)
+                    print("entropy before: ", entropy_before) 
+                    print("entropy after: ", entropy_after)
+                    entropy_diff = entropy_before-entropy_after
+                    print("information gain:", entropy_diff)
+                    print("change in probs (norm):", change_in_probs)
+                    prob_positive = np.exp(learner.hypotheses[0].logprob(candidate, True))
+                    prob_negative = np.exp(learner.hypotheses[0].logprob(candidate, False))
+                    print("prob positive:", prob_positive)
+                    print("prob negative:", prob_negative)
+
+                    eval_metrics.write(str((p * np.log(p) + (1-p) * np.log(1-p)).mean())+",")
+                    for k, v in scores.items():
+                        #print(f"{k:8s} {v:.4f}")
+                        eval_metrics.write(str(v)+',')
+                    eval_metrics.write(str(step)+','+str(run)+','+str(strategy)+','+str(N_INIT)+","+str(is_ti(str(dataset.vocab.decode(candidate)).replace(",","")))+","+str(judgment)+","+str(dataset.vocab.decode(candidate)).replace(",","")+","+str(entropy_before)+","+str(entropy_after)+","+str(entropy_diff)+","+str(change_in_probs)+'\n')
+                    eval_metrics.flush()
+
+#
+                    #print("Judging human forms...")
+                    #corral_of_judged_human_forms = []
 
                     # print(learner.hypotheses[0].entropy(candidate, debug=True))
                 logs[strategy].append(log)
 
-                with open(f"results_{strategy}.json", "w") as writer:
-                    json.dump(logs, writer)
+#                with open(f"results_{strategy}.json", "w") as writer:
+#                    json.dump(logs, writer)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -446,11 +449,21 @@ if __name__ == "__main__":
     parser.add_argument("--wandb_project", type=str, default=None)
     parser.add_argument("--log_log_alpha_ratio", type=float, default=1)
     parser.add_argument("--prior_prob", type=float, default=0.5)
+    parser.add_argument('--verbose', dest='verbose', action='store_true')
+    parser.set_defaults(verbose=False)
+    
+    # batch defaults to True
+    parser.add_argument('--batch', action='store_true')
+    parser.add_argument('--no-batch', dest='batch', action='store_false')
+    parser.set_defaults(batch=True)
+
     args = parser.parse_args()
 
     if args.wandb_project is not None:
         args.do_plot_wandb = True
     else:
         args.do_plot_wandb=False
+
+    print("args: ", args)
 
     main(args)

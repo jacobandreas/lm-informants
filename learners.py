@@ -69,9 +69,16 @@ class Learner:
         self.hypotheses = None
         self.observations = None
 
-    def initialize(self, n_hyps):
+    def initialize(
+            self, n_hyps,
+            log_log_alpha_ratio=1, 
+            prior_prob=0.5,
+            converge_type="symmetric",
+            ):
         self.hypotheses = [
-            self.initialize_hyp() for _ in range(n_hyps)
+            self.initialize_hyp(
+                log_log_alpha_ratio=log_log_alpha_ratio, prior_prob=prior_prob, converge_type=converge_type
+                ) for _ in range(n_hyps)
         ]
         self.observations = []
 
@@ -102,22 +109,34 @@ class Learner:
 
 
 class VBLearner(Learner):
-    def __init__(self, dataset, strategy, linear_train_dataset,index_of_next_item, log_log_alpha_ratio=1, prior_prob=0.5):
+    def __init__(
+            self, 
+            dataset, 
+            strategy, 
+            linear_train_dataset,index_of_next_item, 
+            ):
         super().__init__(dataset, strategy, linear_train_dataset, index_of_next_item)
         self.results_by_observations = []
-        self.log_log_alpha_ratio = log_log_alpha_ratio
-        self.prior_prob = prior_prob
+        
+    def initialize_hyp(self, log_log_alpha_ratio=1, prior_prob=0.5, converge_type="symmetric"):
+        return scorers.MeanFieldScorer(
+                self.dataset, 
+                log_log_alpha_ratio=log_log_alpha_ratio, 
+                prior_prob=prior_prob,
+                converge_type=converge_type,
+                )
 
-    def initialize_hyp(self):
-        return scorers.MeanFieldScorer(self.dataset, log_log_alpha_ratio=self.log_log_alpha_ratio, prior_prob=self.prior_prob)
-
-    def observe(self, seq, judgment, update=True):
+    def observe(self, seq, judgment, update=True, verbose=False, batch=True):
         assert len(self.hypotheses) == 1
         assert update
         features = self.hypotheses[0]._featurize(seq).nonzero()[0]
         self.observations.append((seq, features, judgment))
 #        _, results = self.hypotheses[0].update(seq, judgment)
-        _, results = self.hypotheses[0].update(self.observations)
+        if batch:
+            seqs_to_observe = self.observations
+        else:
+            seqs_to_observe = self.observations[-1]
+        _, results = self.hypotheses[0].update(seqs_to_observe, verbose=verbose)
         self.results_by_observations.append(results)
 
     # TODO: only consider features in sequene as in scorer.entropy()? (Should be equivalent bc probs for features not in seq won't change?)

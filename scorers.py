@@ -45,13 +45,17 @@ class BilinearScorer:
 
 
 class MeanFieldScorer: # this is us
-    def __init__(self, dataset, log_log_alpha_ratio=1, prior_prob=0.5):
+    def __init__(self, dataset, log_log_alpha_ratio=1, prior_prob=0.5, converge_type="symmetric"):
         self.ORDER = 3
 #        self.LOG_LOG_ALPHA_RATIO = 45 # 45 is what Jacob set # was 500
 #        alpha = 0.9999999999999999
 #        self.LOG_LOG_ALPHA_RATIO = np.log(np.log(alpha/(1-alpha))) # 45 is what Jacob set # was 500
         self.LOG_LOG_ALPHA_RATIO = log_log_alpha_ratio 
-        print("log log alpha ratio: ", self.LOG_LOG_ALPHA_RATIO)
+        
+        if converge_type not in ["symmetric", "asymmetric"]:
+            raise ValueError(f"Invalid value for converge_type given: {converge_type}")
+        self.converge_type = converge_type
+        
         self.dataset = dataset
         self.phoneme_features, self.feature_vocab = _load_phoneme_features(dataset)
         self.ngram_features = {}
@@ -60,7 +64,7 @@ class MeanFieldScorer: # this is us
         self.probs = prior_prob * np.ones(len(self.ngram_features))
         self.prior = self.probs.copy()
 
-    def update_one_step(self, seqs, verbose=True): # was originally called update
+    def update_one_step(self, seqs, verbose=False): # was originally called update
         # seq is a list of (seq, features, judgment) tuples
 
         # contains a list of the unique features in the whole batch
@@ -77,15 +81,17 @@ class MeanFieldScorer: # this is us
             print(f"Features to update: {all_features}")
         for curr_feat in all_features:
             this_prob = self.probs[curr_feat]
-           
-            for (_, feats, _) in seqs:
-                other_feats = [f for f in feats if f != curr_feat]
-                other_probs = self.probs[other_feats]
+     
+#            for (_, feats, _) in seqs:
+#                other_feats = [f for f in feats if f != curr_feat]
+#                other_probs = self.probs[other_feats]
 
-            other_probs = [self.probs[[f for f in feats if f != curr_feat]] for (_, feats, _) in seqs] 
+            temp_seqs = [(_, feats, judgement) for (_, feats, judgement) in seqs if curr_feat in feats]
+
+            other_probs = [self.probs[[f for f in feats if f != curr_feat]] for (_, feats, _) in temp_seqs] 
             log_probs_all_off = np.array([np.log(1-op).sum() for op in other_probs])
             probs_all_off = np.exp(log_probs_all_off)
-            judgments = np.array([1 if j is True else -1 for (_, _, j) in seqs])
+            judgments = np.array([1 if j is True else -1 for (_, _, j) in temp_seqs])
 
             update_vector = (judgments * np.exp(np.clip(log_probs_all_off + self.LOG_LOG_ALPHA_RATIO, -np.inf, clip_val)))
             update_sum = update_vector.sum()
@@ -104,26 +110,6 @@ class MeanFieldScorer: # this is us
 #                print(f"\t | update_vector (batch): {update_vector.round(5)}")
 #                print(f"\t | update_sum (batch): {update_sum}")
 
-            """
-            if judgment:
-                # frac satisfying if off is prob that the others are all off
-                # frac satisfying if on is 0
-                log_score = (
-                    np.log(this_prob) - np.log(1-this_prob)
-                    - np.exp(min(log_p_others + self.LOG_LOG_ALPHA_RATIO, clip_val))
-#                    - p_others * np.exp(self.LOG_LOG_ALPHA_RATIO)
-                )
-#                log_score = -10000 
-
-            else:
-                # frac satifying if off is prob that any other is on
-                # frac satisfying if on is 1
-                log_score = (
-                    np.log(this_prob) - np.log(1-this_prob)
-                    + np.exp(min(log_p_others + self.LOG_LOG_ALPHA_RATIO, clip_val))
-#                    + p_others * np.exp(self.LOG_LOG_ALPHA_RATIO)
-                )
-            """
             log_score = np.clip(log_score, -clip_val, clip_val)
 
             posterior = 1 / (1 + np.exp(-log_score))
@@ -146,7 +132,7 @@ class MeanFieldScorer: # this is us
                 } 
         return results 
 
-    def update(self, seqs, verbose=True):
+    def update(self, seqs, verbose=False):
         results = []
 
         orig_probs = self.probs.copy()
@@ -161,9 +147,14 @@ class MeanFieldScorer: # this is us
         tolerance = 0.001
 #        do_converge = (judgment == True or judgment == False) # asymmetric update; if you want asymmetric, comment out after true
 #        do_converge = (judgment == True)
-        do_converge = True 
+        if self.converge_type == "symmetric":
+            do_converge = True
+        # In asymmetric case, only converge for positive examples
+        elif self.converge_type == "asymmetric":
+            do_converge = (judgment == True)
         # updarte if first update *or* have not converged yet
         num_updates = 0
+        max_updates = 10
         self.probs = self.prior.copy()
         while (do_converge and error > tolerance) or num_updates == 0:
             if verbose:
@@ -192,6 +183,11 @@ class MeanFieldScorer: # this is us
 
             num_updates += 1
 
+            if num_updates == max_updates:
+                print(f"reached the max number of updates: {max_updates}")
+                print("error:", error)
+                break
+
         #print("converged!",error)
         if verbose:
 #            print(f"Probs after updating: {new_probs}")
@@ -199,42 +195,6 @@ class MeanFieldScorer: # this is us
             print(f"Update in probs of features in seq (new-orig): \n{(feature_prob_changes).round(5)}")
             print(f"Num updates: {num_updates}")
         return new_probs, results
-
-        #
-        # features = self._featurize(seq).nonzero()[0]
-        # # print(features,"are the features in ",seq)
-        # constraint_probs = self.probs[features]
-        # new_probs = self.probs.copy()
-        #
-        # for i in range(len(features)):
-        #     this_prob = constraint_probs[i]
-        #     other_probs = np.concatenate([constraint_probs[:i], constraint_probs[i + 1:]])
-        #     log_p_others = np.log(1 - other_probs).sum()
-        #     if judgment:
-        #         # frac satisfying if off is prob that the others are all off
-        #         # frac satisfying if on is 0
-        #         log_score = (
-        #                 np.log(this_prob) - np.log(1 - this_prob)
-        #                 - np.exp(min(log_p_others + self.LOG_LOG_ALPHA_RATIO, 10))
-        #         )
-        #
-        #     else:
-        #         # frac satifying if off is prob that any other is on
-        #         # frac satisfying if on is 1
-        #         log_score = (
-        #                 np.log(this_prob) - np.log(1 - this_prob)
-        #                 + np.exp(min(log_p_others + self.LOG_LOG_ALPHA_RATIO, 10))
-        #         )
-        #     log_score = np.clip(log_score, -3, 3)
-        #
-        #     posterior = 1 / (1 + np.exp(-log_score))
-        #     new_probs[features[i]] = posterior = np.clip(posterior, 0.01, 0.99)
-        #
-        # # print("extrema", new_probs.max(), new_probs.min(), new_probs.mean())
-        #
-        # self.probs = new_probs
-        #
-        # return new_probs
 
     def _featurize(self, seq): # Canaan edit to do long distance
         features = np.zeros(len(self.ngram_features))
