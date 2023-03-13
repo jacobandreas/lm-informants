@@ -62,6 +62,7 @@ class MeanFieldScorer: # this is us
         features_with_info = features_seen_index.keys()
         # print(features,"are the features in ",seq)
         constraint_probs = self.probs[features_with_info]
+        #constraint_probs = [constraint_prob for constraint_prob in self.probs.keys() if constraint_prob in features_with_info]# error here; this is expecting a vector of bools or sth, but what I'm working with is a list of features
         # new_probs = self.probs.copy()
         new_probs = copy.deepcopy(self.probs)
         clip_val = 10
