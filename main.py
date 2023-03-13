@@ -45,8 +45,8 @@ def evaluate(dataset, informant, learner):
         if len(good_data) == N_EVAL:
             break
 
-    accepted_data = [(s, True) for s, j in learner.observations if j]
-    rejected_data = [(s, True) for s, j in learner.observations if not j]
+    accepted_data = [(s, True) for s, _, j in learner.observations if j]
+    rejected_data = [(s, True) for s, _, j in learner.observations if not j]
 
     accepted_data = accepted_data[:N_EVAL]
     rejected_data = rejected_data[:N_EVAL]
@@ -70,8 +70,8 @@ def evaluate_with_external_data(good_data, bad_data, informant, learner):
     #
 
 
-    accepted_data = [(s, True) for s, j in learner.observations if j]
-    rejected_data = [(s, True) for s, j in learner.observations if not j]
+    accepted_data = [(s, True) for s, _, j in learner.observations if j]
+    rejected_data = [(s, True) for s, _, j in learner.observations if not j]
 
     accepted_data = accepted_data[:N_EVAL]
     rejected_data = rejected_data[:N_EVAL]
@@ -186,13 +186,13 @@ def main(args):
     eval_metrics = get_out_file("ModelEvalLogs.csv", args.exp_dir)
     eval_metrics.write("ent,good,bad,diff,acc,rej,Step,Run,Strategy,N_Init,IsTI,judgement,proposed_form,entropy_before,entropy_after,entropy_diff,change_in_probs\n") # including things it queried about
     results_by_observations_writer = get_csv_writer("ResultsByObservations.csv", args.exp_dir)
-    results_by_observations_writer.writerow(["Step", "Run", "strategy", "candidate", "judgment", "new_probs", "log_p_others", "update_unclipped", "update_clipped"])
+    results_by_observations_writer.writerow(["Step", "Run", "strategy", "candidate", "judgment", "new_probs", "p_all_off", "update_unclipped", "update_clipped"])
     for N_INIT in [0]:
-        num_runs = 10
+        num_runs = 1 
         for run in range(num_runs):
             #for strategy in ["train","entropy","unif","max","std","diff"]: # ,"max","unif","interleave","diff","std"
 #            for strategy in ["", "eig", "unif","train"]: # only train, entropy, eig, and unif are well-defined here
-            for strategy in ["train","unif","eig", "entropy"]: # only train, entropy, eig, and unif are well-defined here
+            for strategy in ["unif", "entropy"]: # only train, entropy, eig, and unif are well-defined here
                 print("STRATEGY:", strategy)
                 #if strategy == "train":
                 #    run = 19
@@ -261,7 +261,7 @@ def main(args):
                     learner.observe(candidate, judgment)
                     last_result = learner.results_by_observations[-1] 
                     last_result_DL = {k: [dic[k] for dic in last_result] for k in last_result[0]}
-                    results_by_observations_writer.writerow([i, run, strategy, dataset.vocab.decode(candidate), judgment, last_result_DL["new_probs"], last_result_DL["log_p_others"], last_result_DL["update_unclipped"], last_result_DL["update_clipped"]])
+                    results_by_observations_writer.writerow([i, run, strategy, dataset.vocab.decode(candidate), judgment, last_result_DL["new_probs"], last_result_DL["p_all_off"], last_result_DL["update_unclipped"], last_result_DL["update_clipped"]])
                     probs_after = learner.hypotheses[0].probs.copy()
                     entropy_after = entropy(learner.hypotheses[0].probs)
                     change_in_probs = np.linalg.norm(probs_after-probs_before)

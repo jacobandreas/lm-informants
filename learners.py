@@ -112,8 +112,10 @@ class VBLearner(Learner):
     def observe(self, seq, judgment, update=True):
         assert len(self.hypotheses) == 1
         assert update
-        self.observations.append((seq, judgment))
-        _, results = self.hypotheses[0].update(seq, judgment)
+        features = self.hypotheses[0]._featurize(seq).nonzero()[0]
+        self.observations.append((seq, features, judgment))
+#        _, results = self.hypotheses[0].update(seq, judgment)
+        _, results = self.hypotheses[0].update(self.observations)
         self.results_by_observations.append(results)
 
     # TODO: only consider features in sequene as in scorer.entropy()? (Should be equivalent bc probs for features not in seq won't change?)
@@ -139,13 +141,16 @@ class VBLearner(Learner):
 
         # entropy over features after seeing if positive
 
-        p, _ = self.hypotheses[0].update(seq, True, verbose=False)
+#        p, _ = self.hypotheses[0].update(seq, True, verbose=False)
+        features = self.hypotheses[0]._featurize(seq).nonzero()[0]
+        _, results = self.hypotheses[0].update(self.observations + [(seq, features, True)], verbose=False)
         entropy_over_features_after_observing_item_positive = -1 * ((p * np.log(p) + (1 - p) * np.log(1 - p))).sum()
         assert entropy_over_features_after_observing_item_positive > 0
         self.hypotheses[0].probs = orig_probs 
         # reset learner
         # entropy over features after seeing if negative
-        p, _ = self.hypotheses[0].update(seq, False, verbose=False)
+#        p, _ = self.hypotheses[0].update(seq, False, verbose=False)
+        _, results = self.hypotheses[0].update(self.observations + [(seq, features, False)], verbose=False)
         entropy_over_features_after_observing_item_negative = -1 * ((p * np.log(p) + (1 - p) * np.log(1 - p))).sum()
         assert entropy_over_features_after_observing_item_negative > 0
         self.hypotheses[0].probs = orig_probs 
@@ -182,12 +187,15 @@ class VBLearner(Learner):
 
         # entropy over features after seeing if positive
 
-        p, _ = self.hypotheses[0].update(seq, True)
+#        p, _ = self.hypotheses[0].update(seq, True)
+        features = self.hypotheses[0]._featurize(seq).nonzero()[0]
+        _, results = self.hypotheses[0].update(self.observations + [(seq, features, True)])
         entropy_over_features_after_observing_item_positive = ((p * np.log(p) + (1 - p) * np.log(1 - p)).sum())
         self.hypotheses[0] = learner_before_fussing_around
         # reset learner
         # entropy over features after seeing if negative
-        p, _ = self.hypotheses[0].update(seq, False)
+#        p, _ = self.hypotheses[0].update(seq, False)
+        _, results = self.hypotheses[0].update(self.observations + [(seq, features, False)])
         entropy_over_features_after_observing_item_negative = ((p * np.log(p) + (1 - p) * np.log(1 - p)).sum())
         self.hypotheses[0] = learner_before_fussing_around
         # reset learner
@@ -248,7 +256,7 @@ class VBLearner(Learner):
         return sorted(feats)
 
     def propose(self, n_candidates, forbidden_data, length_norm):
-        obs_set_a = set(s for s, j in self.observations)
+        obs_set_a = set(s for s, _, j in self.observations)
         obs_set = set(s for s in (forbidden_data+list(obs_set_a)))
         if np.random.random() < self.propose_train:
             while True:

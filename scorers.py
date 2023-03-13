@@ -1,6 +1,6 @@
 from datasets import BOUNDARY, Vocab
 import util
-
+import pdb
 import copy
 import itertools as it
 import numpy as np
@@ -50,28 +50,61 @@ class MeanFieldScorer: # this is us
 #        self.LOG_LOG_ALPHA_RATIO = 45 # 45 is what Jacob set # was 500
 #        alpha = 0.9999999999999999
 #        self.LOG_LOG_ALPHA_RATIO = np.log(np.log(alpha/(1-alpha))) # 45 is what Jacob set # was 500
-        self.LOG_LOG_ALPHA_RATIO = 1 
+        self.LOG_LOG_ALPHA_RATIO = 0.5 
         print("log log alpha ratio: ", self.LOG_LOG_ALPHA_RATIO)
         self.dataset = dataset
         self.phoneme_features, self.feature_vocab = _load_phoneme_features(dataset)
         self.ngram_features = {}
         for ff in it.product(range(len(self.feature_vocab)), repeat=self.ORDER):
             self.ngram_features[ff] = len(self.ngram_features)
-        self.probs = 0.2 * np.ones(len(self.ngram_features))
+        self.probs = 0.5 * np.ones(len(self.ngram_features))
+        self.prior = self.probs.copy()
 
-    def update_one_step(self, seq, judgment, verbose=True): # was originally called update
-        features = self._featurize(seq).nonzero()[0]
-        #print(features,"are the features in ",seq)
-        constraint_probs = self.probs[features]
-        new_probs = self.probs.copy()
+    def update_one_step(self, seqs, verbose=True): # was originally called update
+        # seq is a list of (seq, features, judgment) tuples
 
+        # contains a list of the unique features in the whole batch
+        # (i.e. the ones we want to update)
+        # features are represented as indices into self.probs
+
+        all_features = set([item for (_, feats, _) in seqs for item in feats]) 
         clip_val = 10 
 
-        for i in range(len(features)):
-            this_prob = constraint_probs[i]
-            other_probs = np.concatenate([constraint_probs[:i], constraint_probs[i+1:]])
-            log_p_others = np.log(1-other_probs).sum()
-            p_others = (1-other_probs).prod()
+        new_probs = self.probs.copy()
+        
+        # curr_feat is feat to update
+        if verbose:
+            print(f"Features to update: {all_features}")
+        for curr_feat in all_features:
+            this_prob = self.probs[curr_feat]
+           
+            for (_, feats, _) in seqs:
+                other_feats = [f for f in feats if f != curr_feat]
+                other_probs = self.probs[other_feats]
+
+            other_probs = [self.probs[[f for f in feats if f != curr_feat]] for (_, feats, _) in seqs] 
+            log_probs_all_off = np.array([np.log(1-op).sum() for op in other_probs])
+            probs_all_off = np.exp(log_probs_all_off)
+            judgments = np.array([1 if j is True else -1 for (_, _, j) in seqs])
+
+            update_vector = (judgments * np.exp(np.clip(log_probs_all_off + self.LOG_LOG_ALPHA_RATIO, -np.inf, clip_val)))
+            update_sum = update_vector.sum()
+            update_unclipped = (judgments * np.exp(log_probs_all_off + self.LOG_LOG_ALPHA_RATIO)).sum()
+
+            log_score = (
+                np.log(this_prob) - np.log(1-this_prob) - update_sum
+            )
+            if verbose:
+                print(f"  Feat: {curr_feat}")
+                print(f"\t | feats (batch): {[feats for (_, feats, _) in seqs]}")
+                print(f"\t | other_probs (batch): {other_probs}")
+                print(f"\t | log_probs_all_off (batch): {log_probs_all_off.round(5)}")
+                print(f"\t | probs_all_off (batch): {probs_all_off.round(5)}")
+                print(f"\t | judgments (batch): {judgments}")
+                print(f"\t | update_vector (batch): {update_vector.round(5)}")
+                print(f"\t | update_sum (batch): {update_sum}")
+
+            """
             if judgment:
                 # frac satisfying if off is prob that the others are all off
                 # frac satisfying if on is 0
@@ -80,7 +113,7 @@ class MeanFieldScorer: # this is us
                     - np.exp(min(log_p_others + self.LOG_LOG_ALPHA_RATIO, clip_val))
 #                    - p_others * np.exp(self.LOG_LOG_ALPHA_RATIO)
                 )
-                log_score = -10000 
+#                log_score = -10000 
 
             else:
                 # frac satifying if off is prob that any other is on
@@ -90,101 +123,74 @@ class MeanFieldScorer: # this is us
                     + np.exp(min(log_p_others + self.LOG_LOG_ALPHA_RATIO, clip_val))
 #                    + p_others * np.exp(self.LOG_LOG_ALPHA_RATIO)
                 )
+            """
             log_score = np.clip(log_score, -clip_val, clip_val)
 
             posterior = 1 / (1 + np.exp(-log_score))
-            new_probs[features[i]] = posterior = np.clip(posterior, 0.000001, 0.999999)
+#            new_probs[features[i]] = posterior = np.clip(posterior, 0.000001, 0.999999)
+            new_probs[curr_feat] = posterior = np.clip(posterior, 0.000001, 0.999999)
             if verbose:
-                new_prob = new_probs[features[i]]
+                new_prob = new_probs[curr_feat]
                 change = new_prob-this_prob
                 if abs(change) > 0.0001:
-                    print(f"feat: {i}, before: {this_prob.round(3)}, after: {(new_prob).round(3)} ({(change).round(3)})")
-                    print(f" | before sigmoid: {log_score}")
-                    print(f" | prior terms: {np.log(this_prob) - np.log(1-this_prob)}")
-                    print(f" | p others: {p_others}")
-                    print(f" | log p others: {log_p_others}")
-                    print(f" | log alpha: {np.exp(self.LOG_LOG_ALPHA_RATIO)}")
-                    print(f" | m term unclipped: {np.exp((log_p_others + self.LOG_LOG_ALPHA_RATIO))}")
-                    print(f" | m term: {np.exp(min(log_p_others + self.LOG_LOG_ALPHA_RATIO, clip_val))}")
+                    print(f"feat: {curr_feat}, before: {this_prob.round(3)}, after: {(new_prob).round(3)} ({(change).round(3)})")
 
         #print("extrema", new_probs.max(), new_probs.min(), new_probs.mean())
 
         self.probs = new_probs
-        sign = int(judgment) * -1 # add if judgment is False, subtract if True
-        update_unclipped = sign * np.exp(min(log_p_others + self.LOG_LOG_ALPHA_RATIO, clip_val))
-        update_clipped = sign * np.exp(log_p_others + self.LOG_LOG_ALPHA_RATIO)
         results = {
                 "new_probs": new_probs, 
-                "log_p_others": log_p_others, 
-                "update_unclipped": update_unclipped, 
-                "update_clipped": update_clipped,} 
+                "update_clipped": update_sum,
+                "update_unclipped": update_unclipped,
+                "p_all_off": np.mean(probs_all_off), # TODO: do we want the sum?
+                } 
         return results 
 
-    def update(self, seq, judgment, verbose=True):
+    def update(self, seqs, verbose=True):
         results = []
 
         orig_probs = self.probs.copy()
         if verbose:
-            features = self._featurize(seq).nonzero()[0]
-            print(f"seq: {seq}")
-            print(f"featurized: {features}")
-            print(f"decoded seq: {self.dataset.vocab.decode(seq)}")
-            print(f"Judgment: {judgment}")
-#            print(f"Probs before updating: {orig_probs}")
-        #   print("updating!")
+            print(f"Items in batch:")
+            for seq, features, judgment in seqs:
+                print(f"\t{seq}, {features}, {self.dataset.vocab.decode(seq)}, {judgment}")
         target_item = False 
-        if not target_item:
-            old_probs = self.probs.copy()
-            step_results = self.update_one_step(seq, judgment, verbose=verbose)
-            results.append(step_results)
-            new_probs = step_results["new_probs"]
-            difference_vector = np.subtract(new_probs, old_probs)
-        else:
-            old_cost = self.logprob(seq, judgment)
-            step_results = self.update_one_step(seq, judgment, verbose=verbose)
-            results.append(step_results)
-            new_probs = step_results["new_probs"]
-            new_cost = self.logprob(seq, judgment)
 
-
-            difference_vector = np.subtract(new_cost, old_cost)
-            #print(old_cost,new_cost,"cost thing",difference_vector)
-
-
-        num_updates = 1
-
-        error = abs(difference_vector).sum()
-        if verbose:
-            print("error: ", error)
-        #print(error)
+        # This is the same as manually updating once first
+        error = np.inf
         tolerance = 0.001
-        if judgment == True or judgment == False: # asymmetric update; if you want asymmetric, comment out after true
-#        if judgment == True: 
-#        if False:
-            while error > tolerance:
-                if not target_item:
+#        do_converge = (judgment == True or judgment == False) # asymmetric update; if you want asymmetric, comment out after true
+#        do_converge = (judgment == True)
+        do_converge = True 
+        # updarte if first update *or* have not converged yet
+        num_updates = 0
+        self.probs = self.prior.copy()
+        while (do_converge and error > tolerance) or num_updates == 0:
+            if verbose:
+                print(f"  Update {num_updates}:")
+            if not target_item:
+                old_probs = self.probs.copy()
+                step_results = self.update_one_step(seqs, verbose=verbose)
+                new_probs = step_results["new_probs"]
+                results.append(step_results)
+                difference_vector = np.absolute(np.subtract(new_probs, old_probs))
+                error = abs(difference_vector).sum()
                 #print(error)
-                #print(old_probs)
-                    old_probs = new_probs.copy()
-                    step_results = self.update_one_step(seq, judgment, verbose=verbose)
-                    new_probs = step_results["new_probs"]
-                    results.append(step_results)
-                    difference_vector = np.absolute(np.subtract(new_probs, old_probs))
-                    error = abs(difference_vector).sum()
-                    #print(error)
-                    #print(new_probs)
-                else:
-                    old_cost = new_cost
-                    step_results = self.update_one_step(seq, judgment, verbose=verbose)
-                    new_probs = step_results["new_probs"]
-                    results.append(step_results)
-                    new_cost = self.logprob(seq, judgment)
+                #print(new_probs)
+            else:
+                # TODO: check if robust
+                old_cost = np.array([self.logprob(s, j) for (s, j) in seqs]) 
+                step_results = self.update_one_step(seqs, judgment, verbose=verbose)
+                new_probs = step_results["new_probs"]
+                results.append(step_results)
+                new_cost = np.array([self.logprob(s, j) for (s, j) in seqs]) 
+#                    new_cost = self.logprob(seq, judgment)
 
-                    difference_vector = np.subtract(new_cost, old_cost)
-                    error = abs(difference_vector).sum()
-                    #print(old_cost, new_cost, "cost thing", difference_vector)
+                difference_vector = np.subtract(new_cost, old_cost)
+                error = abs(difference_vector).sum()
+                #print(old_cost, new_cost, "cost thing", difference_vector)
 
-                num_updates += 1
+            num_updates += 1
 
         #print("converged!",error)
         if verbose:
