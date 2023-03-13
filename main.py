@@ -243,7 +243,7 @@ def main(args):
                 log = []
                 #learner = learners.LogisticLearner(dataset, strategy=strategy)
                 learner = learners.VBLearner(dataset, strategy=strategy, linear_train_dataset = linear_train_dataset, index_of_next_item = index_of_next_item) 
-                learner.initialize(n_hyps=1, log_log_alpha_ratio=args.log_log_alpha_ratio, prior_prob=args.prior_prob)
+                learner.initialize(n_hyps=1, log_log_alpha_ratio=args.log_log_alpha_ratio, prior_prob=args.prior_prob, converge_type=args.converge_type)
                 if len(init_examples) > 0:
                     for example in init_examples[:-1]:
                         learner.observe(example, True, update=True, verbose=args.verbose, batch=args.batch)
@@ -450,6 +450,7 @@ if __name__ == "__main__":
     parser.add_argument("--log_log_alpha_ratio", type=float, default=1)
     parser.add_argument("--prior_prob", type=float, default=0.5)
     parser.add_argument('--verbose', dest='verbose', action='store_true')
+    parser.add_argument('--converge_type', type=str, default="symmetric")
     parser.set_defaults(verbose=False)
     
     # batch defaults to True
