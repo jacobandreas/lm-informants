@@ -58,7 +58,53 @@ class MeanFieldScorer: # this is us
         for ff in it.product(range(len(self.feature_vocab)), repeat=self.ORDER):
             self.ngram_features[ff] = len(self.ngram_features)
         self.probs = 0.2 * np.ones(len(self.ngram_features))
+    def update_batch(self, features_seen_index, verbose = True):
+        features_with_info = features_seen_index.keys()
+        # print(features,"are the features in ",seq)
+        constraint_probs = self.probs[features_with_info]
+        # new_probs = self.probs.copy()
+        new_probs = copy.deepcopy(self.probs)
+        clip_val = 10
 
+        for i in range(len(features_with_info)):
+            this_prob = constraint_probs[i]
+            other_probs = np.concatenate([constraint_probs[:i], constraint_probs[i + 1:]])
+            log_p_others = np.log(1 - other_probs).sum()
+            p_others = (1 - other_probs).prod()
+            log_score = (
+                    np.log(this_prob) - np.log(1 - this_prob)
+                    + (features_seen_index[features_with_info[i]])*(np.exp(min(log_p_others + self.LOG_LOG_ALPHA_RATIO, clip_val)))
+                #                    + p_others * np.exp(self.LOG_LOG_ALPHA_RATIO)
+            )
+            log_score = np.clip(log_score, -clip_val, clip_val)
+
+            posterior = 1 / (1 + np.exp(-log_score))
+            new_probs[features_with_info[i]] = posterior = np.clip(posterior, 0.000001, 0.999999)
+            if verbose:
+                new_prob = new_probs[features_with_info[i]]
+                change = new_prob - this_prob
+                if abs(change) > 0.0001:
+                    print(
+                        f"feat: {i}, before: {this_prob.round(3)}, after: {(new_prob).round(3)} ({(change).round(3)})")
+                    print(f" | before sigmoid: {log_score}")
+                    print(f" | prior terms: {np.log(this_prob) - np.log(1 - this_prob)}")
+                    print(f" | p others: {p_others}")
+                    print(f" | log p others: {log_p_others}")
+                    print(f" | log alpha: {np.exp(self.LOG_LOG_ALPHA_RATIO)}")
+                    print(f" | m term unclipped: {np.exp((log_p_others + self.LOG_LOG_ALPHA_RATIO))}")
+                    print(f" | m term: {np.exp(min(log_p_others + self.LOG_LOG_ALPHA_RATIO, clip_val))}")
+
+        # print("extrema", new_probs.max(), new_probs.min(), new_probs.mean())
+
+        self.probs = new_probs
+        #sign = int(judgment) * -1  # add if judgment is False, subtract if True
+        #update_unclipped = sign * np.exp(min(log_p_others + self.LOG_LOG_ALPHA_RATIO, clip_val))
+        #update_clipped = sign * np.exp(log_p_others + self.LOG_LOG_ALPHA_RATIO)
+        results = {
+            "new_probs": new_probs,
+            "log_p_others": log_p_others,
+            "update_clipped": log_score, }
+        return results
     def update_one_step(self, seq, judgment, verbose=True): # was originally called update
         features = self._featurize(seq).nonzero()[0]
         #print(features,"are the features in ",seq)

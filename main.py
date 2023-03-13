@@ -107,6 +107,7 @@ def main(args):
     #assert False
     write_out_all_features_first_time = False # don't touch this
     eval_humans = True
+    batch_update = True
     write_out_feat_probs = True
     get_prior_prob_of_test_set = True
     feature_query_log = get_out_file("feature_query_log.csv", args.exp_dir) 
@@ -258,7 +259,7 @@ def main(args):
 
                     entropy_before = entropy(learner.hypotheses[0].probs)
                     probs_before = learner.hypotheses[0].probs.copy()
-                    learner.observe(candidate, judgment)
+                    learner.observe(candidate, judgment, batch_update=batch_update)
                     last_result = learner.results_by_observations[-1] 
                     last_result_DL = {k: [dic[k] for dic in last_result] for k in last_result[0]}
                     results_by_observations_writer.writerow([i, run, strategy, dataset.vocab.decode(candidate), judgment, last_result_DL["new_probs"], last_result_DL["log_p_others"], last_result_DL["update_unclipped"], last_result_DL["update_clipped"]])

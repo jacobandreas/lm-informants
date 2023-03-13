@@ -105,15 +105,32 @@ class VBLearner(Learner):
     def __init__(self, dataset, strategy, linear_train_dataset,index_of_next_item):
         super().__init__(dataset, strategy, linear_train_dataset, index_of_next_item )
         self.results_by_observations = []
+        self.features_seen_index = {}
 
     def initialize_hyp(self):
         return scorers.MeanFieldScorer(self.dataset)
 
-    def observe(self, seq, judgment, update=True):
+    def observe(self, seq, judgment, update=True, batch_update = False):
         assert len(self.hypotheses) == 1
         assert update
         self.observations.append((seq, judgment))
-        _, results = self.hypotheses[0].update(seq, judgment)
+        if batch_update:
+            print("about to batch update!")
+            features_here = self.hypotheses[0]._featurize(seq).nonzero()[0]
+            for f in features_here:
+                if f in self.features_seen_index:
+                    if judgment:
+                        self.features_seen_index[f] += 1
+                    else:
+                        self.features_seen_index[f] -= 1
+                else:
+                    if judgment:
+                        self.features_seen_index[f] = 1
+                    else:
+                        self.features_seen_index[f] = -1
+            _, results = self.hypotheses[0].update_batch(self.features_seen_index)
+        else:
+            _, results = self.hypotheses[0].update(seq, judgment)
         self.results_by_observations.append(results)
 
     # TODO: only consider features in sequene as in scorer.entropy()? (Should be equivalent bc probs for features not in seq won't change?)
