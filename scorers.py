@@ -72,7 +72,7 @@ class MeanFieldScorer: # this is us
         # features are represented as indices into self.probs
 
         all_features = set([item for (_, feats, _) in seqs for item in feats]) 
-        clip_val = 10 
+        clip_val = 40 
 
         new_probs = self.probs.copy()
         
@@ -100,11 +100,12 @@ class MeanFieldScorer: # this is us
             log_score = (
                 np.log(this_prob) - np.log(1-this_prob) - update_sum
             )
-#            if verbose:
+            # for debugging
+#            if verbose or curr_feat in [46, 69, 133]:
 #                print(f"  Feat: {curr_feat}")
-#                print(f"\t | feats (batch): {[feats for (_, feats, _) in seqs]}")
-#                print(f"\t | other_probs (batch): {other_probs}")
-#                print(f"\t | log_probs_all_off (batch): {log_probs_all_off.round(5)}")
+#                print(f"\t | feats (batch): {[feats for (_, feats, _) in temp_seqs]}")
+#                print(f"\t | other_probs (batch): {[op.round(3) for op in other_probs]}")
+#                print(f"\t | log_probs_all_off (batch): {log_probs_all_off.round(3)}")
 #                print(f"\t | probs_all_off (batch): {probs_all_off.round(5)}")
 #                print(f"\t | judgments (batch): {judgments}")
 #                print(f"\t | update_vector (batch): {update_vector.round(5)}")
@@ -124,6 +125,7 @@ class MeanFieldScorer: # this is us
         #print("extrema", new_probs.max(), new_probs.min(), new_probs.mean())
 
         self.probs = new_probs
+        # TODO: need to return updates for each feature
         results = {
                 "new_probs": new_probs, 
                 "update_clipped": update_sum,
@@ -164,14 +166,14 @@ class MeanFieldScorer: # this is us
                 step_results = self.update_one_step(seqs, verbose=verbose)
                 new_probs = step_results["new_probs"]
                 results.append(step_results)
-                difference_vector = np.absolute(np.subtract(new_probs, old_probs))
+                difference_vector = np.subtract(new_probs, old_probs)
                 error = abs(difference_vector).sum()
                 #print(error)
                 #print(new_probs)
             else:
                 # TODO: check if robust
                 old_cost = np.array([self.logprob(s, j) for (s, j) in seqs]) 
-                step_results = self.update_one_step(seqs, judgment, verbose=verbose)
+                step_results = self.update_one_step(seqs, verbose=verbose)
                 new_probs = step_results["new_probs"]
                 results.append(step_results)
                 new_cost = np.array([self.logprob(s, j) for (s, j) in seqs]) 
@@ -181,11 +183,27 @@ class MeanFieldScorer: # this is us
                 error = abs(difference_vector).sum()
                 #print(old_cost, new_cost, "cost thing", difference_vector)
 
+#            print("")
+#            print("num updates: ", num_updates)
+#            print("error: ", error)
+#            for idx, (diff, new, old) in enumerate(zip(difference_vector, new_probs, old_probs)):
+#                if abs(diff) >= 1e-4:
+#                    print(f"feat: {idx}, diff: {round(diff, 3)}, new prob: {round(new, 3)}, old prob: {round(old, 3)}")
+#                    seqs_with_feat = [(j) for (_, feats, j) in seqs if idx in feats]
+#                    print("true sequences with features: ", sum(seqs_with_feat), "/", len(seqs_with_feat)) 
+#            print('difference: ', difference_vector.round(3))
+#            print('new_probs: ', new_probs.round(3))
+#            print('old_probs: ', old_probs.round(3))
+
+    
             num_updates += 1
 
             if num_updates == max_updates:
+                # TODO: this is just sanity checking bc this should not be happening
                 print(f"reached the max number of updates: {max_updates}")
                 print("error:", error)
+                print('difference: ', difference_vector)
+#                assert False
                 break
 
         #print("converged!",error)
