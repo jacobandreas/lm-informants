@@ -1,540 +1,1012 @@
 Word,IsTI,IsLicit
-ki pi qI tI,False,False
 ta qI,False,True
-ke pi ki,False,True
-qE ta,False,True
-te tI kE tE tI,False,False
-pi qE,False,False
-ka,False,True
-ta qa ki,False,True
-kE tI ta tI,False,True
-ta qe pi,False,True
-qi,False,True
-kE pe ka,False,False
-pi ki qI tE,False,False
-tE tE,False,True
-ki kI,False,False
-qe pa tI tE,True,True
-tE qi qa,False,False
-ki ki tI,False,False
-kE ke,False,False
-ki ki pI pi,False,False
-pe te,False,True
-ta,False,True
-ki pa qE tI,True,True
-qi kE qE,False,False
-ke ti,False,True
-qi qI ki,False,False
-kI tE pa,False,True
-qa pe,False,True
-ta te tI ka,False,False
-pa,False,True
-kI qi,False,False
-qI ti,False,False
-ka ti ka te,False,True
-qE qi pi,False,False
-pI ki,False,False
-ke ke qi kI,False,False
-qe qe pi pE,False,False
-pE kE te,False,False
-tI te,False,False
-tE pe,False,False
-pE pi kE pe qe,False,False
-pe kE,False,False
-ka ti pa,False,True
-tI kE ta,False,True
-qe kE ka,False,False
-ti qI,False,False
-qe kE tI qa pI,False,False
-te ti,False,True
-pa kI pe kE ti kE,False,False
-ta qE ke,False,False
-qe qa kE pi,True,False
-qe pI,False,False
-qI qI pI pa,False,True
-ti pE ki qi ta,False,False
-ti qI pe,False,False
-ti tE qe,False,False
-ta ki pe,False,True
-kI ti qa,False,False
-pI pI,False,True
-qi te kI pE,False,False
-te pE,False,False
-pI tE ta,False,True
-pE kI qe,False,False
-te kE qa qI ke ka,False,False
-pa te pe ke,False,True
-kI ki,False,False
-kI qi pE,False,False
-pE qI qa ti,True,True
-ka pE pa,False,True
-kE te,False,False
-tI tI,False,True
-pe qI ta,False,False
-kI pi qa,False,False
-tE ta qi kI,True,False
-tE te,False,False
-pe qa,False,True
-tE pa ke,True,True
-kE pa qI,False,True
-qe tE ti pe,False,False
-qe te,False,True
-kI tE kI pa,False,True
-pE tI,False,True
-ke pe,False,True
-tE qE te tE,False,False
-qe pi qE qE kI,False,False
-qI ka pe,True,True
-ke qI qa,False,False
-pE ta,False,True
-qE pi qa,False,False
-qI ke,False,False
-qi qe,False,True
-pi pI,False,False
-qI ta,False,True
-kI pI,False,True
-tI kE tE,False,True
-ka pE tI,False,True
-qE pI kE pe pE pa,False,False
-qI pE pI ka kE kE,False,True
-pE pI,False,True
-ki pe tI pE pa,False,False
-kE qa,False,True
-ke ke ka tE tE ta,True,True
-kI pa,False,True
-pe ti ke,False,True
-ti qa,False,True
-pI pe,False,False
-qi ke,False,True
-ki qa,False,True
-ta qi pI,False,False
-te ta tE pE,True,True
-qa ka tI ta ta ke,False,True
-qE ta kI,False,True
-ta pI ka qe,True,True
-qe kE,False,False
-qa ki pa,False,True
-kE tI pE,False,True
-ki ke,False,True
-pe qa qi,False,True
-kE qi qE,False,False
-kI ka qe,True,True
-pe kI kE,False,False
-ki pI,False,False
-tI ki,False,False
-qI ka ka te ti pi,False,True
-pi ke qa,False,True
-pE pi qE,False,False
-qI tE kI tI qE,False,True
-qi kE,False,False
-pI kE ka pI kI,False,True
-ta pI,False,True
-kI pI kE pe qa,False,False
-pa pI qa,False,True
-pE ki tE,False,False
-ti kI qi ti,False,False
-qa qI pi pe,False,False
-qE pE ki,False,False
-ka pe qE pe,False,False
-tI pE qE,False,True
-ta te,False,True
-ke kE pE,False,False
-kE ke te,False,False
-te pE pe,False,False
-pe tI tE ka te,True,False
-ki pe kI,False,False
-qe qE pi,False,False
-kE ti kE pa,False,False
-qE qi pI qe,False,False
-tE ta,False,True
-ti qe,False,True
-pe kI,False,False
-tE ka kE,False,True
-ka pa,False,True
-qE qe,False,False
-qI pe qa ke pe,False,False
-kE pa,False,True
-pI pI qe,False,False
-pE pI tE,False,True
-pe te pi pi ka,False,True
-ki ki kE kE pi qI qE ti,False,False
-qE pe,False,False
-tI pE,False,True
-te te qa,False,True
-pi ta te kE qE,False,False
-pe qI pI ki,False,False
-ki qe,False,True
-pi qa,False,True
-qa ki qi ti,False,True
-ti kI qa ki,True,False
-ti pe kI pI,False,False
-ke kE,False,False
-ti pe,False,True
-qi pi pa,False,True
-ka kE,False,True
-ta ke ti,False,True
-pI kE ke,False,False
-qe qa ke,False,True
-ti ta,False,True
-kE qe pI,False,False
-ke te,False,True
-kE qI ta,False,True
-pE qI,False,True
-ka kI kI,False,True
-qa pa,False,True
-qe ki,False,True
-ta qE pa tE,False,True
-ti ki,False,True
-qa kI,False,True
-kE pi,False,False
-ta te ke pE kI,False,False
-ka pI,False,True
-qe qi,False,True
-tE ta qe,True,True
-qI qE kE pE qa pa,False,True
-qI ti pa,False,False
-ke pe tI,False,False
-ti ti ke pE,False,False
-ta ta,False,True
-kE pE qa qI,False,True
-pE ka kE pI,False,True
-pI qe,False,False
-ka pi qI qI,False,False
-ta tE,False,True
-pe pI,False,False
-qI qI pe pI pi qI,False,False
-qI te qI,False,False
-qe pE,False,False
-pe pE ke tE,False,False
-qa tI qE,False,True
-qI qa,False,True
-ti ki qE,False,False
-tI ke,False,False
-tI kE te,False,False
-ki ki,False,True
-kI qi pa,False,False
-pe qa kI,True,True
-pI kI,False,True
-qi tE pE,False,False
-pa pi kE,False,False
-qa pE pE,False,True
-pe pe qI,False,False
-pe pI qa,False,False
-kI ti,False,False
-te pE ka pE,False,False
-qE ka,False,True
-pe pE,False,False
-te tE ti,False,False
-pi ti,False,True
-qa pi ti,False,True
-qe qI tE,False,False
-ke qa tE pI te pa,True,False
-te pI,False,False
-qe pe,False,True
-te pi qa pi tI,False,False
-ka ta,False,True
-pi qI pi ki ke te,False,False
-pI tI,False,True
-kE qI qE ti pa,False,False
-tI qE,False,True
-ki ka,False,True
-qI tE,False,True
-ki ka pi,False,True
-pe ka,False,True
-kI ka pi,True,True
-tE tE pa,False,True
-pE qI pe,False,False
-pi qi qa,False,True
-kE qI te ke,False,False
-qE qE kE,False,True
-ti pi qI ti,False,False
-tI pe,False,False
-pE qe,False,False
-qI ki qi pE,False,False
-qI qE ti pi,False,False
-tE ke,False,False
-pE qE,False,True
-kI tI qi,False,False
-ke tE qI ke,False,False
-pE ke,False,False
-ta tI pE,False,True
-qa ti,False,True
-ke pi pa ta,False,True
-pe te pa qe,False,True
-qe qE,False,False
-pe ka kI,True,True
-pE ke kI,False,False
-tI ka,False,True
-te ki qI,False,False
-pa tE ti qI,False,False
-ki ke te,False,True
-ki pE,False,False
-kE te pI,False,False
-pe qE ta,False,False
-ka qE ti,False,False
-qa te ti,False,True
-kE ki pE te pi,False,False
-te pe te,False,True
-qe pi,False,True
-qa qE,False,True
-ta ti qe,False,True
-ki ti,False,True
-qa ke ki kI,False,False
-qE qi,False,False
-tE pi te,False,False
-qi kI qe qI,False,False
-pe qE tI,False,False
-pa kI te,False,False
-pi pi ki tI,False,False
-qi qI te,False,False
-kE ti qe kI qE kI,False,False
-te ke tI ke tI pE,False,False
-tE qE ti kE,False,False
-te pi qi qE,False,False
-ki ki qe pi tE,False,False
-qI tE tE,False,True
-pa tI qI,False,True
-qE pi,False,False
-ti qI ka,False,False
-kI qi qi qe qi tI,False,False
-kI ti ta qe,False,False
-ka ki,False,True
-pi ka,False,True
-tI kE,False,True
-ki pE pI,False,False
-pe qI qe qE,False,False
-kE ki,False,False
-pi qi pe,False,True
-qI kE qi,False,False
-qi ka,False,True
-pa qI,False,True
-ta qe,False,True
-ke ta tI pE kE pI,True,True
-tE kE,False,True
-pa ke qI,False,False
-qI qe,False,False
-pe ke pe,False,True
-qa te tE,False,False
-pE qE tE,False,True
-qe qE qi,False,False
-qE pI pa ta,False,True
-ti te ti pi,False,True
-tI ki ti,False,False
-ti qi ka tI,True,True
-ke pE,False,False
-ka ki qa pI,True,True
-pa kI,False,True
-kI qe pI,False,False
-ki kI pE pI pI,False,False
-kE qE qi,False,False
-pE pe qi,False,False
-ka pe,False,True
-ta pE pE,False,True
-te te kE,False,False
-qE kI kI,False,True
-qE te qe,False,False
-qE tI pi,False,False
-te ki qi,False,True
-te qe ke,False,True
-te ti ta pE kI te,True,False
-pe ka pe qI,False,False
-kE qE,False,True
-ki kI te,False,False
-qe tE,False,False
-ti qE,False,False
-kI te,False,False
-ke te pE,False,False
-qe qI te kI ta,False,False
-ti ka ke,False,True
-pe te pe,False,True
-qE te,False,False
-ka ti pa kE,True,True
-te qE tE,False,False
-ti ti ta,False,True
-pa qa pE,False,True
-tI pI,False,True
-pI pE,False,True
-tE tI qe te,False,False
-tE ta qI,False,True
-ke tE,False,False
-qa ka ka,False,True
-qe pI tI ta,False,False
-qE pe tI,False,False
-pi ta ti qE,False,False
-qi pI pE qa,False,False
-qe tI,False,False
-ti pi,False,True
-qe kE tE tE,False,False
-pe qI,False,False
-pI qI pe kI,False,False
-qE qI qa,False,True
-ti tE,False,False
-qa tI qi ka pa,False,False
-pI pE pe,False,False
-pe ke qa,False,True
-qE kI te ti,False,False
-ka qE qa,False,True
-pI pi qI te kE,False,False
-ke pa tE,True,True
-kE kE ta,False,True
-pe pe,False,True
-qe qi ka pa qe,False,True
-qE qa pa pa,False,True
-ke tE ka,False,False
-tI qe pE,False,False
-kI qI ki qI,False,False
-ta ki,False,True
-pI qa,False,True
-te qE,False,False
-ki tE ki pI,False,False
-qi qa ka tI kE,False,True
-pE pi,False,False
-pe tE qE tE,False,False
-ke qi pE,False,False
-ka qe qE ke,False,False
-pI ta,False,True
-qa kE ti,False,False
-te pe,False,True
-pE kI,False,True
-kE tE te,False,False
-tI pa pe,True,True
-ta qa kE ka,False,True
-qa qe pI pi,False,False
-pa qi ka,False,True
-ki qa kE,True,True
-pe ki te,False,True
-qE ki,False,False
-kI qa qe,True,True
-pE ki ka,False,False
-ti pi tI,False,False
-pI qi kE,False,False
-qE qa,False,True
-kE qe,False,False
-qI qE,False,True
-pe kI qi tI qi,False,False
-kI ke,False,False
-ki pi,False,True
-ki pi qa qa pE,False,True
-qE te tE,False,False
-pE pi ka,False,False
-ti pI,False,False
-qE ke tI,False,False
-qE qI ka,False,True
-ti pI qE pE,False,False
-qI pE,False,True
-qE pe qI,False,False
-pe ke,False,True
-qa ke,False,True
-ti qi,False,True
+qe qe,False,True
+qE pi qE qI,False,False
+kI ta,False,True
 ke qI,False,False
-ke ka pI qa,True,True
-kI pe pi tI qE ti,False,False
-ta pI pa pI kI,False,True
-kE qi,False,False
-kE kE,False,True
-te kE ta ta,False,False
-ka kI,False,True
-pe tI,False,False
-qe pa,False,True
-qi kI qa,False,False
-tE ki ta tE,True,False
-tE qi,False,False
-te ti pe kE pE pi,False,False
-pi qI te,False,False
-ka qI kI pi pa kI kI,True,False
-kI ta pi,True,True
-pI qi,False,False
-ka pa ki pa tE ki,True,False
-ta qa ka pE,False,True
-tI tI pe,False,False
-pe tE,False,False
-ka qa ka ka,False,True
-pI te,False,False
-pe qa pa pa pa,False,True
-te tE ke,False,False
-pa qI ke,False,False
-kE pi ti,False,False
-pi pa,False,True
-pa tE pI tI qi qi,False,False
-qI ta tI pe,False,False
-pe pE pa,False,False
-qE pI,False,True
-pe ke kI,False,False
-qE pa te qe qa tI,True,True
-ka pE qe,False,False
-tE qI,False,True
-ta ke qe,False,True
-pE pe kE pi,False,False
-ke qa qa,False,True
-ke ke ki pe,False,True
-ka kE pI kE,False,True
-pi qI,False,False
-qE pE tI,False,True
-qe pI pE,False,False
-ta qE pa,False,True
-ke qI pI,False,False
-ka qE,False,True
-pI pi pE,False,False
-ke qI ki,False,False
-qE qE te ka,False,False
-pi ki ti,False,True
-qI qa ta,False,True
-pI kE ta,False,True
-pE qI pe kI,False,False
-pE pe,False,False
-ka tE kI pa,False,True
-qI te ta,False,False
-te qa tE,True,True
-pi pi qE,False,False
-ke qE,False,False
-pe qE ka,False,False
-pE kE,False,True
-tE te pE,False,False
-pI pE ke ka,False,False
-tE pI ki,False,False
-qe ta ka te,False,True
-ki qi,False,True
-qa pI qa,False,True
-ti te pe qI,False,False
-qi pI kI ta,False,False
-tE tE te,False,False
-qI tI qE pI tE,False,True
-qa qi qi kI qE,False,False
-qa pi te,False,True
-ke pI,False,False
-ke pa,False,True
-kE kI,False,True
-ta qi tE pI,False,False
-pe tE ki tE kI tE,False,False
-kE ka,False,True
-pi qa pa,False,True
+pe qe ka,False,True
+qi te qa qa,False,True
+kE pi,False,False
+te qI qI ti,False,False
+ta tI,False,True
+qi qa,False,True
+qI qa,False,True
+te tE,False,False
+pa pe pi,False,True
+kI pa,False,True
+ka pE kI kE,False,True
+ta kI qI qa pa qI kE,False,True
+ka kE ka,False,True
+qa ti,False,True
+pE qI pa,False,True
+tI ki tE,False,False
+qa pI kE,False,True
+qa te tE kE,False,False
+qe tE ti qE,False,False
+qi tI pi,False,False
+qa qE,False,True
+kI te ke qI,False,False
+tI pa tE,False,True
+ta qe ke ki,False,True
+ka qI tI,False,True
+pE pe kE,False,False
+pE tE qe qE,False,False
+pI pi,False,False
+tI tI pE,False,True
+pi kE tE pI tE,False,False
+ta te tI,False,False
+qi kE ta ki,True,False
+ti qI,False,False
+tE pe ke,False,False
+pI qi pa,False,False
+ti pe ka,False,True
+kE qe,False,False
+qI pe,False,False
+qa te ke,False,True
+qa kE,False,True
+ta tI pa tI,False,True
+ka pi,False,True
+pE pi pE qE pe qa,False,False
+tI pa ta pa qa,False,True
+pI qa tE,False,True
+qI pi,False,False
+ka te pa,False,True
+qi pI tE,False,False
+ta kE ti,False,False
+kE ta qi qE,True,False
+qa ta ka ka,False,True
+pe kI tE,False,False
+pI pI qi pE qe pi,False,False
+tI qi,False,False
+tE pi,False,False
+tI pi pE ka,False,False
+tI tE ke,False,False
+ke te,False,True
+ka pE pI,False,True
+ke ta kI,True,True
+ke te ka ki,False,True
+qi qi ti,False,True
+qi pE,False,False
+ki ke,False,True
+ka ki,False,True
+qi pe,False,True
+ka qI kI ke,False,False
+pE ti,False,False
+ta ka qe tI pi,False,False
+ta ki ti,False,True
+pI qE ta,False,True
+qE kI kE,False,True
+ki pE pI tI,False,False
+tI ta,False,True
+tI pa,False,True
+kE pE pE ta,False,True
+pE kE qi ki pE,False,False
+te ki,False,True
+pE pE pI,False,True
+pI ka pa pi,False,True
+qe qa tE,True,True
+pe qe tI pE ke ti,False,False
+pa pe ta,False,True
+qI qE,False,True
+pe qI,False,False
+ti qi ka pE,True,True
+qE,False,True
+qa qI qi,False,False
+kE te kI kE,False,False
+pe ta tE,True,True
+ti ki qa,False,True
+qa ka pE,False,True
+qa ke tE,False,False
+ka qa,False,True
+ti qa,False,True
+qI ti,False,False
+pi te ti,False,True
+qE qa,False,True
+qa tI qa,False,True
+qI pI,False,True
+ti pi,False,True
+tE qi pi,False,False
+ta ka qI,False,True
+ke pe,False,True
+pa pe,False,True
+ti qE,False,False
+qi pe pa qi qE pi qe,False,False
+pE qI pi,False,False
+tE te ta tE,True,False
+te tI,False,False
+ka qI,False,True
+qe ke tI ka qa,False,False
+pa pe qe,False,True
+pa ke,False,True
+kE tI,False,True
+kE tE qe,False,False
+ki qE qe,False,False
+kE qE qe ka,False,False
 kI tI,False,True
-ka ke ti,False,True
-qE ki ka ta,False,False
-qa ki tI pe tI,False,False
-qe qi qI,False,False
-tE qI pe,False,False
-tE qe,False,False
-kI pe,False,False
-ke te pI,False,False
-tE te kE,False,False
-tE ki ta qi,False,False
-qe pI qI,False,False
+ta ka pi,False,True
+pI kI qe,False,False
+ka tE ti,False,False
+pi pe qE,False,False
+ta qE,False,True
+kI kI,False,True
+ki te qe pi,False,True
+pI qe ki,False,False
+pe qi qe pe,False,True
+qI ki,False,False
+pI ke,False,False
+kI te qE,False,False
+ka tE tI ta,False,True
+qE ti,False,False
+pi pI,False,False
+ke tI,False,False
+pi ke,False,True
+ki ti kI,False,False
+kI ke qa,False,False
+te qE pe tE,False,False
+ta pe kI pI,False,False
+qi ta ke te,False,True
+pE qe ti ti,False,False
+kI pe pe ke,False,False
+qi qI,False,False
+ti,False,True
+qE qi,False,False
+ke ki,False,True
+pe pi qI,False,False
+ti ta,False,True
+pi qI kI,False,False
+te pe tI,False,False
+pI qE te,False,False
+qa tI,False,True
+ka pi qE qI,False,False
+qE pe,False,False
+ta te tE tI,False,False
+ta pa te pe tE,False,False
+qE tE ki,False,False
+pE qe,False,False
+qE qI pi,False,False
+pI qI,False,True
+kE te ke qa,False,False
+te kE ta kE,False,False
+pa qe pE,False,False
+tI tI ke,False,False
+pa qe tE,False,False
+qI kI,False,True
+tE tE,False,True
+ka ti,False,True
+te qI,False,False
+qE te pi qI kI pi,False,False
+ka ta qi,False,True
+ka ta qE,False,True
+tI pa pa,False,True
+pi tI qa,False,False
+tE ta ke pE,True,False
+pi pe pI tE tE,False,False
+tI pe pI qI qe pE,False,False
+ta qe tI,False,False
+qi pa,False,True
+kI pe ki pE,False,False
+ke qa kE,True,True
+ka pE ke,False,False
+qi tI,False,False
+qE tE qI pE,False,True
+pe tE,False,False
+qe pI kE ti,False,False
+ke pe ke ki qE,False,False
+ta pe,False,True
+qI pI te,False,False
+qE ti qI pe,False,False
+tI qe,False,False
+qa pi pa pa,False,True
+ki qa,False,True
+pe te pe,False,True
+ke kE,False,False
+tI ti tE,False,False
+ki ka,False,True
+ke kI,False,False
+qI pi ke qi,False,False
+qI ti te,False,False
+pe pi,False,True
+pi kI ti qI,False,False
+tE ki,False,False
+pE pi pE,False,False
+pi pa ta qE,False,True
+tI pi ka kE,True,False
+tE pE,False,True
+qe qi,False,True
+pI tE,False,True
+ke pi pI kI pi,False,False
+tE kE,False,True
+kE tE ta tI,False,True
+tE pi ta kE,True,False
+te qe,False,True
+kE ke,False,False
+tI qe qa,False,False
+kE tE pa,False,True
+pE qE kI pE kE pe,False,False
+ta tE te pi,False,False
+ka ta,False,True
+tE qa,False,True
+ti tI,False,False
+qe ta,False,True
+qi tI kE,False,False
+kI qe qI ki,False,False
+qE ta,False,True
+ti qa ka qa,False,True
+ta ki,False,True
+qi qE,False,False
+ta tE pE,False,True
+qI tE pe,False,False
+tI tI tI,False,True
+pE pE ka,False,True
+qa qi,False,True
+kE te,False,False
+pa te ta tE,True,True
+pi pa qE,True,True
+pE qa ka pI,False,True
+qE ka kI,False,True
+ti ke,False,True
+pa pi tI,False,False
+qi tI te qe pe,False,False
+pe qE pe pi,False,False
+pi qa tI pE,True,True
+kI qE ki,False,False
+ta qe ki,False,True
+qE qe,False,False
+pE ta,False,True
+pi tE ti kE,False,False
+ta ki qe,False,True
+qE pe ka pI ke ki,True,False
+qe kE,False,False
+ta pe qe pI,False,False
+kI pi ta kE,True,False
+pi qI qa,False,False
+pI ka pI qi pE,False,False
+pi pe,False,True
+te qI ki,False,False
+ti qe qE,False,False
+qe qi qe qi tE,False,False
+qe kI qa,False,False
+pa qE pE qe,False,False
+kE pi qE kI pa,False,False
+tE te tI,False,False
+ki pe ki,False,True
+qa pe,False,True
+kE kE qI qi te,False,False
+tI te,False,False
+qE pI qa ke,True,True
+pa pI qa,False,True
+ti tI pe,False,False
+pa ki pE ki kE,False,False
+pa pa,False,True
+ka pE qe qe,False,False
+pE tE,False,True
+qI qa te ke,True,True
+ke ke,False,True
+tI ti pi qa,False,False
+qi ke ti,False,True
+qI tE kI,False,True
+pE ka tI,False,True
+te pa pa,False,True
+pa tI,False,True
+tE qi,False,False
+qI pi ke pa,False,False
+qe ti tI,False,False
+ti ta qI,True,True
+ke qi pi qa tE,True,True
+ki tI pi ta,False,False
+tI kE qa ki ta ka,True,True
+ka kE qe pI,False,False
+qI kE qE,False,True
+ki kI qI,False,False
+tI te qe kI ta,False,False
+qa pa qI,False,True
+ki pe qa qE,True,True
+kE ti kE,False,False
+kI qe,False,False
+qa ki,False,True
+te ta te,False,True
+pI pi qE,False,False
+ta qe pi ta te,False,True
+pa pE ki kI,False,False
+qe kI ki,False,False
+te te pa,False,True
+pa te ka,False,True
+pi qa tI qI,True,True
+pi ti ka kE ta,True,True
+pE pi ke,False,False
+pe pa te,False,True
+pe pE ka,False,False
+pi qI ki,False,False
+tE kI ki,False,False
+qi ka pe,False,True
+pe tI kI kE qe,False,False
+qI pa pe ke,True,True
+pE ta pI,False,True
+kE tE qi tI ke,False,False
+kI ka,False,True
+qi pI,False,False
+tE ti ki,False,False
+kE qe qi,False,False
+pa qe ka pa,False,True
+kE pe qa tE,True,False
+ti pa qa pE qe tI qi,False,False
+pe qI ti,False,False
+qa ti pe,False,True
+pi ki,False,True
+qe pe pE pe,False,False
+ke pI pE,False,False
+ke ka qI,True,True
+kI te te,False,False
+qa ti pe tI ka,False,False
+qI tI ki ka ka,False,False
+pE ke,False,False
+qa qa,False,True
+pE qi tE ki pi,False,False
+qe te qe,False,True
+ka qE tE ka,False,True
+pE kI,False,True
+tI qe ti,False,False
+pe qa ka,False,True
+qI tI qa qi qI,True,False
+pi tE ti,False,False
+kE te ki ke kI,False,False
+kE kE,False,True
+qa ti ke,False,True
+pe pa ke,False,True
+te pI te,False,False
+qe tI kI,False,False
+pE te,False,False
+ta ke,False,True
+pi kE pa tI,False,False
+qi tI pE tI,False,False
+qE qi pa qi,False,False
+pe tI ke,False,False
+ke ta,False,True
+ki qa pe tE qa ki ke,True,False
+ki qI,False,False
+ki kE kI kI pI,False,False
+ti qE ke pa,False,False
+pa qi,False,True
+pe pe pi kI,False,False
+qE qI ki qI ti pE qI,False,False
+pa qi ti,False,True
+qe ti pe kI ki kI,False,False
+ti pe,False,True
+tE qi tI,False,False
+tI ka te tI,True,False
+ki qa pi,False,True
+ki ka ti,False,True
+qe qI,False,False
+kI kE,False,True
+qi te qe,False,True
+kI ta te,True,True
+qE qa pi,True,True
+ke tI pI kI,False,False
+te pa ki ka pI kE,True,True
+pI ta qe qE tI pi tE ki,True,False
+ka pE,False,True
+pi ke ka tI ka,True,True
+qI qi,False,False
+tE ke,False,False
+ta qe pE,False,False
+te ka,False,True
+qa ka,False,True
+ti ki,False,True
+qe ti,False,True
+pI tI pa ki pi,True,True
+te qa te,False,True
+kE tE qi qe tE te,False,False
+qe pe,False,True
+qE ta kE pi,False,False
+qa te ta,False,True
+te ke,False,True
+pI kE pe,False,False
+ka tI kI qI,False,True
+qE kE qe,False,False
+kE ke kI ti,False,False
+pi pE,False,False
+kI ke qe ke qI ke,False,False
+pa ta ta,False,True
+pe ki,False,True
+tI pi pI,False,False
+ka pa,False,True
+pa qE kE,False,True
+te kE ta pe,True,False
+qI pE,False,True
+pI ka qe tI,True,False
+qI pe tE qa pe tI qi,True,False
+ta pI tI tI,False,True
+tE qE qI,False,True
+qE tI pa,False,True
+kE ki pi,False,False
+qa ta qI tE qE,False,True
+ki kE qe qE,False,False
+kE kE ke tI pE,False,False
+pi kI,False,False
+kI ki tI qi ke,False,False
+kI ti,False,False
+kE pa ti,True,True
+te pe,False,True
+qI ti pE,False,False
+tE qI,False,True
+ka tE pE kE,False,True
+tE ki pE,False,False
+pa tE pa ki,True,True
+ka tE qE ka,False,True
+qi ke pi,False,True
+te ti qe pa,False,True
+qe ta ti ti,False,True
+ka ta qe,False,True
+pE ti ke qe,False,False
+pa qE qe,False,False
+tE kE kI,False,True
+ki ti kI ke,False,False
+qE kI tI qE,False,True
+kE ta,False,True
+kI qi ki,False,False
+kI kI pI ta kI,False,True
+qE te,False,False
+qI tE qE kI,False,True
+ka te,False,True
+ta ka pI,False,True
+ka tI,False,True
+pe ki qI,False,False
+ti ka qa qi,False,True
+tE pe ti ka,False,False
+ki te ka,False,True
+tI te qi,False,False
+kI qE,False,True
+qE pE ka,False,True
+qI te,False,False
+qi qi,False,True
+tI pI,False,True
+tE qe tI,False,False
+te tI kI,False,False
+tE kI qe ta qe,False,False
+kI ti qi qi,False,False
+pi pI kI,False,False
+qe pe ka,False,True
+ke pa ta,False,True
 ti ka,False,True
-pI ka tI ke tE ka ke,True,False
-ti ke tE,False,False
-te ta ki te,False,True
-pI kI ka kE,False,True
-tE ke tI,False,False
-ka tE,False,True
-te kE,False,False
-tI te te ti qa,False,False
-kI ka ka,False,True
-qE kI ka,False,True
-qa pa pe kE,False,False
-kI ta qa,False,True
-pE tI ka,False,True
-te tI ke,False,False
-kI ki pe pi te,False,False
-pE kE tE,False,True
+ti pa pi kI ki,False,False
+ta qi,False,True
+te te pE,False,False
+ki qe,False,True
+ta qE qE,False,True
+tE qe,False,False
+tI ke ke ke ke,False,False
+pa kE qE,False,True
+tI te pE,False,False
+tI ti,False,False
+qI ti kI,False,False
+pI qE pE,False,True
+pa pi ta qI tE tE,True,True
+ke pi pE,False,False
+qE ki kI ta,False,False
+ka kI pa qi,True,True
+pE kE,False,True
+pi tE,False,False
+qi te,False,True
+tI qI tI,False,True
+ke tE ka,False,False
+pa pE,False,True
+qI pa pE,False,True
+pE te pi pa ta pe,False,False
+tE pI qE qe,False,False
+ke qi,False,True
+pe te ti,False,True
+pE te ka,False,False
+pa kI qe,False,False
+kE pi tI te,False,False
+tE pa ka ti,False,True
+ke pa pe,False,True
+pe ti pi pi,False,True
+ka qa pa qI qE,False,True
+pe ke qa qi pi,False,True
+tE ta tI pi,False,False
+ke pI qe,False,False
+ki qE pa,False,False
+pI qe,False,False
+qa pE ka,False,True
+qi kE,False,False
+pI qE kI kI,False,True
+ki pE qe qE,False,False
+ti qi qa te,False,True
+qe pI ta ti qE pE ta,True,False
+qe ka ta kI,False,True
+qa ta te pe,False,True
+qe qi ta,False,True
+kI qI ta ke qe,True,True
+ka ka qI,False,True
+qi ta pI,True,True
+pe tI,False,False
+ta ti,False,True
+qi ki pa tI,True,True
+qa qE tI pi,False,False
+kI tE pi te kI pi,False,False
+ki ki qI qE,False,False
+ke kI qI tI,False,False
+qE pa kI,False,True
+ta kE pe,False,False
+tI tE kI,False,True
+pI kI tE,False,True
+ki ti,False,True
+ke tE,False,False
+tI ta pE,False,True
+ti kI qa,False,False
+te pe kI,False,False
+ta ke tI ke pE,False,False
+ke ti ti,False,True
+te pI ke,False,False
+ta qi qE tI kE,False,False
+pI te pa,False,False
+pE pE kI tI,False,True
+kI ke,False,False
+ki tI pa,False,False
+qa kI ta,False,True
+tE pe ti,False,False
+ti qI kI,False,False
+ka qe,False,True
+te qi,False,True
+qe ta ti,False,True
+pE tI pE qe,False,False
+pa kE ta,False,True
+ta te,False,True
+ka pi pe,False,True
+qe tE,False,False
+ki qi pe tI,False,False
+pE ke kE,False,False
+qe ki kE tI pI,False,False
+pE ka pI qI ta,False,True
+ti pI tI pe,False,False
+ke qI kE,False,False
+qi ki,False,True
+qE ta te,True,True
+kI tI tE pi,False,False
+qe pE,False,False
+ki qI ki,False,False
+kI qa,False,True
+qE tE,False,True
+ka kE qi pI pe te ka qi,False,False
+pe kE ka tE kI ta pa,False,False
+tE pe ta kI pI qE,True,False
+ka kI ki,False,False
+tE qe ta,False,False
+ti pE pI,False,False
+te tI ka qI,False,False
+ka qe ke,False,True
+pi kE,False,False
+ta te pi ka ke,False,True
+te qi pI qE,False,False
+tI qE qE,False,True
+ke pa te,False,True
+qI qe pa tE qI,True,False
+qI pE ta qe,True,True
+qi qe,False,True
+ke qa qe,False,True
+pi ke qI pE qI,False,False
+kE ka ki,True,True
+qe qI qE,False,False
+ti pI qa,False,False
+qi ta qi kE ti ke,False,False
+ta pE,False,True
+qe ki,False,True
+kE qE pe,False,False
+pi pE pa,False,False
+pe te,False,True
+pe pa kE,True,True
+qi pi pE pI,False,False
+tE qI qi,False,False
+kE pI pI,False,True
+pI ka te,True,True
+ti qI pe,False,False
+pI pE ti,False,False
+qE kI,False,True
+qi qE ki tI,False,False
+qE ti pE pI kI,False,False
+qe qE,False,False
+pi ke te ta,False,True
+pI pE qi qi ka,False,False
+ka ti qi,False,True
+pI ka kE qe,False,False
+te qa qE qa,True,True
+ki pi,False,True
+qe ke,False,True
+ke pe qE,False,False
+ke qI ta,False,False
+tE ke qI pI,False,False
+pe qe ki,False,True
+pE ti ta pe,False,False
+ta qa tE kE ke,False,False
+ke kE tE,False,False
+ki pE,False,False
+pI te qE,False,False
+qi qa ta qi,False,True
+pE pi,False,False
+qi ke,False,True
+pa ki qI tI,False,False
+pI ta pe kI,True,False
+pe ka pI,True,True
+pa pa qI,False,True
+ki pa pE,True,True
+te kE tE,False,False
+pe ka,False,True
+kI ta qE,False,True
+tI tI qE,False,True
+tI tI qE qE tI,False,True
+qE tI ki,False,False
+kE pE qI,False,True
+ti pI,False,False
+pe qi ta pi,False,True
+qI kE,False,True
+ke pi ke,False,True
+tI qE qI ti,False,False
+ti ke pE,False,False
+pI ti,False,False
+qa qE pa,False,True
+tI tE qE,False,True
+ta pE kI,False,True
+kE qi,False,False
+pa pi,False,True
+tE qe ka ta,False,False
+qI ki te,False,False
+pi pa,False,True
+tI qI,False,True
+qE qi ka te,False,False
+tI tI qe,False,False
+qE ti qa ke,False,False
+qa pI,False,True
+pE pI,False,True
+qi qI ke qE,False,False
+pe pI pI,False,False
+qa ka kI kE,False,True
+pi tI,False,False
+pe ta kI ta,True,True
+tE ti ke qe ka,False,False
+qE pI tI ka qa,False,True
+pI qa,False,True
+ta pi,False,True
+ta ki qi ti ti qi,False,True
+pI pI qa,False,True
+qi pa pi ti,False,True
+pE pa pI qE,False,True
+ki pi qa qE qI,True,True
+qa kI,False,True
+qe ki te,False,True
+qI ta ti kE ta,True,False
+kE pI ki tE,False,False
+pe qa kE,True,True
+ki tI,False,False
+tI ke,False,False
+tE pa,False,True
+pI pi pi,False,False
+ka pI,False,True
+pi ta tI,True,True
+pi qe,False,True
+pa kI,False,True
+tI pi kE ka,False,False
+kE pE,False,True
+ki tI qi qa,False,False
+te pI qe pi,False,False
+kE qE pa qa,False,True
+ki pi qE pE,False,False
+pE qa,False,True
+ke pI ta qe,True,False
+ti qE ki,False,False
+kI tE,False,True
+qI pI pi,False,False
+qa tE tI,False,True
+pi pE ti,False,False
+ti qe ti kI,False,False
+pa qI,False,True
+ka ke,False,True
+qI tE,False,True
+qi kI,False,False
+pI qE pi qe,False,False
+ka ki pe,False,True
+te ti,False,True
+qi ta qe qI qe,False,False
+pe ke pi kE,False,False
+ki kI pE,False,False
+tE qi qE kE,False,False
+pI ke tE,False,False
+ka tI pi tE,False,False
+pi ke tI pI,False,False
+pE ke qe,False,False
+tI ka te qi,True,True
+pE pe qi pE,False,False
+kI qa ti,True,True
+pa ki,False,True
+tE ta ti qI,True,False
+qe qI pi ta,False,False
+pi ti,False,True
+ka qe pE ka,False,False
+kE ki,False,False
+qi tI pe qE,False,False
+tI pe te kE pI ke,False,False
+qe kE qa,False,False
+ka ki qI,False,False
+qE qE,False,True
+ka kI qE,False,True
+qI pi ti pI,False,False
+ti te ka,False,True
+te qi pe,False,True
+tI ke tI qe,False,False
+pe qE te,False,False
+ti pa pI,True,True
+ki kE,False,False
+pe kI ke qi,False,False
+ke pi pE ke,False,False
+ka qI qi pi,False,False
+qI tI,False,True
+pe pa,False,True
+pI te,False,False
+pE pe,False,False
+tI ka pE,False,True
+tI qe qi kE qa,False,False
+pa qI ki,False,False
+kE pa qI,False,True
+pE pE qe pI,False,False
+kE pa qe pi te,True,True
+ti kI,False,False
+ki qe te qe,False,True
+kI tE ta qi,True,True
+qe qE kE,False,False
+pI ki,False,False
+ka kE qe,False,False
+tI ta ti,True,True
+ti ka ka,False,True
+tE qa pE qe ke,False,False
+pa tE,False,True
+pa tI ka,False,True
+tE pI pa,False,True
+pI ke ke,False,False
+pi ti ke,False,True
+pI ti pI,False,False
+pe ta kI,True,True
+kI kI ka qa,False,True
+qE ki,False,False
+tE qe pE tE,False,False
+pE qi,False,False
+kI tI ka,False,True
+qI kI kI,False,True
+ki qa pi ta,False,True
+qa pa te ti,False,True
+ti ka pa,False,True
+tE te,False,False
+qe ki ti,False,True
+tI pI tI,False,True
+ti pE,False,False
+kE pI qi tE kE,False,False
+tI qe ti pe,False,False
+ki qE pE,False,False
+kI pi ka,False,False
+kE qe pi ke,False,False
+qI ta ke,True,True
+kI qa qe,True,True
+qa pE,False,True
+kE qI pE tE,False,True
+kE pi qe,False,False
+pi qI,False,False
+kE pI te,False,False
+te qa,False,True
+ta pi kE,False,False
+kE kI qi,False,False
+pI pi qE te,False,False
+ti qi tE pI,False,False
+pi pe pE ka,False,False
+pI qe ti pI ke pE kE,False,False
+pe ta pi,False,True
+ka ti te qi,False,True
+ta pa,False,True
+tI ka pi,True,True
+pi kE pa,False,False
+te kI,False,False
+ta ke pE,False,False
+qe tE kI,False,False
+ka qe ta ki ke pi qa,False,True
+ti qi qe pI,False,False
+ka ka qa,False,True
+tI pE qI,False,True
+qI pE kE,False,True
+kE qa qi,True,True
+qe tE ke qI,False,False
+ki ke ka,False,True
+pa pi qa,False,True
+qe ki pe qa,False,True
+tI te qa,False,False
+ti kE,False,False
+ka ki qe te te,False,True
+kE ke ti ke,False,False
+qa kE ki,False,False
+ta ti te qi ta kI,True,True
+qE qi qi,False,False
+qI pa,False,True
+ki ka qI qe,True,False
+pi qe pE qI ka tE,False,False
+tI pa pe,True,True
+tI ke qe ke ta,False,False
+ta qI pa,False,True
+qE qI qi,False,False
+kE qi pI,False,False
+kE qa,False,True
+pa pI pa kE,False,True
+kI tE qe qE pI ta tE,False,False
+pE ta te,True,True
+pe pI,False,False
+tI ki qa,False,False
+ta qi qi qa qE,True,True
+tI pi,False,False
+qa ta pI ka,False,True
+qE pi qa,False,False
+pI pe pE pE,False,False
+qi pE pE pa,False,False
+kI ti pe,False,False
+pI pE pI,False,True
+kI pa ka qa,False,True
+kI qe qE,False,False
+kI kI tI ta,False,True
+ke qE te tE,False,False
+ke tE qe pE qE,False,False
+ki pa qi,False,True
+ti te pa ka,False,True
+tI qI ke,False,False
+tI ka pE tI ti ke,False,False
+pe kE ka kI pE qE pI ti,False,False
+tE qa ka tE ta,False,True
+pi qe ke pi,False,True
+ti qa te,False,True
+tI kI pi kI,False,False
+kE qe ta tE,True,False
+qi qi qa,False,True
+kI qI,False,True
+ka qi te qa qE pe kI,True,False
+kI tI ke,False,False
+ki pa qE,True,True
+ki qE ke ta tI,True,False
+te ta pE ke te,True,False
+kI qe qe,False,False
+ki te qI,False,False
+pe ke ke,False,True
+tI pi pE ta qe,True,False
+kI qi,False,False
+kE qe qe,False,False
+qi pa pi,False,True
+pi ta qi,False,True
+pE tI ta,False,True
+qe ka pa,False,True
+pe qE ki ki,False,False
+pa tE pI,False,True
+ki pe qI pe ti te,False,False
+ta ka pa pE,False,True
+ta ti ka,False,True
+pa ti,False,True
+tE ta pe,True,True
+te pI,False,False
+pI ta tI qa tE,False,True
+tE pi qe,False,False
+qa qi qE,False,False
+qi pe ki kE,False,False
+qI kE qE ki,False,False
+qe pa,False,True
+qa pi ta qe,False,True
+ta pE ti ti,False,False
+qi ki ti,False,True
+tE kE tE,False,True
+ki qE tI,False,False
+ki ti pa,False,True
+kE qI ki ta,False,False
+qe ti qE,False,False
+pe qe kE ta ke,True,False
+qI tE ka,False,True
+ki pI,False,False
+ki kI qa,False,False
+ke qE,False,False
+pE tI te,False,False
+kE qE,False,True
+qe qi pI,False,False
+ta qi pE,False,False
+qI pa ta,False,True
+tE qa pI ka,False,True
+ti te qa,False,True
+tI qE tI tI ka,False,True
+ta pe ka qE qa,True,True
+kI pE pI,False,True
+kI ka qI,False,True
+kE qI ti,False,False
+ta kI,False,True
+qe ka ta qa,False,True
+ke kE pi qa pa,False,False
+tE qi tE,False,False
+qI ka,False,True
+kI te qe pa,False,False
+pi qe ka,False,True
+ti ti kI,False,False
+qa ta ki,False,True
+qE ke,False,False
+qa ke qI,False,False
+pI qE pI qi pi pE,False,False
+ti tE,False,False
+pa ta,False,True
+tE kI,False,True
+tE ka tE,False,True
+qi pE pI pe qI pI,False,False
+qa qI,False,True
+qE qi tE,False,False
+ke qa,False,True
+ki qe tE tI,False,False
+ti qi,False,True
+pE kE pa pI,False,True
+qa ke qa pi kE,False,False
+qe ke qa,False,True
+qE qe qE,False,False
+kE kI pa,False,True
+pI qE pe,False,False
+pa qi ke ta qI,True,True
+qE pi qa qI,True,False
+ti pe kE qe qI,False,False
+ke qi qi,False,True
+ti pI qi,False,False
+pe tI qE,False,False
+qi qE ti,False,False
+tE ka,False,True
+pa pE tI pa qI,False,True
+qE ka,False,True
+tE qI pi,False,False
+tI ki qi,False,False
+pI ka qe,True,True
+qa qa ke pE,False,False
+te te,False,True
+qI ke kI,False,False
+qa ki ke kI,False,False
+tE qE,False,True
+qE pi ki pi pI,False,False
+tE ki pa,False,False
+qE qe qe qe,False,False
+tE pa qI pi,False,False
+kE kI pe,False,False
+tE ki tE pE,False,False
+pI ta pe pe ki,True,True
+pE pI ta ka,False,True
+pE qe pi,False,False
+pI pE pE kI pe ti,False,False
+pi qa qe,False,True
+te qi pE,False,False
+pe pi kE tI ta,False,False
+qa kI te ke qa ta pa,False,False
+ta tI qE,False,True
+kE qE pi,False,False
+pI pe,False,False
+pe ki pi,False,True
+te qi qI,False,False
+qI qe ki,False,False
+pi pe ka,False,True
+pi kI qi,False,False
+tI ka,False,True
+ke pe qi,False,True
+pi pi,False,True
+qe ti pE pi,False,False
+pi pE ka pI kE kE,False,False
+ki pa qe,False,True
+tE pE pE qI,False,True
+tE pi ki pa ke,False,False
+kE ke tI pI qe pE,False,False
+pE kI ki qe,False,False
+ke qa te,False,True
+ki ke ti,False,True
+pI ki pI,False,False
+qi ki tE,False,False
+pa pI ki,False,False
+qe qI ke,False,False
+qi tE,False,False
+qe kI,False,False
+pa kE,False,True
+kE pa,False,True
+qa tE,False,True
+qa ta,False,True
+kI qe ta qi qa ke,False,False
+qa ta ta pE,False,True
+pe tE pa,False,False
+ka ti ke,False,True
+pE qa pE,False,True
 ,False,True
