@@ -48,9 +48,15 @@ class BilinearScorer:
 class MeanFieldScorer:  # this is us
     def __init__(self, dataset):
         self.ORDER = 3
+<<<<<<< HEAD
         #        self.LOG_LOG_ALPHA_RATIO = 45 # 45 is what Jacob set # was 500
         #        alpha = 0.9999999999999999
         #        self.LOG_LOG_ALPHA_RATIO = np.log(np.log(alpha/(1-alpha))) # 45 is what Jacob set # was 500
+=======
+#        self.LOG_LOG_ALPHA_RATIO = 45 # 45 is what Jacob set # was 500
+#        alpha = 0.9999999999999999
+#        self.LOG_LOG_ALPHA_RATIO = np.log(np.log(alpha/(1-alpha))) # 45 is what Jacob set # was 500
+>>>>>>> 1564f14 (increment)
         self.LOG_LOG_ALPHA_RATIO = .1
         print("log log alpha ratio: ", self.LOG_LOG_ALPHA_RATIO)
         self.dataset = dataset
@@ -60,6 +66,7 @@ class MeanFieldScorer:  # this is us
             self.ngram_features[ff] = len(self.ngram_features)
         self.probs = 0.2 * np.ones(len(self.ngram_features))
 
+<<<<<<< HEAD
     def update_batch(self, features_seen_index, verbose=True):
         features_with_info = features_seen_index.keys()
         # print(features,"are the features in ",seq)
@@ -117,6 +124,15 @@ class MeanFieldScorer:  # this is us
         # new_probs = self.probs.copy()
         new_probs = copy.deepcopy(self.probs)
         clip_val = 10
+=======
+    def update_one_step(self, seq, judgment, verbose=True): # was originally called update
+        features = self._featurize(seq).nonzero()[0]
+        #print(features,"are the features in ",seq)
+        constraint_probs = self.probs[features]
+        #new_probs = self.probs.copy()
+        new_probs = copy.deepcopy(self.probs)
+        clip_val = 10 
+>>>>>>> 1564f14 (increment)
 
         for i in range(len(features)):
             this_prob = constraint_probs[i]
@@ -214,8 +230,13 @@ class MeanFieldScorer:  # this is us
             #        if False:
             while error > tolerance:
                 if not target_item:
+<<<<<<< HEAD
                     # print(error)
                     # print(old_probs)
+=======
+                #print(error)
+                #print(old_probs)
+>>>>>>> 1564f14 (increment)
                     old_probs = copy.deepcopy(new_probs)
                     step_results = self.update_one_step(seq, judgment, verbose=verbose)
                     new_probs = step_results["new_probs"]
