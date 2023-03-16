@@ -1,6 +1,6 @@
 from datasets import BOUNDARY, Vocab
 import util
-import pdb
+
 import copy
 import itertools as it
 import numpy as np
@@ -9,6 +9,7 @@ import re
 
 import torch
 from torch import nn
+
 
 class BilinearScorer:
     def __init__(self, vocab, dim, embeddings=None, weights=None):
@@ -44,180 +45,246 @@ class BilinearScorer:
         return BilinearScorer(self.vocab, self.dim, new_embeddings, new_weights)
 
 
-class MeanFieldScorer: # this is us
-    def __init__(self, dataset, log_log_alpha_ratio=1, prior_prob=0.5, converge_type="symmetric"):
+class MeanFieldScorer:  # this is us
+    def __init__(self, dataset):
         self.ORDER = 3
-#        self.LOG_LOG_ALPHA_RATIO = 45 # 45 is what Jacob set # was 500
-#        alpha = 0.9999999999999999
-#        self.LOG_LOG_ALPHA_RATIO = np.log(np.log(alpha/(1-alpha))) # 45 is what Jacob set # was 500
-        self.LOG_LOG_ALPHA_RATIO = log_log_alpha_ratio 
-        
-        if converge_type not in ["symmetric", "asymmetric"]:
-            raise ValueError(f"Invalid value for converge_type given: {converge_type}")
-        self.converge_type = converge_type
-        
+        #        self.LOG_LOG_ALPHA_RATIO = 45 # 45 is what Jacob set # was 500
+        #        alpha = 0.9999999999999999
+        #        self.LOG_LOG_ALPHA_RATIO = np.log(np.log(alpha/(1-alpha))) # 45 is what Jacob set # was 500
+        self.LOG_LOG_ALPHA_RATIO = .1
+        print("log log alpha ratio: ", self.LOG_LOG_ALPHA_RATIO)
         self.dataset = dataset
         self.phoneme_features, self.feature_vocab = _load_phoneme_features(dataset)
         self.ngram_features = {}
         for ff in it.product(range(len(self.feature_vocab)), repeat=self.ORDER):
             self.ngram_features[ff] = len(self.ngram_features)
-        self.probs = prior_prob * np.ones(len(self.ngram_features))
-        self.prior = self.probs.copy()
+        self.probs = 0.2 * np.ones(len(self.ngram_features))
 
-    def update_one_step(self, seqs, verbose=False): # was originally called update
-        # seq is a list of (seq, features, judgment) tuples
+    def update_batch(self, features_seen_index, verbose=True):
+        features_with_info = features_seen_index.keys()
+        # print(features,"are the features in ",seq)
+        constraint_probs = self.probs[features_with_info]
+        # constraint_probs = [constraint_prob for constraint_prob in self.probs.keys() if constraint_prob in features_with_info]# error here; this is expecting a vector of bools or sth, but what I'm working with is a list of features
+        # new_probs = self.probs.copy()
+        new_probs = copy.deepcopy(self.probs)
+        clip_val = 10
 
-        # contains a list of the unique features in the whole batch
-        # (i.e. the ones we want to update)
-        # features are represented as indices into self.probs
-
-        all_features = set([item for (_, feats, _) in seqs for item in feats]) 
-        clip_val = 40 
-
-        new_probs = self.probs.copy()
-        
-        # curr_feat is feat to update
-        if verbose:
-            print(f"Features to update: {all_features}")
-        for curr_feat in all_features:
-            this_prob = self.probs[curr_feat]
-     
-#            for (_, feats, _) in seqs:
-#                other_feats = [f for f in feats if f != curr_feat]
-#                other_probs = self.probs[other_feats]
-
-            temp_seqs = [(_, feats, judgement) for (_, feats, judgement) in seqs if curr_feat in feats]
-
-            other_probs = [self.probs[[f for f in feats if f != curr_feat]] for (_, feats, _) in temp_seqs] 
-            log_probs_all_off = np.array([np.log(1-op).sum() for op in other_probs])
-            probs_all_off = np.exp(log_probs_all_off)
-            judgments = np.array([1 if j is True else -1 for (_, _, j) in temp_seqs])
-
-            update_vector = (judgments * np.exp(np.clip(log_probs_all_off + self.LOG_LOG_ALPHA_RATIO, -np.inf, clip_val)))
-            update_sum = update_vector.sum()
-            update_unclipped = (judgments * np.exp(log_probs_all_off + self.LOG_LOG_ALPHA_RATIO)).sum()
-
+        for i in range(len(features_with_info)):
+            this_prob = constraint_probs[i]
+            other_probs = np.concatenate([constraint_probs[:i], constraint_probs[i + 1:]])
+            log_p_others = np.log(1 - other_probs).sum()
+            p_others = (1 - other_probs).prod()
             log_score = (
-                np.log(this_prob) - np.log(1-this_prob) - update_sum
+                    np.log(this_prob) - np.log(1 - this_prob)
+                    + (features_seen_index[features_with_info[i]]) * (
+                        np.exp(min(log_p_others + self.LOG_LOG_ALPHA_RATIO, clip_val)))
+                #                    + p_others * np.exp(self.LOG_LOG_ALPHA_RATIO)
             )
-            # for debugging
-#            if verbose or curr_feat in [46, 69, 133]:
-#                print(f"  Feat: {curr_feat}")
-#                print(f"\t | feats (batch): {[feats for (_, feats, _) in temp_seqs]}")
-#                print(f"\t | other_probs (batch): {[op.round(3) for op in other_probs]}")
-#                print(f"\t | log_probs_all_off (batch): {log_probs_all_off.round(3)}")
-#                print(f"\t | probs_all_off (batch): {probs_all_off.round(5)}")
-#                print(f"\t | judgments (batch): {judgments}")
-#                print(f"\t | update_vector (batch): {update_vector.round(5)}")
-#                print(f"\t | update_sum (batch): {update_sum}")
-
             log_score = np.clip(log_score, -clip_val, clip_val)
 
             posterior = 1 / (1 + np.exp(-log_score))
-#            new_probs[features[i]] = posterior = np.clip(posterior, 0.000001, 0.999999)
-            new_probs[curr_feat] = posterior = np.clip(posterior, 0.000001, 0.999999)
+            new_probs[features_with_info[i]] = posterior = np.clip(posterior, 0.000001, 0.999999)
             if verbose:
-                new_prob = new_probs[curr_feat]
-                change = new_prob-this_prob
+                new_prob = new_probs[features_with_info[i]]
+                change = new_prob - this_prob
                 if abs(change) > 0.0001:
-                    print(f"feat: {curr_feat}, before: {this_prob.round(3)}, after: {(new_prob).round(3)} ({(change).round(3)})")
+                    print(
+                        f"feat: {i}, before: {this_prob.round(3)}, after: {(new_prob).round(3)} ({(change).round(3)})")
+                    print(f" | before sigmoid: {log_score}")
+                    print(f" | prior terms: {np.log(this_prob) - np.log(1 - this_prob)}")
+                    print(f" | p others: {p_others}")
+                    print(f" | log p others: {log_p_others}")
+                    print(f" | log alpha: {np.exp(self.LOG_LOG_ALPHA_RATIO)}")
+                    print(f" | m term unclipped: {np.exp((log_p_others + self.LOG_LOG_ALPHA_RATIO))}")
+                    print(f" | m term: {np.exp(min(log_p_others + self.LOG_LOG_ALPHA_RATIO, clip_val))}")
 
-        #print("extrema", new_probs.max(), new_probs.min(), new_probs.mean())
+        # print("extrema", new_probs.max(), new_probs.min(), new_probs.mean())
 
         self.probs = new_probs
-        # TODO: need to return updates for each feature
+        # sign = int(judgment) * -1  # add if judgment is False, subtract if True
+        # update_unclipped = sign * np.exp(min(log_p_others + self.LOG_LOG_ALPHA_RATIO, clip_val))
+        # update_clipped = sign * np.exp(log_p_others + self.LOG_LOG_ALPHA_RATIO)
         results = {
-                "new_probs": new_probs, 
-                "update_clipped": update_sum,
-                "update_unclipped": update_unclipped,
-                "p_all_off": np.mean(probs_all_off), # TODO: do we want the sum?
-                } 
-        return results 
+            "new_probs": new_probs,
+            "log_p_others": log_p_others,
+            "update_clipped": log_score, }
+        return results
 
-    def update(self, seqs, verbose=False):
+    def update_one_step(self, seq, judgment, verbose=True):  # was originally called update
+        features = self._featurize(seq).nonzero()[0]
+        # print(features,"are the features in ",seq)
+        constraint_probs = self.probs[features]
+        # new_probs = self.probs.copy()
+        new_probs = copy.deepcopy(self.probs)
+        clip_val = 10
+
+        for i in range(len(features)):
+            this_prob = constraint_probs[i]
+            other_probs = np.concatenate([constraint_probs[:i], constraint_probs[i + 1:]])
+            log_p_others = np.log(1 - other_probs).sum()
+            p_others = (1 - other_probs).prod()
+            if judgment:
+                # frac satisfying if off is prob that the others are all off
+                # frac satisfying if on is 0
+                log_score = (
+                        np.log(this_prob) - np.log(1 - this_prob)
+                        - np.exp(min(log_p_others + self.LOG_LOG_ALPHA_RATIO, clip_val))
+                    #                    - p_others * np.exp(self.LOG_LOG_ALPHA_RATIO)
+                )
+                # log_score = -10000
+
+            else:
+                # frac satifying if off is prob that any other is on
+                # frac satisfying if on is 1
+                log_score = (
+                        np.log(this_prob) - np.log(1 - this_prob)
+                        + np.exp(min(log_p_others + self.LOG_LOG_ALPHA_RATIO, clip_val))
+                    #                    + p_others * np.exp(self.LOG_LOG_ALPHA_RATIO)
+                )
+            log_score = np.clip(log_score, -clip_val, clip_val)
+
+            posterior = 1 / (1 + np.exp(-log_score))
+            new_probs[features[i]] = posterior = np.clip(posterior, 0.000001, 0.999999)
+            if verbose:
+                new_prob = new_probs[features[i]]
+                change = new_prob - this_prob
+                if abs(change) > 0.0001:
+                    print(
+                        f"feat: {i}, before: {this_prob.round(3)}, after: {(new_prob).round(3)} ({(change).round(3)})")
+                    print(f" | before sigmoid: {log_score}")
+                    print(f" | prior terms: {np.log(this_prob) - np.log(1 - this_prob)}")
+                    print(f" | p others: {p_others}")
+                    print(f" | log p others: {log_p_others}")
+                    print(f" | log alpha: {np.exp(self.LOG_LOG_ALPHA_RATIO)}")
+                    print(f" | m term unclipped: {np.exp((log_p_others + self.LOG_LOG_ALPHA_RATIO))}")
+                    print(f" | m term: {np.exp(min(log_p_others + self.LOG_LOG_ALPHA_RATIO, clip_val))}")
+
+        # print("extrema", new_probs.max(), new_probs.min(), new_probs.mean())
+
+        self.probs = new_probs
+        sign = int(judgment) * -1  # add if judgment is False, subtract if True
+        update_unclipped = sign * np.exp(min(log_p_others + self.LOG_LOG_ALPHA_RATIO, clip_val))
+        update_clipped = sign * np.exp(log_p_others + self.LOG_LOG_ALPHA_RATIO)
+        results = {
+            "new_probs": new_probs,
+            "log_p_others": log_p_others,
+            "update_unclipped": update_unclipped,
+            "update_clipped": update_clipped, }
+        return results
+
+    def update(self, seq, judgment, verbose=True):
         results = []
 
-        orig_probs = self.probs.copy()
-        if verbose:
-            print(f"Items in batch:")
-            for seq, features, judgment in seqs:
-                print(f"\t{seq}, {features}, {self.dataset.vocab.decode(seq)}, {judgment}")
-        target_item = False 
+        orig_probs = copy.deepcopy(self.probs)
 
-        # This is the same as manually updating once first
-        error = np.inf
+        if verbose:
+            features = self._featurize(seq).nonzero()[0]
+            print(f"seq: {seq}")
+            print(f"featurized: {features}")
+            print(f"decoded seq: {self.dataset.vocab.decode(seq)}")
+            print(f"Judgment: {judgment}")
+        #            print(f"Probs before updating: {orig_probs}")
+        #   print("updating!")
+        target_item = False
+        if not target_item:
+            old_probs = copy.deepcopy(self.probs)
+            step_results = self.update_one_step(seq, judgment, verbose=verbose)
+            results.append(step_results)
+            new_probs = step_results["new_probs"]
+            difference_vector = np.subtract(new_probs, old_probs)
+        else:
+            old_cost = copy.deepcopy(self.logprob(seq, judgment))
+            step_results = self.update_one_step(seq, judgment, verbose=verbose)
+            results.append(step_results)
+            new_probs = step_results["new_probs"]
+            new_cost = self.logprob(seq, judgment)
+
+            difference_vector = np.subtract(new_cost, old_cost)
+            # print(old_cost,new_cost,"cost thing",difference_vector)
+
+        num_updates = 1
+
+        error = abs(difference_vector).sum()
+        if verbose:
+            print("error: ", error)
+        # print(error)
         tolerance = 0.001
-#        do_converge = (judgment == True or judgment == False) # asymmetric update; if you want asymmetric, comment out after true
-#        do_converge = (judgment == True)
-        if self.converge_type == "symmetric":
-            do_converge = True
-        # In asymmetric case, only converge for positive examples
-        elif self.converge_type == "asymmetric":
-            do_converge = (judgment == True)
-        # updarte if first update *or* have not converged yet
-        num_updates = 0
-        max_updates = 10
-        self.probs = self.prior.copy()
-        while (do_converge and error > tolerance) or num_updates == 0:
-            if verbose:
-                print(f"  Update {num_updates}:")
-            if not target_item:
-                old_probs = self.probs.copy()
-                step_results = self.update_one_step(seqs, verbose=verbose)
-                new_probs = step_results["new_probs"]
-                results.append(step_results)
-                difference_vector = np.subtract(new_probs, old_probs)
-                error = abs(difference_vector).sum()
-                #print(error)
-                #print(new_probs)
-            else:
-                # TODO: check if robust
-                old_cost = np.array([self.logprob(s, j) for (s, j) in seqs]) 
-                step_results = self.update_one_step(seqs, verbose=verbose)
-                new_probs = step_results["new_probs"]
-                results.append(step_results)
-                new_cost = np.array([self.logprob(s, j) for (s, j) in seqs]) 
-#                    new_cost = self.logprob(seq, judgment)
+        if judgment == True or judgment == False:  # symmetric update; if you want asymmetric, comment out after true
+            #        if judgment == True:
+            #        if False:
+            while error > tolerance:
+                if not target_item:
+                    # print(error)
+                    # print(old_probs)
+                    old_probs = copy.deepcopy(new_probs)
+                    step_results = self.update_one_step(seq, judgment, verbose=verbose)
+                    new_probs = step_results["new_probs"]
+                    results.append(step_results)
+                    difference_vector = np.absolute(np.subtract(new_probs, old_probs))
+                    error = abs(difference_vector).sum()
+                    # print(error)
+                    # print(new_probs)
+                else:
+                    old_cost = copy.deepcopy(new_cost)
+                    step_results = self.update_one_step(seq, judgment, verbose=verbose)
+                    new_probs = step_results["new_probs"]
+                    results.append(step_results)
+                    new_cost = self.logprob(seq, judgment)
 
-                difference_vector = np.subtract(new_cost, old_cost)
-                error = abs(difference_vector).sum()
-                #print(old_cost, new_cost, "cost thing", difference_vector)
+                    difference_vector = np.subtract(new_cost, old_cost)
+                    error = abs(difference_vector).sum()
+                    # print(old_cost, new_cost, "cost thing", difference_vector)
 
-#            print("")
-#            print("num updates: ", num_updates)
-#            print("error: ", error)
-#            for idx, (diff, new, old) in enumerate(zip(difference_vector, new_probs, old_probs)):
-#                if abs(diff) >= 1e-4:
-#                    print(f"feat: {idx}, diff: {round(diff, 3)}, new prob: {round(new, 3)}, old prob: {round(old, 3)}")
-#                    seqs_with_feat = [(j) for (_, feats, j) in seqs if idx in feats]
-#                    print("true sequences with features: ", sum(seqs_with_feat), "/", len(seqs_with_feat)) 
-#            print('difference: ', difference_vector.round(3))
-#            print('new_probs: ', new_probs.round(3))
-#            print('old_probs: ', old_probs.round(3))
+                num_updates += 1
 
-    
-            num_updates += 1
-
-            if num_updates == max_updates:
-                # TODO: this is just sanity checking bc this should not be happening
-                print(f"reached the max number of updates: {max_updates}")
-                print("error:", error)
-                print('difference: ', difference_vector)
-#                assert False
-                break
-
-        #print("converged!",error)
+        # print("converged!",error)
         if verbose:
-#            print(f"Probs after updating: {new_probs}")
-            feature_prob_changes = new_probs[features]-orig_probs[features]
+            #            print(f"Probs after updating: {new_probs}")
+            feature_prob_changes = new_probs[features] - orig_probs[features]
             print(f"Update in probs of features in seq (new-orig): \n{(feature_prob_changes).round(5)}")
             print(f"Num updates: {num_updates}")
         return new_probs, results
 
-    def _featurize(self, seq): # Canaan edit to do long distance
+        #
+        # features = self._featurize(seq).nonzero()[0]
+        # # print(features,"are the features in ",seq)
+        # constraint_probs = self.probs[features]
+        # new_probs = self.probs.copy()
+        #
+        # for i in range(len(features)):
+        #     this_prob = constraint_probs[i]
+        #     other_probs = np.concatenate([constraint_probs[:i], constraint_probs[i + 1:]])
+        #     log_p_others = np.log(1 - other_probs).sum()
+        #     if judgment:
+        #         # frac satisfying if off is prob that the others are all off
+        #         # frac satisfying if on is 0
+        #         log_score = (
+        #                 np.log(this_prob) - np.log(1 - this_prob)
+        #                 - np.exp(min(log_p_others + self.LOG_LOG_ALPHA_RATIO, 10))
+        #         )
+        #
+        #     else:
+        #         # frac satifying if off is prob that any other is on
+        #         # frac satisfying if on is 1
+        #         log_score = (
+        #                 np.log(this_prob) - np.log(1 - this_prob)
+        #                 + np.exp(min(log_p_others + self.LOG_LOG_ALPHA_RATIO, 10))
+        #         )
+        #     log_score = np.clip(log_score, -3, 3)
+        #
+        #     posterior = 1 / (1 + np.exp(-log_score))
+        #     new_probs[features[i]] = posterior = np.clip(posterior, 0.01, 0.99)
+        #
+        # # print("extrema", new_probs.max(), new_probs.min(), new_probs.mean())
+        #
+        # self.probs = new_probs
+        #
+        # return new_probs
+
+    def _featurize(self, seq):  # Canaan edit to do long distance
         features = np.zeros(len(self.ngram_features))
         for i in range(len(seq) - self.ORDER + 1):
-            features_here = [self.phoneme_features[seq[j]].nonzero()[0] for j in range(i, i+self.ORDER)]
+            features_here = [self.phoneme_features[seq[j]].nonzero()[0] for j in range(i, i + self.ORDER)]
             for ff in it.product(*features_here):
                 features[self.ngram_features[ff]] += 1
         return features
@@ -225,7 +292,7 @@ class MeanFieldScorer: # this is us
     def cost(self, seq):
         return -self.logprob(seq, True)
 
-    def logprob(self, seq, judgment, length_norm = False):
+    def logprob(self, seq, judgment, length_norm=False):
         features = self._featurize(seq).nonzero()[0]
         num_features_active = len(features)
         constraint_probs = self.probs[features]
@@ -233,18 +300,18 @@ class MeanFieldScorer: # this is us
         logprob_ok = np.log(1 - constraint_probs).sum()
         if judgment:
             if length_norm:
-                #print("ok!")
-                #print(logprob_ok/num_features_active)
-                return (logprob_ok/num_features_active)
+                # print("ok!")
+                # print(logprob_ok/num_features_active)
+                return (logprob_ok / num_features_active)
             else:
                 return logprob_ok
         else:
             if length_norm:
-                return np.log1p(-torch.exp(logprob_ok))/num_features_active
+                return np.log1p(-torch.exp(logprob_ok)) / num_features_active
             else:
-                #print(type(logprob_ok))
+                # print(type(logprob_ok))
                 logprob_ok = torch.from_numpy(np.array(logprob_ok))
-                #print(type(logprob_ok))
+                # print(type(logprob_ok))
 
                 return np.log1p(-torch.exp(logprob_ok))
 
@@ -252,11 +319,11 @@ class MeanFieldScorer: # this is us
         features = self._featurize(seq).nonzero()[0]
         constraint_probs = self.probs[features]
         feat_entropies = (
-            -constraint_probs * np.log(constraint_probs) 
-            -(1-constraint_probs) * np.log(1-constraint_probs)
+                -constraint_probs * np.log(constraint_probs)
+                - (1 - constraint_probs) * np.log(1 - constraint_probs)
         )
         if length_norm:
-            return feat_entropies.sum()/len(constraint_probs)
+            return feat_entropies.sum() / len(constraint_probs)
         else:
             return feat_entropies.sum()
 
@@ -265,12 +332,14 @@ class MeanFieldScorer: # this is us
         c = -1 * self.cost(seq)
         # p is prob
         p = np.exp(c)
-        ent = -p*np.log(p)-((1-p) * np.log(1-p))
-        return ent 
+        ent = -p * np.log(p) - ((1 - p) * np.log(1 - p))
+        return ent
+
 
 class LogisticSeqScorer(nn.Module):
     _feature_cache = {}
     _phoneme_feature_cache = {}
+
     def __init__(self, dataset):
         super().__init__()
 
@@ -295,7 +364,7 @@ class LogisticSeqScorer(nn.Module):
         else:
             assert False
 
-    #@profile
+    # @profile
     def cost(self, seq, grad=False):
         features, alt_features = self._featurize(seq)
         neg_cost = 0
@@ -304,7 +373,7 @@ class LogisticSeqScorer(nn.Module):
                 score_here = self.cost_part(features[i])
                 alt_scores_here = torch.stack([self.cost_part(f) for f in alt_features[i]])
                 neg_cost += score_here - torch.logsumexp(alt_scores_here, dim=0)
-        
+
         assert neg_cost < 0
         if grad:
             return -neg_cost
@@ -334,8 +403,8 @@ class LogisticSeqScorer(nn.Module):
         if len(denominators_good) > 0:
             denominators_good = torch.stack(denominators_good)
             ll_good = (
-                self.cost_part(numerators_good)
-                - ((self.cost_part(denominators_good)).logsumexp(dim=1).sum())
+                    self.cost_part(numerators_good)
+                    - ((self.cost_part(denominators_good)).logsumexp(dim=1).sum())
             )
             loss_good = -ll_good
 
@@ -345,8 +414,8 @@ class LogisticSeqScorer(nn.Module):
                 nums_bad_here = numerators_bad[i]
                 denoms_bad_here = torch.stack(denominators_bad[i])
                 ex_logprob = (
-                    self.cost_part(nums_bad_here)
-                    - (self.cost_part(denoms_bad_here).logsumexp(dim=1).sum())
+                        self.cost_part(nums_bad_here)
+                        - (self.cost_part(denoms_bad_here).logsumexp(dim=1).sum())
                 )
                 loss = -torch.log1p(-torch.exp(ex_logprob / 1000))
                 loss_bad += loss
@@ -358,7 +427,6 @@ class LogisticSeqScorer(nn.Module):
 
         return (loss_good + loss_bad) / len(dataset) + 0.1 * reg
 
-
     def _featurize(self, seq):
         if seq in LogisticSeqScorer._feature_cache:
             return LogisticSeqScorer._feature_cache[seq]
@@ -366,15 +434,15 @@ class LogisticSeqScorer(nn.Module):
         alt_features = []
 
         for i in range(len(seq)):
-            ctx = seq[max(i-self.ORDER+1, 0):i]
-            while len(ctx) < self.ORDER-1:
+            ctx = seq[max(i - self.ORDER + 1, 0):i]
+            while len(ctx) < self.ORDER - 1:
                 ctx = (self.dataset.vocab.get(BOUNDARY),) + ctx
             tgt = seq[i]
             if (ctx, tgt) in LogisticSeqScorer._phoneme_feature_cache:
-                    f, af = LogisticSeqScorer._phoneme_feature_cache[ctx, tgt]
-                    features.append(f)
-                    alt_features.append(af)
-                    continue
+                f, af = LogisticSeqScorer._phoneme_feature_cache[ctx, tgt]
+                features.append(f)
+                alt_features.append(af)
+                continue
             f = torch.zeros(len(self.ngram_features))
             af = [torch.zeros(len(self.ngram_features)) for _ in range(len(self.phoneme_features))]
             ctx_features = [self.phoneme_features[p].nonzero()[0] for p in ctx]
@@ -422,11 +490,12 @@ class LogisticScorer:
     # TODO cache this
     def _featurize(self, seq):
         features = np.zeros(len(self.ngram_features))
-        for i in range(len(seq)-1):
+        for i in range(len(seq) - 1):
             for f1 in np.nonzero(self.phoneme_features[seq[i]])[0]:
-                for f2 in np.nonzero(self.phoneme_features[seq[i+1]])[0]:
+                for f2 in np.nonzero(self.phoneme_features[seq[i + 1]])[0]:
                     features[self.ngram_features[f1, f2]] += 1
         return features
+
 
 class MLPScorer:
     def __init__(self, vocab, dim, params=None):
@@ -434,7 +503,7 @@ class MLPScorer:
         self.dim = dim
         if params is None:
             self.embeddings = np.random.random(size=(len(vocab), dim)) - 0.5
-            self.weights1 = np.random.random(size=(3*dim, dim)) - 0.5
+            self.weights1 = np.random.random(size=(3 * dim, dim)) - 0.5
             self.weights2 = np.random.random(size=(dim, 1)) - 0.5
         else:
             self.embeddings = params["embeddings"]
@@ -448,7 +517,7 @@ class MLPScorer:
             e2 = self.embeddings[t2]
             e3 = self.embeddings[t3]
             e = np.concatenate((e1, e2, e3))
-            #h = util.sigmoid(e @ self.weights1)
+            # h = util.sigmoid(e @ self.weights1)
             h = np.tanh(e @ self.weights1)
             o = h @ self.weights2
             costs.append(o)
@@ -498,14 +567,13 @@ class HWScorer:
         else:
             self.ngram_features = ngram_features
 
-
     def applicable_features(self, seq):
         for order in (2, 3):
             for i in range(len(seq) - order + 1):
                 for ngram_feature, feature_cost in self.ngram_features[order]:
                     success = True
                     for j in range(order):
-                        phoneme_features = self.phoneme_features[seq[i+j]]
+                        phoneme_features = self.phoneme_features[seq[i + j]]
                         success &= all(phoneme_features[f] for f in ngram_feature[j])
                     if success:
                         yield (ngram_feature, feature_cost)
@@ -518,12 +586,10 @@ class HWScorer:
             seq_cost += feature_cost
         return seq_cost
 
-
     def add(self, feature, cost):
         new_features = copy.deepcopy(self.ngram_features)
         new_features[len(new_features)].append((feature, cost))
         return HWScorer(self.dataset, new_features)
-
 
     def pp_feature(self, ngram_feature):
         out = []
@@ -545,7 +611,6 @@ class HWScorer:
 
     def penalty(self):
         return len(self.ngram_features[2]) + len(self.ngram_features[3])
-
 
     def perturb(self, seq):
         feature_pairs = set()
@@ -571,13 +636,13 @@ class HWScorer:
             new_features[len(feature)] = new_set
 
         action = np.random.randint(4)
-        if action == 0 or random_applicable is None: # create
+        if action == 0 or random_applicable is None:  # create
             # TODO might already be there
             f1, f2 = random_pair
             new_feature = ((f1,), (f2,))
             new_features[2].append((new_feature, -1.))
 
-        elif action == 1: # insert
+        elif action == 1:  # insert
             new_feature, new_cost = random_applicable
             remove(random_applicable)
             offset = np.random.choice((0, 1))
@@ -585,29 +650,29 @@ class HWScorer:
             new_feature[offset].append(random_pair[0])
             if offset + 1 >= len(new_feature):
                 new_feature.append([])
-            new_feature[offset+1].append(random_pair[1])
+            new_feature[offset + 1].append(random_pair[1])
             new_feature = tuple(tuple(l) for l in new_feature)
             new_features[len(new_feature)].append((new_feature, new_cost))
 
-        elif action == 2: # delete
+        elif action == 2:  # delete
             remove(random_applicable)
 
-        elif action == 3: # reweight
+        elif action == 3:  # reweight
             remove(random_applicable)
             new_feature, new_cost = random_applicable
             new_cost *= np.exp(np.random.random() - 0.5)
             new_features[len(new_feature)].append((new_feature, new_cost))
 
-
-        #print(seq)
-        #print(self.ngram_features)
-        #print(new_features)
-        #print()
+        # print(seq)
+        # print(self.ngram_features)
+        # print(new_features)
+        # print()
 
         new = HWScorer(self.dataset, new_features)
-        #if new.penalty() < self.penalty():
+        # if new.penalty() < self.penalty():
         #    print(self.penalty(), new.penalty())
         return new
+
 
 def _load_phoneme_features(dataset):
     phoneme_features = {}
@@ -630,7 +695,7 @@ def _load_phoneme_features(dataset):
                     continue
                 feat = feature_vocab.get(f"{feat_val}{feat_names[i]}")
                 feat_vec[feat] = 1
-            #feat_vec[feature_vocab.get("-word_boundary")] = 1
+            # feat_vec[feature_vocab.get("-word_boundary")] = 1
             phoneme_features[dataset.vocab.get(phoneme)] = feat_vec
 
         boundary_vec = np.zeros(len(feature_vocab))

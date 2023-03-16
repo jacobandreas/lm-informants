@@ -219,10 +219,12 @@ def main(args):
             #for strategy in ["train","entropy","unif","max","std","diff"]: # ,"max","unif","interleave","diff","std"
 #            for strategy in ["", "eig", "unif","train"]: # only train, entropy, eig, and unif are well-defined here
             for strategy in ["entropy_pred", "entropy", "train", "unif", "eig"]: # only train, entropy, eig, and unif are well-defined here
+
                 print("STRATEGY:", strategy)
                 if args.do_plot_wandb:
                     config = {"n_init": N_INIT, "run": run, "strategy": strategy, "log_log_alpha_ratio": args.log_log_alpha_ratio, "prior_prob": args.prior_prob}
                     wandb_run = wandb.init(config=config, project=args.wandb_project, name=strategy, reinit=True)
+                #if strategy == "train":
                 #if strategy == "train":
                 #    run = 19
                 index_of_next_item = 0
