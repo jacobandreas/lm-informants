@@ -1,5 +1,7 @@
 from datasets import BOUNDARY, Vocab
 import util
+import matplotlib.pyplot as plt
+import wandb
 import pdb
 import copy
 import itertools as it
@@ -8,6 +10,7 @@ from scipy.special import logsumexp
 import re
 
 import torch
+from util import plot_feature_probs
 from torch import nn
 
 class BilinearScorer:
@@ -64,34 +67,47 @@ class MeanFieldScorer: # this is us
         self.probs = prior_prob * np.ones(len(self.ngram_features))
         self.prior = self.probs.copy()
 
-    def update_one_step(self, seqs, verbose=False): # was originally called update
+    def update_one_step(self, seqs, feats_to_update=None, featurized_seqs_by_feat=None, judgments_by_feat=None, verbose=False, do_plot_wandb=False): # was originally called update
         # seq is a list of (seq, features, judgment) tuples
 
         # contains a list of the unique features in the whole batch
         # (i.e. the ones we want to update)
         # features are represented as indices into self.probs
+        if feats_to_update is None:
+            feats_to_update = list(set([item for (_, feats, _) in seqs for item in feats])) 
 
-        all_features = set([item for (_, feats, _) in seqs for item in feats]) 
         clip_val = 40 
 
         new_probs = self.probs.copy()
         
         # curr_feat is feat to update
         if verbose:
-            print(f"Features to update: {all_features}")
-        for curr_feat in all_features:
+            print(f"Features to update: {feats_to_update}")
+        for idx, curr_feat in enumerate(feats_to_update):
             this_prob = self.probs[curr_feat]
      
 #            for (_, feats, _) in seqs:
 #                other_feats = [f for f in feats if f != curr_feat]
 #                other_probs = self.probs[other_feats]
+           
+            # featurized_seqs = list of all seqs that have the feature
+            if featurized_seqs_by_feat is not None:
+                featurized_seqs = featurized_seqs_by_feat[idx]
+            else:
+                featurized_seqs = [feats for (_, feats, _) in seqs if curr_feat in feats]
 
-            temp_seqs = [(_, feats, judgement) for (_, feats, judgement) in seqs if curr_feat in feats]
+            if judgments_by_feat is not None:
+                judgments = judgments_by_feat[idx]
+            else:
+                judgments = [1 if judgment else -1 for (_, feats, judgment) in seqs if curr_feat in feats]
 
-            other_probs = [self.probs[[f for f in feats if f != curr_feat]] for (_, feats, _) in temp_seqs] 
+#            temp_seqs = [(_, feats, judgement) for (_, feats, judgement) in seqs if curr_feat in feats]
+
+#            other_probs = [self.probs[[f for f in feats if f != curr_feat]] for (_, feats, _) in temp_seqs] 
+            other_probs = [self.probs[[f for f in feats if f != curr_feat]] for feats in featurized_seqs] 
             log_probs_all_off = np.array([np.log(1-op).sum() for op in other_probs])
             probs_all_off = np.exp(log_probs_all_off)
-            judgments = np.array([1 if j is True else -1 for (_, _, j) in temp_seqs])
+#            judgments = np.array([1 if j is True else -1 for (_, _, j) in temp_seqs])
 
             update_vector = (judgments * np.exp(np.clip(log_probs_all_off + self.LOG_LOG_ALPHA_RATIO, -np.inf, clip_val)))
             update_sum = update_vector.sum()
@@ -111,6 +127,7 @@ class MeanFieldScorer: # this is us
 #                print(f"\t | update_vector (batch): {update_vector.round(5)}")
 #                print(f"\t | update_sum (batch): {update_sum}")
 
+            # TODO: want a one-sided clip?
             log_score = np.clip(log_score, -clip_val, clip_val)
 
             posterior = 1 / (1 + np.exp(-log_score))
@@ -131,10 +148,13 @@ class MeanFieldScorer: # this is us
                 "update_clipped": update_sum,
                 "update_unclipped": update_unclipped,
                 "p_all_off": np.mean(probs_all_off), # TODO: do we want the sum?
-                } 
+                }
+            
+
+
         return results 
 
-    def update(self, seqs, verbose=False):
+    def update(self, seqs, verbose=False, do_plot_wandb=False):
         results = []
 
         orig_probs = self.probs.copy()
@@ -156,14 +176,32 @@ class MeanFieldScorer: # this is us
             do_converge = (judgment == True)
         # updarte if first update *or* have not converged yet
         num_updates = 0
-        max_updates = 10
+        max_updates = 25 
         self.probs = self.prior.copy()
+        probs_before_update = self.probs.copy()
+
+        # precompute feats_to_update for efficiency
+        feats_to_update = list(set([item for (_, feats, _) in seqs for item in feats]))
+        featurized_seqs_by_feat = [None] * len(feats_to_update)
+        judgments_by_feat = [None] * len(feats_to_update)
+        
+        for idx, curr_feat in enumerate(feats_to_update):
+            temp_seqs = [(feats, judgement) for (_, feats, judgement) in seqs if curr_feat in feats]
+            featurized_seqs_by_feat[idx] = [t[0] for t in temp_seqs]
+            judgments = [t[1] for t in temp_seqs]
+            judgments_by_feat[idx] = [1 if j else -1 for j in judgments] 
+
+        best_error = np.inf
         while (do_converge and error > tolerance) or num_updates == 0:
             if verbose:
                 print(f"  Update {num_updates}:")
             if not target_item:
                 old_probs = self.probs.copy()
-                step_results = self.update_one_step(seqs, verbose=verbose)
+                step_results = self.update_one_step(seqs, 
+                        feats_to_update=feats_to_update, 
+                        verbose=verbose, 
+                        featurized_seqs_by_feat=featurized_seqs_by_feat, 
+                        judgments_by_feat=judgments_by_feat)
                 new_probs = step_results["new_probs"]
                 results.append(step_results)
                 difference_vector = np.subtract(new_probs, old_probs)
@@ -195,16 +233,33 @@ class MeanFieldScorer: # this is us
 #            print('new_probs: ', new_probs.round(3))
 #            print('old_probs: ', old_probs.round(3))
 
-    
-            num_updates += 1
 
-            if num_updates == max_updates:
-                # TODO: this is just sanity checking bc this should not be happening
-                print(f"reached the max number of updates: {max_updates}")
-                print("error:", error)
-                print('difference: ', difference_vector)
+            if do_plot_wandb:
+                # TODO: these features will be different than the features in the other heatmap, these are only plotting the ones updating
+                probs_to_plot = self.probs[feats_to_update]
+                title = f'Prob vs Feature for Step: {len(seqs)-1}, Update: {num_updates}' 
+                feature_probs_plot = plot_feature_probs(feats_to_update, probs_to_plot, old_probs[feats_to_update], title=title)
+
+                wandb.log({"intermediate_feature_probs/plot": wandb.Image(feature_probs_plot)})
+                plt.close()
+                wandb.log({"intermediate_updates/error": error, "intermediate_updates/step": len(seqs)-1, "intermediate_updates/update": num_updates})
+            
+            num_updates += 1
+            
+            if error <= best_error:
+                best_error = error
+            else:
+                if verbose:
+                    print(f"error stopped decreasing after {num_updates} updates")
+                    print('difference: ', difference_vector.round(3))
 #                assert False
                 break
+        if do_plot_wandb:
+            section = "updates"
+            # TODO: redundant with code in main
+            change_in_probs = np.linalg.norm(probs_before_update - self.probs)
+            log_results = {"step": len(seqs)-1, "num_updates": num_updates, "change_in_probs_norm": change_in_probs}
+            wandb.log({f"{section}/{k}": v for k, v in log_results.items()})
 
         #print("converged!",error)
         if verbose:
@@ -212,6 +267,7 @@ class MeanFieldScorer: # this is us
             feature_prob_changes = new_probs[features]-orig_probs[features]
             print(f"Update in probs of features in seq (new-orig): \n{(feature_prob_changes).round(5)}")
             print(f"Num updates: {num_updates}")
+
         return new_probs, results
 
     def _featurize(self, seq): # Canaan edit to do long distance

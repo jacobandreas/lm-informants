@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import datasets
+from sklearn import metrics
 import os
 import informants
 import learners
@@ -15,7 +16,7 @@ from AnalyzeSyntheticData import is_ti
 import wandb
 import matplotlib.pyplot as plt
 
-from util import entropy
+from util import entropy, plot_feature_probs
 import csv
 
 N_EVAL = 50
@@ -23,28 +24,21 @@ BOUNDARY = "$"
 
 np.random.seed(0)
 
+def cost_to_prob(cost):
+    return np.exp(cost * -1)
+
 #@profile
+def eval_auc(costs, labels):
+    probs = [cost_to_prob(c) for c in costs]
+    labels = [int(l) for l in labels]
+    fpr, tpr, thresholds = metrics.roc_curve(labels, probs, pos_label=1)
+    roc_auc = metrics.auc(fpr, tpr)
+    return roc_auc
 
 def get_broad_annotations():
     df = pd.read_csv("broad_test_set_annotated.csv") 
     return dict(zip(df.Word, df.IsLicit)), dict(zip(df.Word, df.IsTI))
 
-def plot_feature_probs(features, costs, last_costs, step):
-
-    fig = plt.figure(figsize=(12, 3))
-
-    colors = ["blue" if c == lc else "red" for c, lc in zip(costs, last_costs)] 
-
-    # Create the plot
-    plt.clf()
-    plt.scatter(features, costs, linestyle='None', marker='o', c=colors, s=3, alpha=0.5)
-    plt.xlabel('Feature')
-    plt.xticks(rotation=90)
-    plt.ylim(-0.1, 1.1)
-    plt.ylabel('Prob')
-    plt.rc('xtick',labelsize=5)
-    plt.title('Prob vs Feature for Step {}'.format(step))
-    return fig
 
 def evaluate(dataset, informant, learner):
     random = np.random.RandomState(0)
@@ -134,6 +128,7 @@ def main(args):
 #    temp_dataset = datasets.load_atr_harmony()
 #    dataset = datasets.load_manual()
 #    dataset.vocab = temp_dataset.vocab
+    # TODO: create new dataset for each strategy (or reset random seq generation)
     dataset = datasets.load_atr_harmony()
 
     random = np.random.RandomState(0)
@@ -214,11 +209,11 @@ def main(args):
         import wandb
 
     for N_INIT in [0]:
-        num_runs = 5 
+        num_runs = 2 
         for run in range(num_runs):
             #for strategy in ["train","entropy","unif","max","std","diff"]: # ,"max","unif","interleave","diff","std"
 #            for strategy in ["", "eig", "unif","train"]: # only train, entropy, eig, and unif are well-defined here
-            for strategy in ["entropy_pred", "entropy", "train", "unif", "eig"]: # only train, entropy, eig, and unif are well-defined here
+            for strategy in ["entropy_pred", "entropy", "train", "unif"]: # only train, entropy, eig, and unif are well-defined here
                 print("STRATEGY:", strategy)
                 if args.do_plot_wandb:
                     config = {"n_init": N_INIT, "run": run, "strategy": strategy, "log_log_alpha_ratio": args.log_log_alpha_ratio, "prior_prob": args.prior_prob}
@@ -246,8 +241,8 @@ def main(args):
                 learner.initialize(n_hyps=1, log_log_alpha_ratio=args.log_log_alpha_ratio, prior_prob=args.prior_prob, converge_type=args.converge_type)
                 if len(init_examples) > 0:
                     for example in init_examples[:-1]:
-                        learner.observe(example, True, update=True, verbose=args.verbose, batch=args.batch)
-                    learner.observe(init_examples[-1], True, update=True, verbose=args.verbose)
+                        learner.observe(example, True, update=True, verbose=args.verbose, batch=args.batch, do_plot_wandb=args.do_plot_wandb)
+                    learner.observe(init_examples[-1], True, update=True, verbose=args.verbose, do_plot_wandb=args.do_plot_wandb)
                 #scores = evaluate_with_external_data(good_dataset,bad_dataset, eval_informant, learner)
                 scores = evaluate(dataset, eval_informant, learner)
 
@@ -276,7 +271,7 @@ def main(args):
 
 
 #                for i in range(75-N_INIT):
-                for i in range(75-N_INIT):
+                for i in range(2-N_INIT):
                     print("")
                     print(f"i: {i}")
                     step=N_INIT+i
@@ -287,9 +282,12 @@ def main(args):
                         all_features.sort(key=lambda x: x[1])
                         costs = [x[0] for x in all_features]
                         features = [x[1] for x in all_features]
-                        feature_probs_plot = plot_feature_probs(features, costs, last_costs, step)
+                        title = f'Prob vs Feature for Step: {step}'
+                        feature_probs_plot = plot_feature_probs(features, costs, last_costs, title=title)
                         last_costs = costs.copy()
                         wandb.log({"feature_probs/plot": wandb.Image(feature_probs_plot)})
+                        plt.close()
+
                     #learner.cost()
                     candidate = learner.propose(n_candidates=100, forbidden_data = forbidden_data_that_cannot_be_queried_about, length_norm=True)
                     judgment = informant.judge(candidate)
@@ -386,6 +384,7 @@ def main(args):
                         broad_human_evals_writer.writerow([step, run, strategy, N_INIT, items, costs, labels, TIs])
                         print(f"avg cost for broad test set: {np.mean(costs)}")
 
+
                     #scores["external_wugs"] = corral_of_judged_human_forms
                     scores["step"] = N_INIT + i
                     scores["run"] = run
@@ -408,7 +407,11 @@ def main(args):
                     
                     entropy_before = entropy(learner.hypotheses[0].probs)
                     probs_before = learner.hypotheses[0].probs.copy()
-                    learner.observe(candidate, judgment, verbose=args.verbose)
+
+                    if args.do_plot_wandb:
+                        wandb.log({"step": step, "auc": eval_auc(costs, labels), "entropy_over_features": entropy_before, "chosen_candidate": str(dataset.vocab.decode(candidate))})
+
+                    learner.observe(candidate, judgment, verbose=args.verbose, do_plot_wandb=args.do_plot_wandb)
                     last_result = learner.results_by_observations[-1] 
                     last_result_DL = {k: [dic[k] for dic in last_result] for k in last_result[0]}
                     results_by_observations_writer.writerow([i, run, strategy, dataset.vocab.decode(candidate), judgment, last_result_DL["new_probs"], last_result_DL["p_all_off"], last_result_DL["update_unclipped"], last_result_DL["update_clipped"]])
@@ -439,6 +442,12 @@ def main(args):
 
                     # print(learner.hypotheses[0].entropy(candidate, debug=True))
                 logs[strategy].append(log)
+                # create a scatter plot using wandb.plot()
+
+                wandb_run.finish() 
+#                data = wandb.Api().run.scan_history(keys=['step', 'auc', 'chosen_candidate'])
+#                fig = wandb.plot.scatter(data, x='x', y='y', hover_data=['chosen_candidate'])
+#                wandb.log({'interactive_scatter_plot': fig})
 
 #                with open(f"results_{strategy}.json", "w") as writer:
 #                    json.dump(logs, writer)

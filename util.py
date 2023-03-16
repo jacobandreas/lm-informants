@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
 def ngrams(seq, order):
     for i in range(len(seq) - order + 1):
@@ -14,3 +15,20 @@ def entropy(probs, length_norm=False):
     else:
         return ent.sum()
 
+
+def plot_feature_probs(features, costs, last_costs, title=""):
+
+    fig = plt.figure(figsize=(12, 3))
+
+    colors = ["blue" if c == lc else "red" for c, lc in zip(costs, last_costs)] 
+
+    # Create the plot
+    plt.clf()
+    plt.scatter(features, costs, linestyle='None', marker='o', c=colors, s=3, alpha=0.5)
+    plt.xlabel('Feature')
+    plt.xticks(rotation=90)
+    plt.ylim(-0.1, 1.1)
+    plt.ylabel('Prob')
+    plt.rc('xtick',labelsize=5)
+    plt.title(title)
+    return fig

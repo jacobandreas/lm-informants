@@ -126,7 +126,7 @@ class VBLearner(Learner):
                 converge_type=converge_type,
                 )
 
-    def observe(self, seq, judgment, update=True, verbose=False, batch=True):
+    def observe(self, seq, judgment, update=True, do_plot_wandb=False, verbose=False, batch=True):
         assert len(self.hypotheses) == 1
         assert update
         features = self.hypotheses[0]._featurize(seq).nonzero()[0]
@@ -136,7 +136,7 @@ class VBLearner(Learner):
             seqs_to_observe = self.observations
         else:
             seqs_to_observe = self.observations[-1]
-        _, results = self.hypotheses[0].update(seqs_to_observe, verbose=verbose)
+        _, results = self.hypotheses[0].update(seqs_to_observe, verbose=verbose, do_plot_wandb=do_plot_wandb)
         self.results_by_observations.append(results)
 
     # TODO: only consider features in sequene as in scorer.entropy()? (Should be equivalent bc probs for features not in seq won't change?)
