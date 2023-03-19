@@ -125,10 +125,7 @@ def main(args):
     feature_query_log = get_out_file("feature_query_log.csv", args.exp_dir) 
     feature_query_log.write("Feature,Candidate,Step,N_Init,Strategy,Run\n")
     alL_features_log = get_out_file("all_features_log.csv", args.exp_dir) 
-#    temp_dataset = datasets.load_atr_harmony()
-#    dataset = datasets.load_manual()
-#    dataset.vocab = temp_dataset.vocab
-    # TODO: create new dataset for each strategy (or reset random seq generation)
+
     dataset = datasets.load_atr_harmony()
 
     random = np.random.RandomState(0)
@@ -158,38 +155,14 @@ def main(args):
         broad_licit_annotations, broad_TI_annotations = get_broad_annotations()
       
         
-        # good_dataset_t = read_in_blicks("./data/Blicks/hw_holdout_good.txt")
-        # good_dataset = []
-        # for item in good_dataset_t:
-        #     # print()
-        #     phonemes = [BOUNDARY] + item + [BOUNDARY]
-        #     # print(phonemes,"is phonemes")
-        #     encoded_word = dataset.vocab.encode(phonemes)  # expects a list of arpabet chars
-        #     # print(item,encoded_word,c)
-        #     good_dataset.append((encoded_word, True))
-        # bad_dataset_t = read_in_blicks("./data/Blicks/hw_holdout_bad.txt")
-        #
-        # bad_dataset = []
-        # for item in bad_dataset_t:
-        #     # print()
-        #     phonemes = [BOUNDARY] + item + [BOUNDARY]
-        #     # print(phonemes,"is phonemes")
-        #     encoded_word = dataset.vocab.encode(phonemes)  # expects a list of arpabet chars
-        #     # print(item,encoded_word,c)
-        #     good_dataset.append((encoded_word,True))
-        #print(dataset_to_judge)
-        #assert False
+
     forbidden_data_that_cannot_be_queried_about = [item[1] for item in broad_test_set] + [item[1] for item in narrow_test_set] #broad_test_set+narrow_test_set
     linear_train_dataset = dataset.data
     random.shuffle(linear_train_dataset)
-    #print(linear_train_dataset)
-    #dataset = datasets.load_cmu_onsets()
-    #dataset = datasets.load_dummy()
+
     hw_scorer = scorers.HWScorer(dataset)
     eval_informant = informants.HWInformant(dataset, hw_scorer)
-    #eval_informant = informants.DummyInformant(dataset)
     informant = eval_informant
-    #informant = informants.InteractiveInformant(dataset)
 
     logs = {}
     unique_features = pd.read_csv('all_features_in_data_unique.csv')['X1'].unique()
@@ -209,7 +182,7 @@ def main(args):
         import wandb
 
     for N_INIT in [0]:
-        num_runs = 2 
+        num_runs = 10
         for run in range(num_runs):
             #for strategy in ["train","entropy","unif","max","std","diff"]: # ,"max","unif","interleave","diff","std"
 #            for strategy in ["", "eig", "unif","train"]: # only train, entropy, eig, and unif are well-defined here
@@ -271,7 +244,7 @@ def main(args):
 
 
 #                for i in range(75-N_INIT):
-                for i in range(2-N_INIT):
+                for i in range(150-N_INIT):
                     print("")
                     print(f"i: {i}")
                     step=N_INIT+i
@@ -444,7 +417,7 @@ def main(args):
                 logs[strategy].append(log)
                 # create a scatter plot using wandb.plot()
 
-                wandb_run.finish() 
+                #wandb_run.finish()
 #                data = wandb.Api().run.scan_history(keys=['step', 'auc', 'chosen_candidate'])
 #                fig = wandb.plot.scatter(data, x='x', y='y', hover_data=['chosen_candidate'])
 #                wandb.log({'interactive_scatter_plot': fig})
