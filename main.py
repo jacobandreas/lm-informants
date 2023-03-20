@@ -271,7 +271,7 @@ def main(args):
 
 
 #                for i in range(75-N_INIT):
-                for i in range(2-N_INIT):
+                for i in range(75-N_INIT):
                     print("")
                     print(f"i: {i}")
                     step=N_INIT+i
