@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import datasets
+import wandb
 from sklearn import metrics
 import os
 import informants
@@ -179,14 +180,13 @@ def main(args):
         broad_human_evals_writer.writerow(["Step", "Run", "Strategy", "N_INIT", "Items", "Costs", "IsLicit", "IsTI"])
     eval_metrics = get_out_file("ModelEvalLogs.csv", args.exp_dir)
     eval_metrics.write("ent,good,bad,diff,acc,rej,Step,Run,Strategy,N_Init,IsTI,judgement,proposed_form,entropy_before,entropy_after,entropy_diff,change_in_probs\n") # including things it queried about
+
+
     results_by_observations_writer = get_csv_writer("ResultsByObservations.csv", args.exp_dir)
     results_by_observations_writer.writerow(["Step", "Run", "strategy", "candidate", "judgment", "new_probs", "p_all_off", "update_unclipped", "update_clipped"])
 
-    if args.do_plot_wandb:
-        import wandb
-
-    for N_INIT in [0,2,4,8,16,25]:
-        num_runs = 5
+    for N_INIT in [0]:
+        num_runs = args.num_runs 
 
         for run in range(num_runs):
             #for strategy in ["train","entropy","unif","max","std","diff"]: # ,"max","unif","interleave","diff","std"
@@ -251,6 +251,7 @@ def main(args):
                 #assert False
 
 
+                wandb_table_data = []
 #                for i in range(75-N_INIT):
                 for i in range(args.num_steps-N_INIT):
                     print("")
@@ -397,7 +398,7 @@ def main(args):
                     
                     entropy_before = entropy(learner.hypotheses[0].probs)
                     probs_before = learner.hypotheses[0].probs.copy()
-                    eig = learner.get_eig(candidate)
+                    eig = learner.get_eig(candidate).item()
                     pred_prob_pos = np.exp(learner.hypotheses[0].logprob(candidate, True))
 
                     if args.do_plot_wandb:
@@ -447,6 +448,7 @@ def main(args):
                         eval_metrics.write(str(v)+',')
                     eval_metrics.write(str(step)+','+str(run)+','+str(strategy)+','+str(N_INIT)+","+str(is_ti(str(dataset.vocab.decode(candidate)).replace(",","")))+","+str(judgment)+","+str(dataset.vocab.decode(candidate)).replace(",","")+","+str(entropy_before)+","+str(entropy_after)+","+str(entropy_diff)+","+str(change_in_probs)+'\n')
                     eval_metrics.flush()
+                    wandb_table_data.append([step, strategy, str_candidate, judgment, list(featurized_candidate), eig,  entropy_before, entropy_after, entropy_diff, change_in_probs])
 
 #
                     #print("Judging human forms...")
@@ -463,8 +465,8 @@ def main(args):
 
 #                with open(f"results_{strategy}.json", "w") as writer:
 #                    json.dump(logs, writer)
-                eval_metrics_df = pd.read_csv(os.path.join(args.exp_dir, "ModelEvalLogs.csv"))
-                wandb.log({"Model Eval Logs": wandb.Table(dataframe=eval_metrics_df)})
+                wandb_table = wandb.Table(columns=["step", "strategy", "proposed_form", "judgment", "features", "eig", "entropy_before", "entropy_after", "entropy_diff", "change_in_probs"], data=wandb_table_data) 
+                wandb.log({"Model Eval Logs": wandb_table})
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -476,6 +478,7 @@ if __name__ == "__main__":
     parser.add_argument('--verbose', dest='verbose', action='store_true')
     parser.add_argument('--converge_type', type=str, default="symmetric")
     parser.add_argument('--num_steps', type=int, default=150)
+    parser.add_argument('--num_runs', type=int, default=5)
     parser.set_defaults(verbose=False)
     
     # batch defaults to True
