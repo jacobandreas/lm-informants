@@ -116,17 +116,18 @@ def get_csv_writer(file_name, out_dir):
 def main(args):
     list_of_words_to_get_features_from = open("all_sylls.csv","r").read().split('\n')
     list_of_words_to_get_features_from = [i for i in list_of_words_to_get_features_from if i]
-    print(list_of_words_to_get_features_from)
+#    print(list_of_words_to_get_features_from)
     #assert False
     write_out_all_features_first_time = False # don't touch this
-    eval_humans = True
+    eval_humans = args.eval_humans 
     write_out_feat_probs = True
-    get_prior_prob_of_test_set = True
+    get_prior_prob_of_test_set = False 
     feature_query_log = get_out_file("feature_query_log.csv", args.exp_dir) 
     feature_query_log.write("Feature,Candidate,Step,N_Init,Strategy,Run\n")
     alL_features_log = get_out_file("all_features_log.csv", args.exp_dir) 
 
-    dataset = datasets.load_atr_harmony()
+    lexicon_file_name = f"data/hw/{args.feature_type}_lexicon.txt"
+    dataset = datasets.load_lexicon(lexicon_file_name)
 
     random = np.random.RandomState(0)
     if get_prior_prob_of_test_set:
@@ -156,11 +157,14 @@ def main(args):
       
         
 
-    forbidden_data_that_cannot_be_queried_about = [item[1] for item in broad_test_set] + [item[1] for item in narrow_test_set] #broad_test_set+narrow_test_set
+    if eval_humans:
+        forbidden_data_that_cannot_be_queried_about = [item[1] for item in broad_test_set] + [item[1] for item in narrow_test_set] #broad_test_set+narrow_test_set
+    else:
+        forbidden_data_that_cannot_be_queried_about = []
     linear_train_dataset = dataset.data
     random.shuffle(linear_train_dataset)
 
-    hw_scorer = scorers.HWScorer(dataset)
+    hw_scorer = scorers.HWScorer(dataset, feature_type=args.feature_type)
     eval_informant = informants.HWInformant(dataset, hw_scorer)
     informant = eval_informant
 
@@ -187,7 +191,7 @@ def main(args):
         for run in range(num_runs):
             #for strategy in ["train","entropy","unif","max","std","diff"]: # ,"max","unif","interleave","diff","std"
 #            for strategy in ["", "eig", "unif","train"]: # only train, entropy, eig, and unif are well-defined here
-            for strategy in ["entropy_pred", "train", "unif"]: # only train, entropy, eig, and unif are well-defined here
+            for strategy in ["train", "unif", "entropy_pred"]: # only train, entropy, eig, and unif are well-defined here
                 print("STRATEGY:", strategy)
                 if args.do_plot_wandb:
                     config = {"n_init": N_INIT, "run": run, "strategy": strategy, "log_log_alpha_ratio": args.log_log_alpha_ratio, "prior_prob": args.prior_prob}
@@ -196,8 +200,11 @@ def main(args):
                 #    run = 19
                 index_of_next_item = 0
                 #print(dataset.data[0])
+                random.seed(run)
+                np.random.seed(run)
+                dataset.random.seed(run)
                 random.shuffle(linear_train_dataset) # turn this off if you want to have train be always the same order.
-
+                    
                 #print(len(dataset.data))
                 init_examples = []
                 for _ in range(N_INIT):
@@ -212,7 +219,7 @@ def main(args):
                 log = []
                 #learner = learners.LogisticLearner(dataset, strategy=strategy)
                 learner = learners.VBLearner(dataset, strategy=strategy, linear_train_dataset = linear_train_dataset, index_of_next_item = index_of_next_item) 
-                learner.initialize(n_hyps=1, log_log_alpha_ratio=args.log_log_alpha_ratio, prior_prob=args.prior_prob, converge_type=args.converge_type)
+                learner.initialize(n_hyps=1, log_log_alpha_ratio=args.log_log_alpha_ratio, prior_prob=args.prior_prob, converge_type=args.converge_type, feature_type=args.feature_type)
                 if len(init_examples) > 0:
                     for example in init_examples[:-1]:
                         learner.observe(example, True, update=True, verbose=args.verbose, batch=args.batch, do_plot_wandb=args.do_plot_wandb)
@@ -245,25 +252,35 @@ def main(args):
 
 
 #                for i in range(75-N_INIT):
-                for i in range(150-N_INIT):
+                for i in range(args.num_steps-N_INIT):
                     print("")
                     print(f"i: {i}")
                     step=N_INIT+i
                     p = learner.hypotheses[0].probs
-
-                    if args.do_plot_wandb:
-                        all_features = [(c, f) for (c, f) in learner.all_features() if f in unique_features]
-                        all_features.sort(key=lambda x: x[1])
+                   
+                    # Log Prior
+                    if args.do_plot_wandb and i == 0:
+                        all_features = learner.all_features(return_indices=True)
+                        if args.feature_type == "atr_harmony":
+                            all_features = [(c, f) for (c, f, _) in all_features if f in unique_features]
+                        all_features.sort(key=lambda x: x[-1])
                         costs = [x[0] for x in all_features]
-                        features = [x[1] for x in all_features]
-                        title = f'Prob vs Feature for Step: {step}'
-                        feature_probs_plot = plot_feature_probs(features, costs, last_costs, title=title)
+                        # This indexing will sort by feature names for atr_harmony and feature indices for toy kiku
+                        features = [str(x[-1]) for x in all_features]
+                        title = f'Prob vs Feature\nPrior'
+                        feature_probs_plot = plot_feature_probs(features, costs, costs, title=title)
                         last_costs = costs.copy()
                         wandb.log({"feature_probs/plot": wandb.Image(feature_probs_plot)})
                         plt.close()
 
+
+
                     #learner.cost()
                     candidate = learner.propose(n_candidates=100, forbidden_data = forbidden_data_that_cannot_be_queried_about, length_norm=True)
+                    str_candidate = str(dataset.vocab.decode(candidate))
+                    
+                    mean_field_scorer = learner.hypotheses[0]
+                    featurized_candidate = mean_field_scorer._featurize(candidate).nonzero()[0]
                     judgment = informant.judge(candidate)
                     #prior_probability_of_accept = learner.cost(candidate)
 
@@ -276,7 +293,6 @@ def main(args):
 
                     total_features = []
                     total_features_2 = []
-                    mean_field_scorer = learner.hypotheses[0]
                     features2 = mean_field_scorer._featurize(candidate).nonzero()[0]
 
                     # UNCOMMENT UNTIL ASSERT FALSE TO FIND OUT HOW MANY FEATURES THERE ARE IN THE DATA!!
@@ -381,11 +397,30 @@ def main(args):
                     
                     entropy_before = entropy(learner.hypotheses[0].probs)
                     probs_before = learner.hypotheses[0].probs.copy()
+                    eig = learner.get_eig(candidate)
+                    pred_prob_pos = np.exp(learner.hypotheses[0].logprob(candidate, True))
 
                     if args.do_plot_wandb:
-                        wandb.log({"step": step, "auc": eval_auc(costs, labels), "entropy_over_features": entropy_before, "chosen_candidate": str(dataset.vocab.decode(candidate))})
+                        log_results = {"step": step, "entropy_over_features": entropy_before, "chosen_candidate": str(dataset.vocab.decode(candidate)), "eig": eig, "pred_prob_pos": pred_prob_pos}
+                        if eval_humans:
+                            log_results["auc"] = eval_auc(costs, labels)
+                        wandb.log(log_results)
 
                     learner.observe(candidate, judgment, verbose=args.verbose, do_plot_wandb=args.do_plot_wandb)
+                    if args.do_plot_wandb:
+                        all_features = learner.all_features(return_indices=True)
+                        if args.feature_type == "atr_harmony":
+                            all_features = [(c, f) for (c, f, _) in all_features if f in unique_features]
+                        all_features.sort(key=lambda x: x[-1])
+                        costs = [x[0] for x in all_features]
+                        # This indexing will sort by feature names for atr_harmony and feature indices for toy kiku
+                        features = [str(x[-1]) for x in all_features]
+                        title = f'Prob vs Feature\nStep: {step}\nLast candidate (word): {str_candidate}\nFeaturized:{featurized_candidate}\nJudgment:{judgment}'
+                        feature_probs_plot = plot_feature_probs(features, costs, last_costs, title=title)
+                        last_costs = costs.copy()
+                        wandb.log({"feature_probs/plot": wandb.Image(feature_probs_plot)})
+                        plt.close()
+                    
                     last_result = learner.results_by_observations[-1] 
                     last_result_DL = {k: [dic[k] for dic in last_result] for k in last_result[0]}
                     results_by_observations_writer.writerow([i, run, strategy, dataset.vocab.decode(candidate), judgment, last_result_DL["new_probs"], last_result_DL["p_all_off"], last_result_DL["update_unclipped"], last_result_DL["update_clipped"]])
@@ -396,7 +431,10 @@ def main(args):
                     print("entropy before: ", entropy_before) 
                     print("entropy after: ", entropy_after)
                     entropy_diff = entropy_before-entropy_after
+                    # TODO: add expected information gain
                     print("information gain:", entropy_diff)
+                    print("expected information gain:", eig)
+                    print("predicted probability (acceptable):", pred_prob_pos)
                     print("change in probs (norm):", change_in_probs)
                     prob_positive = np.exp(learner.hypotheses[0].logprob(candidate, True))
                     prob_negative = np.exp(learner.hypotheses[0].logprob(candidate, False))
@@ -425,6 +463,8 @@ def main(args):
 
 #                with open(f"results_{strategy}.json", "w") as writer:
 #                    json.dump(logs, writer)
+                eval_metrics_df = pd.read_csv(os.path.join(args.exp_dir, "ModelEvalLogs.csv"))
+                wandb.log({"Model Eval Logs": wandb.Table(dataframe=eval_metrics_df)})
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -432,14 +472,20 @@ if __name__ == "__main__":
     parser.add_argument("--wandb_project", type=str, default=None)
     parser.add_argument("--log_log_alpha_ratio", type=float, default=1)
     parser.add_argument("--prior_prob", type=float, default=0.5)
+    parser.add_argument("--feature_type", type=str, default="atr_harmony")
     parser.add_argument('--verbose', dest='verbose', action='store_true')
     parser.add_argument('--converge_type', type=str, default="symmetric")
+    parser.add_argument('--num_steps', type=int, default=150)
     parser.set_defaults(verbose=False)
     
     # batch defaults to True
     parser.add_argument('--batch', action='store_true')
     parser.add_argument('--no-batch', dest='batch', action='store_false')
     parser.set_defaults(batch=True)
+    
+    parser.add_argument('--eval_humans', action='store_true')
+    parser.add_argument('--no-eval_humans', dest='eval_humans', action='store_false')
+    parser.set_defaults(eval_humans=True)
 
     args = parser.parse_args()
 

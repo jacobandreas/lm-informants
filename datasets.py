@@ -93,10 +93,10 @@ def load_cmu():
             data.append(vocab.encode(phonemes, add=True))
     return Dataset(data, vocab)
 
-def load_atr_harmony():
+def load_lexicon(file_name):
     vocab = Vocab()
     data = []
-    with open("data/hw/atr_harmony_lexicon.txt") as reader:
+    with open(file_name) as reader:
         for line in reader:
             phonemes = [BOUNDARY] + line.strip().split() + [BOUNDARY]
 

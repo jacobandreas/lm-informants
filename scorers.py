@@ -1,4 +1,5 @@
 from datasets import BOUNDARY, Vocab
+import os
 import util
 import matplotlib.pyplot as plt
 import wandb
@@ -48,19 +49,25 @@ class BilinearScorer:
 
 
 class MeanFieldScorer: # this is us
-    def __init__(self, dataset, log_log_alpha_ratio=1, prior_prob=0.5, converge_type="symmetric"):
+    def __init__(self, dataset, 
+            log_log_alpha_ratio=1, 
+            prior_prob=0.5, 
+            converge_type="symmetric",
+            feature_type="atr_harmony",
+            ):
         self.ORDER = 3
 #        self.LOG_LOG_ALPHA_RATIO = 45 # 45 is what Jacob set # was 500
 #        alpha = 0.9999999999999999
 #        self.LOG_LOG_ALPHA_RATIO = np.log(np.log(alpha/(1-alpha))) # 45 is what Jacob set # was 500
         self.LOG_LOG_ALPHA_RATIO = log_log_alpha_ratio 
+        self.feature_type = feature_type
         
         if converge_type not in ["symmetric", "asymmetric"]:
             raise ValueError(f"Invalid value for converge_type given: {converge_type}")
         self.converge_type = converge_type
         
         self.dataset = dataset
-        self.phoneme_features, self.feature_vocab = _load_phoneme_features(dataset)
+        self.phoneme_features, self.feature_vocab = _load_phoneme_features(dataset, self.feature_type)
         self.ngram_features = {}
         for ff in it.product(range(len(self.feature_vocab)), repeat=self.ORDER):
             self.ngram_features[ff] = len(self.ngram_features)
@@ -132,7 +139,8 @@ class MeanFieldScorer: # this is us
 
             posterior = 1 / (1 + np.exp(-log_score))
 #            new_probs[features[i]] = posterior = np.clip(posterior, 0.000001, 0.999999)
- #           new_probs[curr_feat] = posterior = np.clip(posterior, 0.000001, 0.999999)
+#            new_probs[curr_feat] = posterior = np.clip(posterior, 0.000001, 0.999999)
+            posterior = np.clip(posterior, 1e-5, 1-1e-5)
             new_probs[curr_feat] = posterior
 
             if verbose:
@@ -335,7 +343,7 @@ class LogisticSeqScorer(nn.Module):
         self.ORDER = 2
 
         self.dataset = dataset
-        self.phoneme_features, self.feature_vocab = _load_phoneme_features(dataset)
+        self.phoneme_features, self.feature_vocab = load_phoneme_features(dataset)
         self.ngram_features = {}
         for ff in it.product(range(len(self.feature_vocab)), repeat=self.ORDER):
             self.ngram_features[ff] = len(self.ngram_features)
@@ -547,12 +555,14 @@ class VotingScorer:
 
 
 class HWScorer:
-    def __init__(self, dataset, ngram_features=None):
+    def __init__(self, dataset, feature_type="atr_harmony", ngram_features=None):
         self.dataset = dataset
+        self.feature_type = feature_type
+        print("feature type: ", feature_type)
 
-        self.phoneme_features, self.feature_vocab = _load_phoneme_features(dataset)
+        self.phoneme_features, self.feature_vocab = _load_phoneme_features(dataset, self.feature_type)
         if ngram_features is None:
-            self.ngram_features = _load_ngram_features(self.feature_vocab)
+            self.ngram_features = _load_ngram_features(self.feature_vocab, self.feature_type)
         else:
             self.ngram_features = ngram_features
 
@@ -667,11 +677,13 @@ class HWScorer:
         #    print(self.penalty(), new.penalty())
         return new
 
-def _load_phoneme_features(dataset):
+def _load_phoneme_features(dataset, feature_type):
     phoneme_features = {}
     feature_vocab = Vocab()
+    
+    file_name = os.path.join("data/hw", f"{feature_type}_features.txt") 
 
-    with open("data/hw/atr_harmony_features.txt") as reader:
+    with open(file_name) as reader:
         header = next(reader)
         feat_names = header.strip().split("\t")
         feat_names.append("word_boundary")
@@ -698,9 +710,11 @@ def _load_phoneme_features(dataset):
     return phoneme_features, feature_vocab
 
 
-def _load_ngram_features(feature_vocab):
+def _load_ngram_features(feature_vocab, feature_type):
     ngram_features = {2: [], 3: []}
-    with open("data/hw/atr_feature_weights.txt") as reader:
+    file_name = os.path.join("data/hw", f"{feature_type}_feature_weights.txt") 
+
+    with open(file_name) as reader:
         for line in reader:
             line = line.strip().split("\t")
             features = re.findall(r"\[([^\[\]]+)\]", line[0])

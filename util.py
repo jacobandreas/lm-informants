@@ -31,4 +31,5 @@ def plot_feature_probs(features, costs, last_costs, title=""):
     plt.ylabel('Prob')
     plt.rc('xtick',labelsize=5)
     plt.title(title)
+    plt.tight_layout()
     return fig

@@ -74,10 +74,11 @@ class Learner:
             log_log_alpha_ratio=1, 
             prior_prob=0.5,
             converge_type="symmetric",
+            feature_type="atr_harmony",
             ):
         self.hypotheses = [
             self.initialize_hyp(
-                log_log_alpha_ratio=log_log_alpha_ratio, prior_prob=prior_prob, converge_type=converge_type
+                log_log_alpha_ratio=log_log_alpha_ratio, prior_prob=prior_prob, converge_type=converge_type, feature_type=feature_type,
                 ) for _ in range(n_hyps)
         ]
         self.observations = []
@@ -118,12 +119,13 @@ class VBLearner(Learner):
         super().__init__(dataset, strategy, linear_train_dataset, index_of_next_item)
         self.results_by_observations = []
         
-    def initialize_hyp(self, log_log_alpha_ratio=1, prior_prob=0.5, converge_type="symmetric"):
+    def initialize_hyp(self, log_log_alpha_ratio=1, prior_prob=0.5, converge_type="symmetric", feature_type="atr_harmony"):
         return scorers.MeanFieldScorer(
                 self.dataset, 
                 log_log_alpha_ratio=log_log_alpha_ratio, 
                 prior_prob=prior_prob,
                 converge_type=converge_type,
+                feature_type=feature_type, 
                 )
 
     def observe(self, seq, judgment, update=True, do_plot_wandb=False, verbose=False, batch=True):
@@ -164,16 +166,16 @@ class VBLearner(Learner):
 
 #        p, _ = self.hypotheses[0].update(seq, True, verbose=False)
         features = self.hypotheses[0]._featurize(seq).nonzero()[0]
-        _, results = self.hypotheses[0].update(self.observations + [(seq, features, True)], verbose=False)
+        p, results = self.hypotheses[0].update(self.observations + [(seq, features, True)], verbose=False)
         entropy_over_features_after_observing_item_positive = -1 * ((p * np.log(p) + (1 - p) * np.log(1 - p))).sum()
-        assert entropy_over_features_after_observing_item_positive > 0
+        assert entropy_over_features_after_observing_item_positive > 0, f"Entropy should be positive. Entropy={entropy_over_features_after_observing_item_positive}. Probs={p.round(decimals=3)}"
         self.hypotheses[0].probs = orig_probs 
         # reset learner
         # entropy over features after seeing if negative
 #        p, _ = self.hypotheses[0].update(seq, False, verbose=False)
-        _, results = self.hypotheses[0].update(self.observations + [(seq, features, False)], verbose=False)
+        p, results = self.hypotheses[0].update(self.observations + [(seq, features, False)], verbose=False)
         entropy_over_features_after_observing_item_negative = -1 * ((p * np.log(p) + (1 - p) * np.log(1 - p))).sum()
-        assert entropy_over_features_after_observing_item_negative > 0
+        assert entropy_over_features_after_observing_item_negative > 0, f"Entropy should be positive. Entropy={entropy_over_features_after_observing_item_negative}. Probs={p.round(decimals=3)}"
         self.hypotheses[0].probs = orig_probs 
         # reset learner
 #        print("learner after fussing around:", self.hypotheses[0].probs)
@@ -190,6 +192,9 @@ class VBLearner(Learner):
 
         # the kl-divergence between posteriors before --> observe yes*p(yes) + before --> observe no * p(no)
 
+        print("delta positive:", delta_positive)
+        print("delta negative:", delta_negative)
+        print("prob being positive:", prob_being_positive)
         return eig
 
     def get_kl(self, seq):
@@ -268,17 +273,21 @@ class VBLearner(Learner):
             feats.append((hyp.probs[i].item(), parts))
         return sorted(feats)[-5:]
 
-    def all_features(self):
+    def all_features(self, return_indices=False):
         feats = []
         hyp = self.hypotheses[0]
         for i, ngram_feat in enumerate(hyp.ngram_features.keys()):
             parts = " :: ".join(hyp.feature_vocab.get_rev(f) for f in ngram_feat)
-            feats.append((hyp.probs[i].item(), parts))
+            if return_indices:
+                feats.append((hyp.probs[i].item(), parts, i))
+            else:
+                feats.append((hyp.probs[i].item(), parts))
         return sorted(feats)
 
     def propose(self, n_candidates, forbidden_data, length_norm):
         obs_set_a = set(s for s, _, j in self.observations)
         obs_set = set(s for s in (forbidden_data+list(obs_set_a)))
+        print(self.linear_train_dataset)
         if np.random.random() < self.propose_train:
             while True:
                 seq = self.linear_train_dataset[self.index_of_next_item]
@@ -291,6 +300,7 @@ class VBLearner(Learner):
         while len(candidates) == 0:
             candidates = [self.dataset.random_seq() for _ in range(n_candidates)]
             candidates = [c for c in candidates if c not in obs_set]
+        print("candidates: ", candidates)
         #import ipdb; ipdb.set_trace()
         if self.strategy_name == "entropy":
             scores = [
