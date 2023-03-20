@@ -76,7 +76,7 @@ class MeanFieldScorer: # this is us
         if feats_to_update is None:
             feats_to_update = list(set([item for (_, feats, _) in seqs for item in feats])) 
 
-        clip_val = 40 
+        clip_val = np.inf
 
         new_probs = self.probs.copy()
         
@@ -132,7 +132,9 @@ class MeanFieldScorer: # this is us
 
             posterior = 1 / (1 + np.exp(-log_score))
 #            new_probs[features[i]] = posterior = np.clip(posterior, 0.000001, 0.999999)
-            new_probs[curr_feat] = posterior = np.clip(posterior, 0.000001, 0.999999)
+ #           new_probs[curr_feat] = posterior = np.clip(posterior, 0.000001, 0.999999)
+            new_probs[curr_feat] = posterior
+
             if verbose:
                 new_prob = new_probs[curr_feat]
                 change = new_prob-this_prob
