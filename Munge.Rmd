@@ -4,7 +4,6 @@ title: "FussWithJacobOutput"
 author: "Canaan"
 date: "`r Sys.Date()`"
 output: html_document
-#root_dir: G:/My Drive/MIT/Research/Active Learning with Roger and Jacob Andreas/JacobCode/GridSearch/A
 ---
 
 ```{r setup, include=FALSE}
@@ -398,7 +397,7 @@ heldout_performance_broad_addins <- read_csv("broad_test_set_annotated.csv") %>%
 
 
 
-heldout_performance <- read_csv("HoldoutEvals.csv") %>% 
+heldout_performance <- read_csv("Exp3/HoldoutEvals.csv") %>% 
   filter(TestType == "BroadTest")
 
 heldout_combined <- heldout_performance %>% 
@@ -412,14 +411,14 @@ now plot
 ```{r}
 heldout_combined %>% 
  # mutate(Cost = Cost/Length) %>% 
-  group_by(Step,IsLicit,Run,Strategy) %>% 
+  group_by(Step,IsLicit,Run,Strategy,N_INIT) %>% 
   summarise(mean = mean(Cost)) %>% 
   pivot_wider(names_from = IsLicit, values_from = mean) %>% 
   mutate(NLLBad_minus_NLLGood = `FALSE`-`TRUE`) %>% 
   ggplot(aes(x= Step, y = NLLBad_minus_NLLGood, color = Strategy))+
   geom_smooth()+
-  theme_bw()
-  #facet_wrap(~Run, nrow = 3)
+  theme_bw()+
+  facet_wrap(~N_INIT)
 ```
 now plot classifier accuracy
 
@@ -429,15 +428,16 @@ want to predict IsLicit from Cost for each Step/Strategy/Run/N_Init
 
 
 sums <- heldout_combined %>% 
-  group_by(Strategy,Step,Run) %>% 
-  crossv_kfold(10) %>%
-  mutate(model = purrr::map(train, ~glm(IsLicit ~ Cost, data=., family=binomial))) %>% 
-  unnest( fitted = map2(model, test, ~augment(.x, newdata = .y)),
-          pred = map2( model, test, ~predict( .x, .y, type = "response")) ) %>%
-  select(.id,IsLicit,.fitted, pred,Strategy,Step,Run) %>%
-  mutate(IsLicit2 = as.factor(if_else(IsLicit == TRUE,"C1","C2"))) %>% 
-  group_by(.id,Strategy,Step,Run) %>%
-summarise(auc = roc(IsLicit2, .fitted, quiet = T)$auc[1])
+  group_by(Strategy,Step,Run,N_INIT) %>% 
+  #crossv_kfold(10) #%>%
+  #ungroup() %>% 
+  #mutate(model = purrr::map(train, ~glm(IsLicit ~ Cost, data=., family=binomial))) %>% 
+  #unnest( fitted = map2(model, test, ~augment(.x, newdata = .y)),
+ #         pred = map2( model, test, ~predict( .x, .y, type = "response")) ) %>%
+  #select(.id,IsLicit,Strategy,Step,Run) %>%
+  #mutate(IsLicit2 = as.factor(if_else(IsLicit == TRUE,"C1","C2"))) %>% 
+  #group_by(.id,Strategy,Step,Run) %>%
+summarise(auc = roc(IsLicit, exp(-Cost), quiet = T)$auc[1])
 
 
   
@@ -445,21 +445,16 @@ sums %>%
   #filter(Run == 0) %>% 
   ggplot(aes(x=Step, y = auc, group = Run))+
   geom_smooth()+
-  facet_wrap(~Strategy)+
+  facet_wrap(~Strategy*N_INIT)+
   theme_bw()
 
-sums %>% 
-  #filter(Run == 0) %>% 
-  ggplot(aes(x=Step, y = auc, group = paste0(Run,.id)))+
-  geom_line()+
-  facet_wrap(~Strategy)+
-  theme_bw()
+
 
 sums %>% 
   #filter(Run == 0) %>% 
   ggplot(aes(x=Step, y = auc, group = Strategy, color = Strategy, fill = Strategy))+
   geom_smooth()+
-  #facet_wrap(~Strategy)+
+  facet_wrap(~N_INIT)+
   theme_bw()
 #write_csv(sums,"./GridSearch/D_summary.csv")
 #ggsave("./GridSearch/D_auc.jpeg") 
@@ -512,4 +507,3 @@ a %>%
   theme_bw()
 ```
 
->>>>>>> 86fe688b89613e4948ef2f9ef3cf3f1970b459d4

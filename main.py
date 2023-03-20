@@ -181,12 +181,13 @@ def main(args):
     if args.do_plot_wandb:
         import wandb
 
-    for N_INIT in [0]:
-        num_runs = 10
+    for N_INIT in [0,2,4,8,16,25]:
+        num_runs = 5
+
         for run in range(num_runs):
             #for strategy in ["train","entropy","unif","max","std","diff"]: # ,"max","unif","interleave","diff","std"
 #            for strategy in ["", "eig", "unif","train"]: # only train, entropy, eig, and unif are well-defined here
-            for strategy in ["entropy_pred", "entropy", "train", "unif"]: # only train, entropy, eig, and unif are well-defined here
+            for strategy in ["entropy_pred", "train", "unif"]: # only train, entropy, eig, and unif are well-defined here
                 print("STRATEGY:", strategy)
                 if args.do_plot_wandb:
                     config = {"n_init": N_INIT, "run": run, "strategy": strategy, "log_log_alpha_ratio": args.log_log_alpha_ratio, "prior_prob": args.prior_prob}
