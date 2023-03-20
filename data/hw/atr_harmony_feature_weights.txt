@@ -1,0 +1,2 @@
+*[+atr][-atr]	(tier=default)	10.0
+*[-atr][+atr]	(tier=default)	10.0
