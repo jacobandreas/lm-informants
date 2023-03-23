@@ -244,16 +244,16 @@ class MeanFieldScorer: # this is us
 #            print('old_probs: ', old_probs.round(3))
 
 
-            if do_plot_wandb:
-                # TODO: these features will be different than the features in the other heatmap, these are only plotting the ones updating
-                probs_to_plot = self.probs[feats_to_update]
-                title = f'Prob vs Feature for Step: {len(seqs)-1}, Update: {num_updates}' 
-                feature_probs_plot = plot_feature_probs(feats_to_update, probs_to_plot, old_probs[feats_to_update], title=title)
-
-                wandb.log({"intermediate_feature_probs/plot": wandb.Image(feature_probs_plot)})
-                plt.close()
-                wandb.log({"intermediate_updates/error": error, "intermediate_updates/step": len(seqs)-1, "intermediate_updates/update": num_updates})
-            
+            # if do_plot_wandb:
+            #     # TODO: these features will be different than the features in the other heatmap, these are only plotting the ones updating
+            #     probs_to_plot = self.probs[feats_to_update]
+            #     title = f'Prob vs Feature for Step: {len(seqs)-1}, Update: {num_updates}'
+            #     feature_probs_plot = plot_feature_probs(feats_to_update, probs_to_plot, old_probs[feats_to_update], title=title)
+            #
+            #     wandb.log({"intermediate_feature_probs/plot": wandb.Image(feature_probs_plot)})
+            #     plt.close()
+            #     wandb.log({"intermediate_updates/error": error, "intermediate_updates/step": len(seqs)-1, "intermediate_updates/update": num_updates})
+            #
             num_updates += 1
             
             if error <= best_error:

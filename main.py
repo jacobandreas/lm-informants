@@ -191,7 +191,7 @@ def main(args):
         for run in range(num_runs):
             #for strategy in ["train","entropy","unif","max","std","diff"]: # ,"max","unif","interleave","diff","std"
 #            for strategy in ["", "eig", "unif","train"]: # only train, entropy, eig, and unif are well-defined here
-            for strategy in ["train", "unif", "entropy_pred","entropy","eig"]: # only train, entropy, eig, and unif are well-defined here
+            for strategy in ["eig_train"]:#["entropy_pred","train", "unif", "entropy","eig","eig_train"]: # only train, entropy, eig, and unif are well-defined here
                 print("STRATEGY:", strategy)
                 if args.do_plot_wandb:
                     config = {"n_init": N_INIT, "run": run, "strategy": strategy, "log_log_alpha_ratio": args.log_log_alpha_ratio, "prior_prob": args.prior_prob}
@@ -277,7 +277,50 @@ def main(args):
 
 
                     #learner.cost()
-                    candidate = learner.propose(n_candidates=100, forbidden_data = forbidden_data_that_cannot_be_queried_about, length_norm=True)
+                    if strategy == "eig_train":
+                        if learner.gain_list_from_train == []:
+                            learner.strategy_name = "train"
+                            learner.strategy_for_this_candidate = "train"
+                            candidate = learner.propose(n_candidates=100,
+                                                        forbidden_data=forbidden_data_that_cannot_be_queried_about,
+                                                        length_norm=True)
+                            print()
+                            print()
+                            print("no train items yet, pulling from train")
+                            print("strategy chosen was", learner.strategy_for_this_candidate)
+                            print()
+                            print()
+                        else:
+                            mean_gain_from_train = np.mean(learner.gain_list_from_train)
+                            learner.strategy_name = "eig"
+                            candidate = learner.propose(n_candidates=100,
+                                                        forbidden_data=forbidden_data_that_cannot_be_queried_about,
+                                                        length_norm=True)
+                            eig_from_candidate = learner.get_eig(candidate) # this is redundant
+                            if mean_gain_from_train > eig_from_candidate:
+                                learner.strategy_name = "train"
+                                # then we want to take the train example as our candidate
+                                candidate = learner.propose(n_candidates=100,
+                                                        forbidden_data=forbidden_data_that_cannot_be_queried_about,
+                                                        length_norm=True)
+                                learner.strategy = "eig_train"
+                                learner.strategy_for_this_candidate = "train"
+                            else:
+                                # we observe the candidate from the eig strategy we're going to ask about
+                                learner.strategy_name = "eig_train"
+                                learner.strategy_for_this_candidate = "eig"
+                            print()
+                            print()
+                            print("mean gain from train:", mean_gain_from_train)
+                            print("expected value of candidate:", eig_from_candidate)
+                            print("strategy chosen was",learner.strategy_for_this_candidate)
+                            print()
+                            print()
+
+
+                    else:
+                        candidate = learner.propose(n_candidates=100, forbidden_data = forbidden_data_that_cannot_be_queried_about, length_norm=True)
+
                     str_candidate = str(dataset.vocab.decode(candidate))
                     
                     mean_field_scorer = learner.hypotheses[0]
@@ -402,7 +445,7 @@ def main(args):
                     pred_prob_pos = np.exp(learner.hypotheses[0].logprob(candidate, True))
 
                     if args.do_plot_wandb:
-                        log_results = {"step": step, "entropy_over_features": entropy_before, "chosen_candidate": str(dataset.vocab.decode(candidate)), "eig": eig, "pred_prob_pos": pred_prob_pos}
+                        log_results = {"step": step, "entropy_over_features": entropy_before, "chosen_candidate": str(dataset.vocab.decode(candidate)), "eig": eig, "pred_prob_pos": pred_prob_pos, "stragegy_used": learner.strategy_for_this_candidate}
                         if eval_humans:
                             log_results["auc"] = eval_auc(costs, labels)
                         wandb.log(log_results)
@@ -432,7 +475,25 @@ def main(args):
                     print("entropy before: ", entropy_before) 
                     print("entropy after: ", entropy_after)
                     entropy_diff = entropy_before-entropy_after
+                    if learner.strategy_name == "eig_train":
+                        print()
+                        print()
+                        print("actual gain from choice was", entropy_diff)
+                        print()
+                        print()
+                    if learner.strategy_for_this_candidate == "train":
+                        print()
+                        print()
+                        print("old list of gains from trains is", learner.gain_list_from_train)
+                        print("old mean is", np.mean(learner.gain_list_from_train))
+                        learner.gain_list_from_train.append(entropy_diff)
+                        print("appending a new item to the list of entropy:", entropy_diff)
+                        print("new list of gains from trains is", learner.gain_list_from_train)
+                        print("new mean is", np.mean(learner.gain_list_from_train))
+                        print()
+                        print()
                     # TODO: add expected information gain
+
                     print("information gain:", entropy_diff)
                     print("expected information gain:", eig)
                     print("predicted probability (acceptable):", pred_prob_pos)
@@ -448,7 +509,7 @@ def main(args):
                         eval_metrics.write(str(v)+',')
                     eval_metrics.write(str(step)+','+str(run)+','+str(strategy)+','+str(N_INIT)+","+str(is_ti(str(dataset.vocab.decode(candidate)).replace(",","")))+","+str(judgment)+","+str(dataset.vocab.decode(candidate)).replace(",","")+","+str(entropy_before)+","+str(entropy_after)+","+str(entropy_diff)+","+str(change_in_probs)+'\n')
                     eval_metrics.flush()
-                    wandb_table_data.append([step, strategy, str_candidate, judgment, list(featurized_candidate), eig,  entropy_before, entropy_after, entropy_diff, change_in_probs])
+                    wandb_table_data.append([step, strategy, str_candidate, judgment, list(featurized_candidate), eig,  entropy_before, entropy_after, entropy_diff, change_in_probs, learner.strategy_for_this_candidate])
 
 #
                     #print("Judging human forms...")
@@ -465,7 +526,7 @@ def main(args):
 
 #                with open(f"results_{strategy}.json", "w") as writer:
 #                    json.dump(logs, writer)
-                wandb_table = wandb.Table(columns=["step", "strategy", "proposed_form", "judgment", "features", "eig", "entropy_before", "entropy_after", "entropy_diff", "change_in_probs"], data=wandb_table_data) 
+                wandb_table = wandb.Table(columns=["step", "strategy", "proposed_form", "judgment", "features", "eig", "entropy_before", "entropy_after", "entropy_diff", "change_in_probs","strategy_for_this_candidate"], data=wandb_table_data)
                 wandb.log({"Model Eval Logs": wandb_table})
 
 if __name__ == "__main__":
