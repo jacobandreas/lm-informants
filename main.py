@@ -191,7 +191,7 @@ def main(args):
         for run in range(num_runs):
             #for strategy in ["train","entropy","unif","max","std","diff"]: # ,"max","unif","interleave","diff","std"
 #            for strategy in ["", "eig", "unif","train"]: # only train, entropy, eig, and unif are well-defined here
-            for strategy in ["eig_train"]:#["entropy_pred","train", "unif", "entropy","eig","eig_train"]: # only train, entropy, eig, and unif are well-defined here
+            for strategy in ["train","unif","eig"]:#["entropy_pred","train", "unif", "entropy","eig","eig_train"]: # only train, entropy, eig, and unif are well-defined here
                 print("STRATEGY:", strategy)
                 if args.do_plot_wandb:
                     config = {"n_init": N_INIT, "run": run, "strategy": strategy, "log_log_alpha_ratio": args.log_log_alpha_ratio, "prior_prob": args.prior_prob}
@@ -297,6 +297,7 @@ def main(args):
                                                         forbidden_data=forbidden_data_that_cannot_be_queried_about,
                                                         length_norm=True)
                             eig_from_candidate = learner.get_eig(candidate) # this is redundant
+                            print("mean gain from train:",mean_gain_from_train,". EIG from candidate:",eig_from_candidate,". ratio:",mean_gain_from_train/eig_from_candidate,". gain over gain + train:", eig_from_candidate/(eig_from_candidate+mean_gain_from_train))
                             if mean_gain_from_train > eig_from_candidate:
                                 learner.strategy_name = "train"
                                 # then we want to take the train example as our candidate
@@ -313,6 +314,46 @@ def main(args):
                             print()
                             print("mean gain from train:", mean_gain_from_train)
                             print("expected value of candidate:", eig_from_candidate)
+                            print("strategy chosen was",learner.strategy_for_this_candidate)
+                            print()
+                            print()
+
+                    elif strategy == "entropy_pred_train":
+                        if learner.gain_list_from_train == []:
+                            learner.strategy_name = "train"
+                            learner.strategy_for_this_candidate = "train"
+                            candidate = learner.propose(n_candidates=100,
+                                                        forbidden_data=forbidden_data_that_cannot_be_queried_about,
+                                                        length_norm=True)
+                            print()
+                            print()
+                            print("no train items yet, pulling from train")
+                            print("strategy chosen was", learner.strategy_for_this_candidate)
+                            print()
+                            print()
+                        else:
+                            mean_gain_from_train = np.mean(learner.gain_list_from_train)
+                            learner.strategy_name = "entropy_pred"
+                            candidate = learner.propose(n_candidates=100,
+                                                        forbidden_data=forbidden_data_that_cannot_be_queried_about,
+                                                        length_norm=True)
+                            entropy_pred_from_candidate = learner.hypotheses[0].entropy_pred(candidate) # this is redundant
+                            if mean_gain_from_train > entropy_pred_from_candidate:
+                                learner.strategy_name = "train"
+                                # then we want to take the train example as our candidate
+                                candidate = learner.propose(n_candidates=100,
+                                                        forbidden_data=forbidden_data_that_cannot_be_queried_about,
+                                                        length_norm=True)
+                                learner.strategy = "entropy_pred_train"
+                                learner.strategy_for_this_candidate = "train"
+                            else:
+                                # we observe the candidate from the eig strategy we're going to ask about
+                                learner.strategy_name = "entropy_pred_train"
+                                learner.strategy_for_this_candidate = "entropy_pred"
+                            print()
+                            print()
+                            print("mean gain from train:", mean_gain_from_train)
+                            print("expected value of candidate:", entropy_pred_from_candidate)
                             print("strategy chosen was",learner.strategy_for_this_candidate)
                             print()
                             print()
@@ -475,7 +516,7 @@ def main(args):
                     print("entropy before: ", entropy_before) 
                     print("entropy after: ", entropy_after)
                     entropy_diff = entropy_before-entropy_after
-                    if learner.strategy_name == "eig_train":
+                    if learner.strategy_name in ["eig_train","entropy_pred_train"]:
                         print()
                         print()
                         print("actual gain from choice was", entropy_diff)
@@ -492,7 +533,6 @@ def main(args):
                         print("new mean is", np.mean(learner.gain_list_from_train))
                         print()
                         print()
-                    # TODO: add expected information gain
 
                     print("information gain:", entropy_diff)
                     print("expected information gain:", eig)

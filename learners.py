@@ -61,7 +61,7 @@ class Learner:
             pass
         elif strategy == "eig":
             pass
-        elif strategy == "eig_train":
+        elif strategy in ["eig_train","entropy_pred_train"]:
             pass
         else:
             assert False
