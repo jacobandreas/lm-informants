@@ -54,15 +54,17 @@ class MeanFieldScorer: # this is us
             prior_prob=0.5, 
             converge_type="symmetric",
             feature_type="atr_harmony",
+            tolerance = 0.001,
             ):
         self.ORDER = 3
 #        self.LOG_LOG_ALPHA_RATIO = 45 # 45 is what Jacob set # was 500
 #        alpha = 0.9999999999999999
 #        self.LOG_LOG_ALPHA_RATIO = np.log(np.log(alpha/(1-alpha))) # 45 is what Jacob set # was 500
-        self.LOG_LOG_ALPHA_RATIO = log_log_alpha_ratio 
+        self.LOG_LOG_ALPHA_RATIO = log_log_alpha_ratio
+        self.tolerance = tolerance
         self.feature_type = feature_type
         
-        if converge_type not in ["symmetric", "asymmetric"]:
+        if converge_type not in ["symmetric", "asymmetric", "none"]:
             raise ValueError(f"Invalid value for converge_type given: {converge_type}")
         self.converge_type = converge_type
         
@@ -119,20 +121,23 @@ class MeanFieldScorer: # this is us
             update_vector = (judgments * np.exp(np.clip(log_probs_all_off + self.LOG_LOG_ALPHA_RATIO, -np.inf, clip_val)))
             update_sum = update_vector.sum()
             update_unclipped = (judgments * np.exp(log_probs_all_off + self.LOG_LOG_ALPHA_RATIO)).sum()
+            update_check = (judgments * probs_all_off * np.exp(self.LOG_LOG_ALPHA_RATIO)).sum()
 
             log_score = (
                 np.log(this_prob) - np.log(1-this_prob) - update_sum
             )
             # for debugging
-#            if verbose or curr_feat in [46, 69, 133]:
-#                print(f"  Feat: {curr_feat}")
-#                print(f"\t | feats (batch): {[feats for (_, feats, _) in temp_seqs]}")
-#                print(f"\t | other_probs (batch): {[op.round(3) for op in other_probs]}")
-#                print(f"\t | log_probs_all_off (batch): {log_probs_all_off.round(3)}")
-#                print(f"\t | probs_all_off (batch): {probs_all_off.round(5)}")
-#                print(f"\t | judgments (batch): {judgments}")
-#                print(f"\t | update_vector (batch): {update_vector.round(5)}")
-#                print(f"\t | update_sum (batch): {update_sum}")
+            if verbose:
+                print(f"  Feat: {curr_feat}")
+                print(f"\t | feats (batch): {featurized_seqs}")
+                print(f"\t | other_probs (batch): {[op.round(3) for op in other_probs]}")
+                print(f"\t | log_probs_all_off (batch): {log_probs_all_off.round(3)}")
+                print(f"\t | probs_all_off (batch): {probs_all_off.round(5)}")
+                print(f"\t | judgments (batch): {judgments}")
+                print(f"\t | update_vector (batch): {update_vector.round(5)}")
+                print(f"\t | update_unclipped (batch): {update_unclipped.round(5)}")
+                print(f"\t | update_check (batch): {update_check.round(5)}")
+                print(f"\t | update_sum (batch): {update_sum}")
 
             # TODO: want a one-sided clip?
             log_score = np.clip(log_score, -clip_val, clip_val)
@@ -146,8 +151,7 @@ class MeanFieldScorer: # this is us
             if verbose:
                 new_prob = new_probs[curr_feat]
                 change = new_prob-this_prob
-                if abs(change) > 0.0001:
-                    print(f"feat: {curr_feat}, before: {this_prob.round(3)}, after: {(new_prob).round(3)} ({(change).round(3)})")
+                print(f"feat: {curr_feat}, before: {this_prob.round(3)}, after: {(new_prob).round(3)} ({(change).round(3)})")
 
         #print("extrema", new_probs.max(), new_probs.min(), new_probs.mean())
 
@@ -176,7 +180,6 @@ class MeanFieldScorer: # this is us
 
         # This is the same as manually updating once first
         error = np.inf
-        tolerance = 0.001
 #        do_converge = (judgment == True or judgment == False) # asymmetric update; if you want asymmetric, comment out after true
 #        do_converge = (judgment == True)
         if self.converge_type == "symmetric":
@@ -184,6 +187,8 @@ class MeanFieldScorer: # this is us
         # In asymmetric case, only converge for positive examples
         elif self.converge_type == "asymmetric":
             do_converge = (judgment == True)
+        elif self.converge_type == "none":
+            do_converge = False
         # updarte if first update *or* have not converged yet
         num_updates = 0
         max_updates = 25 
@@ -202,7 +207,7 @@ class MeanFieldScorer: # this is us
             judgments_by_feat[idx] = [1 if j else -1 for j in judgments] 
 
         best_error = np.inf
-        while (do_converge and error > tolerance) or num_updates == 0:
+        while (do_converge and error > self.tolerance) or num_updates == 0:
             if verbose:
                 print(f"  Update {num_updates}:")
             if not target_item:
@@ -244,15 +249,18 @@ class MeanFieldScorer: # this is us
 #            print('old_probs: ', old_probs.round(3))
 
 
+            """
             if do_plot_wandb:
                 # TODO: these features will be different than the features in the other heatmap, these are only plotting the ones updating
                 probs_to_plot = self.probs[feats_to_update]
                 title = f'Prob vs Feature for Step: {len(seqs)-1}, Update: {num_updates}' 
-                feature_probs_plot = plot_feature_probs(feats_to_update, probs_to_plot, old_probs[feats_to_update], title=title)
+                str_feats_to_update = [str(f) for f in feats_to_update]
+                feature_probs_plot = plot_feature_probs(str_feats_to_update, probs_to_plot, old_probs[feats_to_update], title=title)
 
                 wandb.log({"intermediate_feature_probs/plot": wandb.Image(feature_probs_plot)})
                 plt.close()
                 wandb.log({"intermediate_updates/error": error, "intermediate_updates/step": len(seqs)-1, "intermediate_updates/update": num_updates})
+            """
             
             num_updates += 1
             

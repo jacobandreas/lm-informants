@@ -75,10 +75,11 @@ class Learner:
             prior_prob=0.5,
             converge_type="symmetric",
             feature_type="atr_harmony",
+            tolerance=0.001,
             ):
         self.hypotheses = [
             self.initialize_hyp(
-                log_log_alpha_ratio=log_log_alpha_ratio, prior_prob=prior_prob, converge_type=converge_type, feature_type=feature_type,
+                log_log_alpha_ratio=log_log_alpha_ratio, prior_prob=prior_prob, converge_type=converge_type, feature_type=feature_type, tolerance=tolerance,
                 ) for _ in range(n_hyps)
         ]
         self.observations = []
@@ -119,13 +120,14 @@ class VBLearner(Learner):
         super().__init__(dataset, strategy, linear_train_dataset, index_of_next_item)
         self.results_by_observations = []
         
-    def initialize_hyp(self, log_log_alpha_ratio=1, prior_prob=0.5, converge_type="symmetric", feature_type="atr_harmony"):
+    def initialize_hyp(self, log_log_alpha_ratio=1, prior_prob=0.5, converge_type="symmetric", feature_type="atr_harmony", tolerance=0.001):
         return scorers.MeanFieldScorer(
                 self.dataset, 
                 log_log_alpha_ratio=log_log_alpha_ratio, 
                 prior_prob=prior_prob,
                 converge_type=converge_type,
-                feature_type=feature_type, 
+                feature_type=feature_type,
+                tolerance=tolerance,
                 )
 
     def observe(self, seq, judgment, update=True, do_plot_wandb=False, verbose=False, batch=True):
@@ -192,9 +194,6 @@ class VBLearner(Learner):
 
         # the kl-divergence between posteriors before --> observe yes*p(yes) + before --> observe no * p(no)
 
-        print("delta positive:", delta_positive)
-        print("delta negative:", delta_negative)
-        print("prob being positive:", prob_being_positive)
         return eig
 
     def get_kl(self, seq):
