@@ -205,6 +205,7 @@ def main(args):
                 random.seed(run)
                 np.random.seed(run)
                 dataset.random.seed(run)
+                linear_train_dataset = dataset.data.copy()
                 if args.shuffle_train:
                     random.shuffle(linear_train_dataset) # turn this off if you want to have train be always the same order.
                     
@@ -226,11 +227,14 @@ def main(args):
 
                 all_features = learner.all_features(return_indices=True)
                 unique_feature_indices = [f_idx for (_, f, f_idx) in all_features if f in unique_features]
+                
+                wandb_table_data = []
 
-                if len(init_examples) > 0:
-                    for example in init_examples[:-1]:
-                        learner.observe(example, True, update=True, verbose=args.verbose, batch=args.batch, do_plot_wandb=args.do_plot_wandb)
-                    learner.observe(init_examples[-1], True, update=True, verbose=args.verbose, do_plot_wandb=args.do_plot_wandb)
+#                if len(init_examples) > 0:
+#                    for example in init_examples:
+#                        learner.observe(example, True, update=True, verbose=args.verbose, batch=args.batch, do_plot_wandb=args.do_plot_wandb)
+#                    learner.observe(init_examples[-1], True, update=True, verbose=args.verbose, batch=args.batch, do_plot_wandb=args.do_plot_wandb)
+                    
                 #scores = evaluate_with_external_data(good_dataset,bad_dataset, eval_informant, learner)
                 scores = evaluate(dataset, eval_informant, learner)
 
@@ -258,16 +262,20 @@ def main(args):
                 #assert False
 
 
-                wandb_table_data = []
 #                for i in range(75-N_INIT):
-                for i in range(args.num_steps-N_INIT):
+#                for i in range(args.num_steps-N_INIT):
+                for i in range(args.num_steps):
                     print("")
                     print(f"i: {i}")
-                    step=N_INIT+i
+                    step = i
+#                    step=N_INIT+i
                     p = learner.hypotheses[0].probs
                    
                     #learner.cost()
-                    if strategy == "eig_train":
+                    if i < N_INIT:
+                        candidate = init_examples[i]
+
+                    elif strategy == "eig_train":
                         if learner.gain_list_from_train == []:
                             learner.strategy_name = "train"
                             learner.strategy_for_this_candidate = "train"
@@ -488,7 +496,7 @@ def main(args):
                             log_results["auc"] = eval_auc(costs, labels)
                         wandb.log(log_results)
 
-                    learner.observe(candidate, judgment, verbose=args.verbose, do_plot_wandb=args.do_plot_wandb)
+                    learner.observe(candidate, judgment, verbose=args.verbose, do_plot_wandb=args.do_plot_wandb, batch=args.batch)
                     if args.do_plot_wandb:
                         all_features = learner.all_features(return_indices=True)
                         if args.feature_type == "atr_harmony":
@@ -507,7 +515,7 @@ def main(args):
                         wandb.log({"feature_probs/plot": wandb.Image(feature_probs_plot)})
                         plt.close()
 
-                        if step == 0:
+                        if i == 0:
                             wandb.log({"features": wandb.Table(columns=["feature_idx", "feature"], data=[[f[-1], f[-2]] for f in all_features])})
                     
                     last_result = learner.results_by_observations[-1] 
