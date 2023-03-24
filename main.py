@@ -192,7 +192,7 @@ def main(args):
         for run in range(num_runs):
             #for strategy in ["train","entropy","unif","max","std","diff"]: # ,"max","unif","interleave","diff","std"
 #            for strategy in ["", "eig", "unif","train"]: # only train, entropy, eig, and unif are well-defined here
-            for strategy in ["eig", "train", "unif", "entropy_pred", "entropy"]: # only train, entropy, eig, and unif are well-defined here
+            for strategy in ["train", "unif", "eig_train", "eig", "entropy_pred", "entropy"]: # only train, entropy, eig, and unif are well-defined here
 #            for strategy in ["train"]:
                 print("STRATEGY:", strategy)
                 if args.do_plot_wandb:
