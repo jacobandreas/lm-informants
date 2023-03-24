@@ -32,4 +32,5 @@ def plot_feature_probs(features, costs, last_costs, title=""):
     plt.rc('xtick',labelsize=5)
     plt.title(title, fontsize=9.5)
     plt.tight_layout()
+    plt.close() # TODO canaan added this, b/c it was warning
     return fig

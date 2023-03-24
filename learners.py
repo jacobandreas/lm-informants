@@ -61,6 +61,8 @@ class Learner:
             pass
         elif strategy == "eig":
             pass
+        elif strategy in ["eig_train","entropy_pred_train"]:
+            pass
         else:
             assert False
 
@@ -119,6 +121,8 @@ class VBLearner(Learner):
             ):
         super().__init__(dataset, strategy, linear_train_dataset, index_of_next_item)
         self.results_by_observations = []
+        self.gain_list_from_train = []
+        self.strategy_for_this_candidate = None
         
     def initialize_hyp(self, log_log_alpha_ratio=1, prior_prob=0.5, converge_type="symmetric", feature_type="atr_harmony", tolerance=0.001):
         return scorers.MeanFieldScorer(
@@ -143,7 +147,7 @@ class VBLearner(Learner):
         _, results = self.hypotheses[0].update(seqs_to_observe, verbose=verbose, do_plot_wandb=do_plot_wandb)
         self.results_by_observations.append(results)
 
-    # TODO: only consider features in sequene as in scorer.entropy()? (Should be equivalent bc probs for features not in seq won't change?)
+    # TODO: only consider features in sequence as in scorer.entropy()? (Should be equivalent bc probs for features not in seq won't change?)
     def get_eig(self, seq):
         orig_probs = deepcopy(self.hypotheses[0].probs)
 #        print("learner before fussing around:", learner_before_fussing_around.probs)
@@ -194,6 +198,10 @@ class VBLearner(Learner):
 
         # the kl-divergence between posteriors before --> observe yes*p(yes) + before --> observe no * p(no)
 
+       # if args.verbose:
+       #      print("delta positive:", delta_positive)
+       #      print("delta negative:", delta_negative)
+       #      print("prob being positive:", prob_being_positive)
         return eig
 
     def get_kl(self, seq):
@@ -284,10 +292,11 @@ class VBLearner(Learner):
         return sorted(feats)
 
     def propose(self, n_candidates, forbidden_data, length_norm):
+        #print("in propose, strategy is",self.strategy_name)
         obs_set_a = set(s for s, _, j in self.observations)
         obs_set = set(s for s in (forbidden_data+list(obs_set_a)))
-        print(self.linear_train_dataset)
-        if np.random.random() < self.propose_train:
+        #print(self.linear_train_dataset)
+        if np.random.random() < self.propose_train or self.strategy_name == "train":
             while True:
                 seq = self.linear_train_dataset[self.index_of_next_item]
                 #print("proposing item",seq,"with index",self.index_of_next_item)
@@ -299,7 +308,7 @@ class VBLearner(Learner):
         while len(candidates) == 0:
             candidates = [self.dataset.random_seq() for _ in range(n_candidates)]
             candidates = [c for c in candidates if c not in obs_set]
-        print("candidates: ", candidates)
+        #print("candidates: ", candidates)
         #import ipdb; ipdb.set_trace()
         if self.strategy_name == "entropy":
             scores = [
