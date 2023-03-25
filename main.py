@@ -192,7 +192,7 @@ def main(args):
         for run in range(num_runs):
             #for strategy in ["train","entropy","unif","max","std","diff"]: # ,"max","unif","interleave","diff","std"
 #            for strategy in ["", "eig", "unif","train"]: # only train, entropy, eig, and unif are well-defined here
-            for strategy in ["train", "unif", "eig_train", "eig", "entropy_pred", "entropy"]: # only train, entropy, eig, and unif are well-defined here
+            for strategy in [ "eig_train","entropy_pred", "entropy","train", "unif","eig"]: # only train, entropy, eig, and unif are well-defined here
 #            for strategy in ["train"]:
                 print("STRATEGY:", strategy)
                 if args.do_plot_wandb:
@@ -274,6 +274,8 @@ def main(args):
                     #learner.cost()
                     if i < N_INIT:
                         candidate = init_examples[i]
+                        if strategy == "eig_train":
+                            learner.strategy_for_this_candidate = "train"
 
                     elif strategy == "eig_train":
                         if learner.gain_list_from_train == []:
@@ -538,7 +540,7 @@ def main(args):
                     else:
                         entropy_diff_unique = None
                     # TODO: add expected information gain
-                    
+
                     if learner.strategy_name in ["eig_train","entropy_pred_train"]:
                         print()
                         print()
