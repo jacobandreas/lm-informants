@@ -186,13 +186,15 @@ def main(args):
     results_by_observations_writer = get_csv_writer("ResultsByObservations.csv", args.exp_dir)
     results_by_observations_writer.writerow(["Step", "Run", "strategy", "candidate", "judgment", "new_probs", "p_all_off", "update_unclipped", "update_clipped"])
 
-    for N_INIT in [25, 0]:
+    for N_INIT in [0]:
         num_runs = args.num_runs 
 
         for run in range(num_runs):
             #for strategy in ["train","entropy","unif","max","std","diff"]: # ,"max","unif","interleave","diff","std"
 #            for strategy in ["", "eig", "unif","train"]: # only train, entropy, eig, and unif are well-defined here
-            for strategy in [ "eig_train","entropy_pred", "entropy","train", "unif","eig"]: # only train, entropy, eig, and unif are well-defined here
+            for strategy in [ "eig_train"]:#"entropy_pred", "entropy","train", "unif","eig",]: # only train, entropy, eig, and unif are well-defined here
+                if strategy in ["eig","eig_train"]:
+                    args.num_steps = 50
 #            for strategy in ["train"]:
                 print("STRATEGY:", strategy)
                 if args.do_plot_wandb:
@@ -281,7 +283,7 @@ def main(args):
                         if learner.gain_list_from_train == []:
                             learner.strategy_name = "train"
                             learner.strategy_for_this_candidate = "train"
-                            candidate = learner.propose(n_candidates=100,
+                            candidate = learner.propose(n_candidates=10,
                                                         forbidden_data=forbidden_data_that_cannot_be_queried_about,
                                                         length_norm=True)
                             print()
@@ -293,7 +295,7 @@ def main(args):
                         else:
                             mean_gain_from_train = np.mean(learner.gain_list_from_train)
                             learner.strategy_name = "eig"
-                            candidate = learner.propose(n_candidates=100,
+                            candidate = learner.propose(n_candidates=10,
                                                         forbidden_data=forbidden_data_that_cannot_be_queried_about,
                                                         length_norm=True)
                             eig_from_candidate = learner.get_eig(candidate) # this is redundant
@@ -301,7 +303,7 @@ def main(args):
                             if mean_gain_from_train > eig_from_candidate:
                                 learner.strategy_name = "train"
                                 # then we want to take the train example as our candidate
-                                candidate = learner.propose(n_candidates=100,
+                                candidate = learner.propose(n_candidates=10,
                                                         forbidden_data=forbidden_data_that_cannot_be_queried_about,
                                                         length_norm=True)
                                 learner.strategy = "eig_train"
@@ -360,7 +362,7 @@ def main(args):
 
 
                     else:
-                        candidate = learner.propose(n_candidates=100, forbidden_data = forbidden_data_that_cannot_be_queried_about, length_norm=True)
+                        candidate = learner.propose(n_candidates=10, forbidden_data = forbidden_data_that_cannot_be_queried_about, length_norm=True)
 
                     str_candidate = str(dataset.vocab.decode(candidate))
                     
