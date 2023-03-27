@@ -283,7 +283,7 @@ def main(args):
                         if learner.gain_list_from_train == []:
                             learner.strategy_name = "train"
                             learner.strategy_for_this_candidate = "train"
-                            candidate = learner.propose(n_candidates=10,
+                            candidate = learner.propose(n_candidates=100,
                                                         forbidden_data=forbidden_data_that_cannot_be_queried_about,
                                                         length_norm=True)
                             print()
@@ -295,7 +295,7 @@ def main(args):
                         else:
                             mean_gain_from_train = np.mean(learner.gain_list_from_train)
                             learner.strategy_name = "eig"
-                            candidate = learner.propose(n_candidates=10,
+                            candidate = learner.propose(n_candidates=100,
                                                         forbidden_data=forbidden_data_that_cannot_be_queried_about,
                                                         length_norm=True)
                             eig_from_candidate = learner.get_eig(candidate) # this is redundant
@@ -303,7 +303,7 @@ def main(args):
                             if mean_gain_from_train > eig_from_candidate:
                                 learner.strategy_name = "train"
                                 # then we want to take the train example as our candidate
-                                candidate = learner.propose(n_candidates=10,
+                                candidate = learner.propose(n_candidates=100,
                                                         forbidden_data=forbidden_data_that_cannot_be_queried_about,
                                                         length_norm=True)
                                 learner.strategy = "eig_train"
@@ -362,7 +362,7 @@ def main(args):
 
 
                     else:
-                        candidate = learner.propose(n_candidates=10, forbidden_data = forbidden_data_that_cannot_be_queried_about, length_norm=True)
+                        candidate = learner.propose(n_candidates=100, forbidden_data = forbidden_data_that_cannot_be_queried_about, length_norm=True)
 
                     str_candidate = str(dataset.vocab.decode(candidate))
                     
