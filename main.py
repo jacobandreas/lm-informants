@@ -192,14 +192,14 @@ def main(args):
         for run in range(num_runs):
             #for strategy in ["train","entropy","unif","max","std","diff"]: # ,"max","unif","interleave","diff","std"
 #            for strategy in ["", "eig", "unif","train"]: # only train, entropy, eig, and unif are well-defined here
-            for strategy in [ "eig_train"]:#"entropy_pred", "entropy","train", "unif","eig",]: # only train, entropy, eig, and unif are well-defined here
+            for strategy in [ "unif","entropy_pred","train"]:#"entropy_pred", "entropy","train", "unif","eig",]: # only train, entropy, eig, and unif are well-defined here
                 if strategy in ["eig","eig_train"]:
                     args.num_steps = 50
 #            for strategy in ["train"]:
                 print("STRATEGY:", strategy)
                 if args.do_plot_wandb:
                     config = {"n_init": N_INIT, "run": run, "strategy": strategy, "log_log_alpha_ratio": args.log_log_alpha_ratio, "prior_prob": args.prior_prob, "feature_type": args.feature_type, "converge_type": args.converge_type, "tolerance": args.tolerance, "n_init": N_INIT}
-                    wandb_run = wandb.init(config=config, project=args.wandb_project, name=strategy, reinit=True)
+                    wandb_run = wandb.init(config=config, project=args.wandb_project, name=strategy, reinit=True, tags = [t.strip() for t in args.tags.split(",") if args.tags is not None])
                 #if strategy == "train":
                 #    run = 19
                 index_of_next_item = 0
@@ -484,7 +484,7 @@ def main(args):
                     
                     entropy_before = entropy(learner.hypotheses[0].probs)
                     # TODO: Unique features only available for atr_harmony
-                    if args.feature_type == "atr_harmony":
+                    if args.feature_type in ["atr_harmony","english"]:
                         entropy_before_unique = entropy(learner.hypotheses[0].probs[unique_feature_indices])
                     else:
                         entropy_before_unique = None
@@ -503,7 +503,7 @@ def main(args):
                     learner.observe(candidate, judgment, verbose=args.verbose, do_plot_wandb=args.do_plot_wandb, batch=args.batch)
                     if args.do_plot_wandb:
                         all_features = learner.all_features(return_indices=True)
-                        if args.feature_type == "atr_harmony":
+                        if args.feature_type in ["atr_harmony","english"]:
                             all_features = [(c, f, f_idx) for (c, f, f_idx) in all_features if f in unique_features]
                         all_features.sort(key=lambda x: x[-1])
                         costs = [x[0] for x in all_features]
@@ -528,16 +528,15 @@ def main(args):
                     
                     probs_after = learner.hypotheses[0].probs.copy()
                     entropy_after = entropy(learner.hypotheses[0].probs)
-                    if args.feature_type == "atr_harmony":
+                    if args.feature_type in ["atr_harmony","english"]:
                         entropy_after_unique = entropy(learner.hypotheses[0].probs[unique_feature_indices])
-                    # TODO: Unique features only available for atr_harmony
                     else:
                         entropy_after_unique = None
                     change_in_probs = np.linalg.norm(probs_after-probs_before)
                     print("entropy before: ", entropy_before) 
                     print("entropy after: ", entropy_after)
                     entropy_diff = entropy_before-entropy_after
-                    if args.feature_type == "atr_harmony": 
+                    if args.feature_type in ["atr_harmony", "english"]:
                         entropy_diff_unique = entropy_before_unique-entropy_after_unique
                     else:
                         entropy_diff_unique = None
@@ -608,6 +607,8 @@ if __name__ == "__main__":
     parser.add_argument('--tolerance', type=float, default=0.001)
     parser.add_argument('--num_steps', type=int, default=150)
     parser.add_argument('--num_runs', type=int, default=5)
+    parser.add_argument('--tags', type=str, default=None)
+
     parser.set_defaults(verbose=False)
     
     # batch defaults to True
