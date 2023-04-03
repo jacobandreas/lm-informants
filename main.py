@@ -40,9 +40,7 @@ def eval_corrs(costs, labels, sources): # nb, sources comes in via TIs, and labe
     data = pd.DataFrame({'costs': costs, 'labels': labels, 'sources': sources})
     group_corr = data.groupby('sources').apply(lambda x: np.corrcoef(-x['costs'], x['labels'])[0, 1]).reset_index(
         name='pearson_corr')
-    #return group_corr
-    #data = pd.DataFrame({'costs': costs, 'labels': labels, 'sources': sources})
-    #group_corr = data.groupby('sources').apply(lambda x: np.corrcoef(x['costs'], x['labels'])[0, 1])
+
     print(group_corr)
     return group_corr
 
