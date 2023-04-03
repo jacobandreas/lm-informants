@@ -36,9 +36,26 @@ def eval_auc(costs, labels):
     roc_auc = metrics.auc(fpr, tpr)
     return roc_auc
 
-def get_broad_annotations():
-    df = pd.read_csv("broad_test_set_annotated.csv") 
-    return dict(zip(df.Word, df.IsLicit)), dict(zip(df.Word, df.IsTI))
+def eval_corrs(costs, labels, sources): # nb, sources comes in via TIs, and labels are human judgments
+    data = pd.DataFrame({'costs': costs, 'labels': labels, 'sources': sources})
+    group_corr = data.groupby('sources').apply(lambda x: np.corrcoef(x['costs'], x['labels'])[0, 1]).reset_index(
+        name='pearson_corr')
+    #return group_corr
+    #data = pd.DataFrame({'costs': costs, 'labels': labels, 'sources': sources})
+    #group_corr = data.groupby('sources').apply(lambda x: np.corrcoef(x['costs'], x['labels'])[0, 1])
+    print(group_corr)
+    return group_corr
+
+
+def get_broad_annotations(feature_type):
+    if feature_type == "atr":
+        df = pd.read_csv("broad_test_set_annotated.csv")
+        return dict(zip(df.Word, df.IsLicit)), dict(zip(df.Word, df.IsTI))
+    elif feature_type == "english":
+        df = pd.read_csv("WordsAndScores.csv")
+        return dict(zip(df.Word, df.Score)), dict(zip(df.Word, df.Source))
+    else:
+        raise NotImplementedError("please select a valid feature type!")
 
 
 def evaluate(dataset, informant, learner):
@@ -137,7 +154,7 @@ def main(args):
     if write_out_feat_probs:
         feat_evals = get_out_file("FeatureProbs.csv", args.exp_dir)
         feat_evals.write("N_Init,feature,cost,Step,Candidate,Judgment,Strategy, IsTI,Run\n")
-    if eval_humans:
+    if eval_humans and args.feature_type == "atr":
         narrow_test_set_t = read_in_blicks("TI_test.csv")
         narrow_test_set = []
         for item in narrow_test_set_t:
@@ -154,7 +171,22 @@ def main(args):
             encoded_word = dataset.vocab.encode(phonemes)  # expects a list of arpabet chars
             broad_test_set.append((item, encoded_word))
 
-        broad_licit_annotations, broad_TI_annotations = get_broad_annotations()
+        broad_licit_annotations, broad_TI_annotations = get_broad_annotations(args.feature_type)
+    elif eval_humans and args.feature_type == "english":
+        #_t = read_in_blicks("TI_test.csv")
+        narrow_test_set = []
+
+        broad_test_set_t = read_in_blicks("WordsToBeScored.csv")
+        broad_test_set = []
+        for item in broad_test_set_t:
+            phonemes = [BOUNDARY] + item + [BOUNDARY]
+            # print(phonemes,"is phonemes")
+            encoded_word = dataset.vocab.encode(phonemes)  # expects a list of arpabet chars
+            broad_test_set.append((item, encoded_word))
+
+        broad_licit_annotations, broad_TI_annotations = get_broad_annotations(args.feature_type)
+    else:
+        raise NotImplementedError("please choose a supported combination of features and evaluation settings!")
       
         
 
@@ -497,7 +529,14 @@ def main(args):
                     if args.do_plot_wandb:
                         log_results = {"step": step, "entropy_over_features": entropy_before, "chosen_candidate": str(dataset.vocab.decode(candidate)), "eig_of_candidate": eig, "pred_prob_pos": pred_prob_pos, "strategy_used": learner.strategy_for_this_candidate, "pred_prob_pos": pred_prob_pos, "entropy_over_unique_features": entropy_before_unique, "entropy_of_candidate": entropy_of_candidate}
                         if eval_humans:
-                            log_results["auc"] = eval_auc(costs, labels)
+                            if args.feature_type == "atr":
+                                log_results["auc"] = eval_auc(costs, labels)
+                            elif args.feature_type == "english":
+                                corrs_df = eval_corrs(costs, labels, TIs)
+                                table = wandb.Table(dataframe=corrs_df)
+                                wandb.log({"corrs": table})
+                            else:
+                                raise NotImplementedError("Please select a valid feature type!")
                         wandb.log(log_results)
 
                     learner.observe(candidate, judgment, verbose=args.verbose, do_plot_wandb=args.do_plot_wandb, batch=args.batch)
