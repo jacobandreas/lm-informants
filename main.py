@@ -37,8 +37,8 @@ def eval_auc(costs, labels):
     return roc_auc
 
 def eval_corrs(costs, labels, sources): # nb, sources comes in via TIs, and labels are human judgments
-    data = pd.DataFrame({'costs': -1*costs, 'labels': labels, 'sources': sources})
-    group_corr = data.groupby('sources').apply(lambda x: np.corrcoef(x['costs'], x['labels'])[0, 1]).reset_index(
+    data = pd.DataFrame({'costs': costs, 'labels': labels, 'sources': sources})
+    group_corr = data.groupby('sources').apply(lambda x: np.corrcoef(-x['costs'], x['labels'])[0, 1]).reset_index(
         name='pearson_corr')
     #return group_corr
     #data = pd.DataFrame({'costs': costs, 'labels': labels, 'sources': sources})
