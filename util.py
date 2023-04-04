@@ -18,9 +18,17 @@ def entropy(probs, length_norm=False):
 
 def plot_feature_probs(features, costs, last_costs, title=""):
 
-    fig = plt.figure(figsize=(12, 3))
+    fig = plt.figure(figsize=(12, 5))
 
-    colors = ["blue" if c == lc else "red" for c, lc in zip(costs, last_costs)] 
+    if last_costs is None:
+        colors = ["red" for _ in range(len(costs))]
+    else:
+        colors = ["blue" if c == lc else "red" for c, lc in zip(costs, last_costs)] 
+
+    print("PLOTTING")
+    print("costs: ", costs)
+    print("last costs: ", last_costs)
+    print("colors: ", colors)
 
     # Create the plot
     plt.clf()

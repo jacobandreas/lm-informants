@@ -43,12 +43,11 @@ def eval_corrs(costs, labels, sources): # nb, sources comes in via TIs, and labe
     #return group_corr
     #data = pd.DataFrame({'costs': costs, 'labels': labels, 'sources': sources})
     #group_corr = data.groupby('sources').apply(lambda x: np.corrcoef(x['costs'], x['labels'])[0, 1])
-    print(group_corr)
     return group_corr
 
 
 def get_broad_annotations(feature_type):
-    if feature_type == "atr":
+    if feature_type == "atr_harmony":
         df = pd.read_csv("broad_test_set_annotated.csv")
         return dict(zip(df.Word, df.IsLicit)), dict(zip(df.Word, df.IsTI))
     elif feature_type == "english":
@@ -154,7 +153,7 @@ def main(args):
     if write_out_feat_probs:
         feat_evals = get_out_file("FeatureProbs.csv", args.exp_dir)
         feat_evals.write("N_Init,feature,cost,Step,Candidate,Judgment,Strategy, IsTI,Run\n")
-    if eval_humans and args.feature_type == "atr":
+    if eval_humans and args.feature_type == "atr_harmony":
         narrow_test_set_t = read_in_blicks("TI_test.csv")
         narrow_test_set = []
         for item in narrow_test_set_t:
@@ -204,7 +203,9 @@ def main(args):
 
     logs = {}
     unique_features = pd.read_csv('all_features_in_data_unique.csv')['X1'].unique()
-    last_costs = [args.prior_prob] * len(unique_features)
+
+    last_costs = None
+    last_costs_by_feat = {}
 
     if eval_humans:
         out_human_evals = get_out_file("HoldoutEvals.csv", args.exp_dir) 
@@ -224,14 +225,15 @@ def main(args):
         for run in range(num_runs):
             #for strategy in ["train","entropy","unif","max","std","diff"]: # ,"max","unif","interleave","diff","std"
 #            for strategy in ["", "eig", "unif","train"]: # only train, entropy, eig, and unif are well-defined here
-            for strategy in [ "entropy_pred","train","eig"]:#"entropy_pred", "entropy","train", "unif","eig",]: # only train, entropy, eig, and unif are well-defined here
+            for strategy in ["entropy_pred","train","eig"]:#"entropy_pred", "entropy","train", "unif","eig",]: # only train, entropy, eig, and unif are well-defined here
                 if strategy in ["eig","eig_train"]:
                     args.num_steps = 50
 #            for strategy in ["train"]:
                 print("STRATEGY:", strategy)
                 if args.do_plot_wandb:
                     config = {"n_init": N_INIT, "run": run, "strategy": strategy, "log_log_alpha_ratio": args.log_log_alpha_ratio, "prior_prob": args.prior_prob, "feature_type": args.feature_type, "converge_type": args.converge_type, "tolerance": args.tolerance, "n_init": N_INIT}
-                    wandb_run = wandb.init(config=config, project=args.wandb_project, name=strategy, reinit=True, tags = [t.strip() for t in args.tags.split(",") if args.tags is not None])
+                    tags = [] if args.tags is None else [t.strip() for t in args.tags.split(",")]
+                    wandb_run = wandb.init(config=config, project=args.wandb_project, name=strategy, reinit=True, tags = tags) 
                 #if strategy == "train":
                 #    run = 19
                 index_of_next_item = 0
@@ -298,6 +300,8 @@ def main(args):
 
 #                for i in range(75-N_INIT):
 #                for i in range(args.num_steps-N_INIT):
+                encountered_features = set() 
+                observed_features = set() 
                 for i in range(args.num_steps):
                     print("")
                     print(f"i: {i}")
@@ -400,6 +404,7 @@ def main(args):
                     
                     mean_field_scorer = learner.hypotheses[0]
                     featurized_candidate = mean_field_scorer._featurize(candidate).nonzero()[0]
+                    encountered_features.update(set(featurized_candidate))
                     judgment = informant.judge(candidate)
                     #prior_probability_of_accept = learner.cost(candidate)
 
@@ -516,8 +521,11 @@ def main(args):
                     
                     entropy_before = entropy(learner.hypotheses[0].probs)
                     # TODO: Unique features only available for atr_harmony
-                    if args.feature_type in ["atr_harmony","english"]:
+                    if args.feature_type in ["atr_harmony"]:
                         entropy_before_unique = entropy(learner.hypotheses[0].probs[unique_feature_indices])
+                    # TODO: for english, compute entropy over seen features (where "seen features" includes features in current candidate, before observing) 
+                    elif args.feature_type in ["english"]:
+                        entropy_before_unique = entropy(learner.hypotheses[0].probs[list(encountered_features)])
                     else:
                         entropy_before_unique = None
                     probs_before = learner.hypotheses[0].probs.copy()
@@ -527,34 +535,67 @@ def main(args):
                     pred_prob_pos = np.exp(learner.hypotheses[0].logprob(candidate, True))
 
                     if args.do_plot_wandb:
-                        log_results = {"step": step, "entropy_over_features": entropy_before, "chosen_candidate": str(dataset.vocab.decode(candidate)), "eig_of_candidate": eig, "pred_prob_pos": pred_prob_pos, "strategy_used": learner.strategy_for_this_candidate, "pred_prob_pos": pred_prob_pos, "entropy_over_unique_features": entropy_before_unique, "entropy_of_candidate": entropy_of_candidate}
+                        log_results = {
+                                "step": step, 
+                                "entropy_over_features": entropy_before, 
+                                "chosen_candidate": str(dataset.vocab.decode(candidate)), 
+                                "eig_of_candidate": eig, 
+                                "pred_prob_pos": pred_prob_pos, 
+                                "strategy_used": learner.strategy_for_this_candidate, 
+                                "pred_prob_pos": pred_prob_pos, 
+                                "entropy_over_unique_features": entropy_before_unique, 
+                                "entropy_of_candidate": entropy_of_candidate, 
+                                # this includes in the current candidate, before observing
+                                "num_features_encountered": len(encountered_features),
+                                # this excludes the current candidate 
+                                "num_features_observed": len(observed_features),
+                                }
                         if eval_humans:
-                            if args.feature_type == "atr":
+                            if args.feature_type == "atr_harmony":
                                 log_results["auc"] = eval_auc(costs, labels)
                             elif args.feature_type == "english":
                                 corrs_df = eval_corrs(costs, labels, TIs)
                                 table = wandb.Table(dataframe=corrs_df)
+                            
                                 wandb.log({"corrs": table})
+                               
+                                corrs_df = corrs_df.set_index('sources')['pearson_corr']
+                                log_results.update({f"human_correlation_{k}": v for k, v in corrs_df.to_dict().items()})
+
                             else:
                                 raise NotImplementedError("Please select a valid feature type!")
+                        
                         wandb.log(log_results)
 
                     learner.observe(candidate, judgment, verbose=args.verbose, do_plot_wandb=args.do_plot_wandb, batch=args.batch)
+                    observed_features.update(set(featurized_candidate))
                     if args.do_plot_wandb:
                         all_features = learner.all_features(return_indices=True)
-                        if args.feature_type in ["atr_harmony","english"]:
+		
+                        # for atr_harmony, only look at features in "unique_features"
+                        if args.feature_type in ["atr_harmony"]:
                             all_features = [(c, f, f_idx) for (c, f, f_idx) in all_features if f in unique_features]
+                            last_filtered_costs = last_costs
+                        
+                        # for english, only look at features that have been seen so far (including in candidate being proposed)
+                        elif args.feature_type in ["english"]:
+                            all_features = [(c, f, f_idx) for (c, f, f_idx) in all_features if f_idx in encountered_features]
+
                         all_features.sort(key=lambda x: x[-1])
                         costs = [x[0] for x in all_features]
-                        # This indexing will sort by feature names for atr_harmony and feature indices for toy kiku
                         features = [str(x[-1]) for x in all_features]
+
+                        if args.feature_type in ["english"]:
+                            # to get the values to determine which points moved, get the costs for features;
+                            # if they are not in last_costs_by_feat, they are just the prior prob (TODO: is this robust? it should be because features are only ever added?)
+                            last_filtered_costs = [last_costs_by_feat[f_idx] if f_idx in last_costs_by_feat.keys() else args.prior_prob for (_, _, f_idx) in all_features]
+                        
                         title = f'Step: {step}\nLast candidate (word): {str_candidate}\nFeaturized:{featurized_candidate}\nJudgment:{judgment}'
-#                        print(features)
-#                        print(costs)
-#                        print(last_costs)
-#                        print([c==l for c, l in zip(costs, last_costs)])
-                        feature_probs_plot = plot_feature_probs(features, costs, last_costs, title=title)
+                        print("costs: ", costs)
+                        feature_probs_plot = plot_feature_probs(features, costs, last_filtered_costs, title=title)
                         last_costs = costs.copy()
+                        last_costs_by_feat = {x[2]: x[0] for x in all_features}
+
                         wandb.log({"feature_probs/plot": wandb.Image(feature_probs_plot)})
                         plt.close()
 
@@ -569,6 +610,8 @@ def main(args):
                     entropy_after = entropy(learner.hypotheses[0].probs)
                     if args.feature_type in ["atr_harmony","english"]:
                         entropy_after_unique = entropy(learner.hypotheses[0].probs[unique_feature_indices])
+                    elif args.feature_type in ["english"]:
+                        entropy_after_unique = entropy(learner.hypotheses[0].probs[list(encountered_features)])
                     else:
                         entropy_after_unique = None
                     change_in_probs = np.linalg.norm(probs_after-probs_before)

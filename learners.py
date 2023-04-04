@@ -205,7 +205,8 @@ class VBLearner(Learner):
         return eig
 
     def get_kl(self, seq):
-        learner_before_fussing_around = self.hypotheses[0]
+        orig_probs = deepcopy(self.hypotheses[0].probs)
+#        print("learner before fussing around:", learner_before_fussing_around.probs)
 
         # prob of the thing being positive or negative
         prob_being_positive_a = np.exp(self.hypotheses[0].logprob(seq, True))
@@ -214,32 +215,31 @@ class VBLearner(Learner):
         prob_being_negative = 1-prob_being_positive
         assert prob_being_positive + prob_being_negative == 1
 
-        # entropy over features before seeing
-        p = self.hypotheses[0].probs
-        entropy_over_features_before_observing_item = ((p * np.log(p) + (1 - p) * np.log(1 - p)).sum())
-
-        # entropy over features after seeing if positive
-
-#        p, _ = self.hypotheses[0].update(seq, True)
         features = self.hypotheses[0]._featurize(seq).nonzero()[0]
-        _, results = self.hypotheses[0].update(self.observations + [(seq, features, True)])
-        entropy_over_features_after_observing_item_positive = ((p * np.log(p) + (1 - p) * np.log(1 - p)).sum())
-        self.hypotheses[0] = learner_before_fussing_around
+        p, results = self.hypotheses[0].update(self.observations + [(seq, features, True)], verbose=False)
+        p_after_true = p.copy()
+
         # reset learner
-        # entropy over features after seeing if negative
-#        p, _ = self.hypotheses[0].update(seq, False)
-        _, results = self.hypotheses[0].update(self.observations + [(seq, features, False)])
-        entropy_over_features_after_observing_item_negative = ((p * np.log(p) + (1 - p) * np.log(1 - p)).sum())
-        self.hypotheses[0] = learner_before_fussing_around
+        self.hypotheses[0].probs = orig_probs 
+        
+        p, results = self.hypotheses[0].update(self.observations + [(seq, features, False)], verbose=False)
+        p_after_false = p.copy()
+
         # reset learner
+        self.hypotheses[0].probs = orig_probs 
+        
+        all_equal = (orig_probs == self.hypotheses[0].probs)
+        assert all_equal.all()
 
-        # either:
+        torch_p_before = torch.Bernoulli(torch.from_numpy(orig_probs))
+        torch_p_after_false = torch.Bernoulli(torch.from_numpy(p_after_false))
+        torch_p_after_true = torch.Bernoulli(torch.from_numpy(p_after_true))
 
-        kl = entropy_over_features_after_observing_item_positive*prob_being_positive + entropy_over_features_after_observing_item_negative*prob_being_negative # reduce my entropy
+        kl_pos = torch.distributions.kl.kl_divergence(torch_p_after_true, torch_p_before)
+        kl_neg = torch.distributions.kl.kl_divergence(torch_p_after_false, torch_p_before)
 
-        # OR
+        kl = kl_pos*prob_being_positive + kl_neg*prob_being_negative 
 
-        # the kl-divergence between posteriors before --> observe yes*p(yes) + before --> observe no * p(no)
         return kl
 
     def cost(self, seq):
@@ -321,6 +321,8 @@ class VBLearner(Learner):
             scores = [0 for c in candidates]
         elif self.strategy_name == "eig":
             scores = [self.get_eig(c) for c in candidates]
+        elif self.strategy_name == "kl":
+            scores = [self.get_kl(c) for c in candidates]
         else:
             raise NotImplementedError(f"strategy {self.strategy_name} not implemented")
         scored_candidates = list(zip(candidates, scores))
