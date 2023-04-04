@@ -8,6 +8,7 @@ from scipy.special import logsumexp
 from copy import deepcopy 
 
 import torch
+from torchmetrics.functional import kl_divergence
 from torch import nn, optim
 
 class Learner:
@@ -62,6 +63,8 @@ class Learner:
         elif strategy == "eig":
             pass
         elif strategy in ["eig_train","entropy_pred_train"]:
+            pass
+        elif strategy == "kl":
             pass
         else:
             assert False
@@ -231,12 +234,14 @@ class VBLearner(Learner):
         all_equal = (orig_probs == self.hypotheses[0].probs)
         assert all_equal.all()
 
-        torch_p_before = torch.Bernoulli(torch.from_numpy(orig_probs))
-        torch_p_after_false = torch.Bernoulli(torch.from_numpy(p_after_false))
-        torch_p_after_true = torch.Bernoulli(torch.from_numpy(p_after_true))
+        torch_p_before = (torch.from_numpy(orig_probs)).unsqueeze(0)
+        #print(torch_p_before.shape)
+        torch_p_after_false = (torch.from_numpy(p_after_false)).unsqueeze(0)
+        torch_p_after_true = (torch.from_numpy(p_after_true)).unsqueeze(0)
+        kl_pos = kl_divergence(torch_p_after_true, torch_p_before, reduction = "sum")
 
-        kl_pos = torch.distributions.kl.kl_divergence(torch_p_after_true, torch_p_before)
-        kl_neg = torch.distributions.kl.kl_divergence(torch_p_after_false, torch_p_before)
+        #kl_pos = torch.distributions.kl.kl_divergence(torch_p_after_true, torch_p_before, reduction = "sum")
+        kl_neg = kl_divergence(torch_p_after_false, torch_p_before, reduction = "sum")
 
         kl = kl_pos*prob_being_positive + kl_neg*prob_being_negative 
 

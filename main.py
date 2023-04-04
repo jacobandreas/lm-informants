@@ -223,7 +223,7 @@ def main(args):
         for run in range(num_runs):
             #for strategy in ["train","entropy","unif","max","std","diff"]: # ,"max","unif","interleave","diff","std"
 #            for strategy in ["", "eig", "unif","train"]: # only train, entropy, eig, and unif are well-defined here
-            for strategy in ["entropy_pred","train","eig"]:#"entropy_pred", "entropy","train", "unif","eig",]: # only train, entropy, eig, and unif are well-defined here
+            for strategy in ["kl","entropy_pred","train","eig","unif","eig_train","entropy"]:#"entropy_pred", "entropy","train", "unif","eig",]: # only train, entropy, eig, and unif are well-defined here
                 if strategy in ["eig","eig_train"]:
                     args.num_steps = 50
 #            for strategy in ["train"]:
