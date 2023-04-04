@@ -238,10 +238,10 @@ class VBLearner(Learner):
         #print(torch_p_before.shape)
         torch_p_after_false = (torch.from_numpy(p_after_false)).unsqueeze(0)
         torch_p_after_true = (torch.from_numpy(p_after_true)).unsqueeze(0)
-        kl_pos = kl_divergence(torch_p_after_true, torch_p_before, reduction = "sum")
+        kl_pos = kl_divergence(torch_p_after_true, torch_p_before, reduction = "mean")
 
         #kl_pos = torch.distributions.kl.kl_divergence(torch_p_after_true, torch_p_before, reduction = "sum")
-        kl_neg = kl_divergence(torch_p_after_false, torch_p_before, reduction = "sum")
+        kl_neg = kl_divergence(torch_p_after_false, torch_p_before, reduction = "mean")
 
         kl = kl_pos*prob_being_positive + kl_neg*prob_being_negative 
 
