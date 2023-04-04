@@ -141,7 +141,11 @@ def main(args):
     feature_query_log.write("Feature,Candidate,Step,N_Init,Strategy,Run\n")
     alL_features_log = get_out_file("all_features_log.csv", args.exp_dir) 
 
-    lexicon_file_name = f"data/hw/{args.feature_type}_lexicon.txt"
+    if args.lexicon_file is None:
+        lexicon_file_name = f"data/hw/{args.feature_type}_lexicon.txt"
+    else:
+        lexicon_file_name = args.lexicon_file
+        assert os.path.exists(lexicon_file_name) 
     dataset = datasets.load_lexicon(lexicon_file_name)
 
     random = np.random.RandomState(0)
@@ -182,7 +186,7 @@ def main(args):
             broad_test_set.append((item, encoded_word))
 
         broad_licit_annotations, broad_TI_annotations = get_broad_annotations(args.feature_type)
-    else:
+    elif eval_humans:
         raise NotImplementedError("please choose a supported combination of features and evaluation settings!")
       
         
@@ -223,13 +227,14 @@ def main(args):
         for run in range(num_runs):
             #for strategy in ["train","entropy","unif","max","std","diff"]: # ,"max","unif","interleave","diff","std"
 #            for strategy in ["", "eig", "unif","train"]: # only train, entropy, eig, and unif are well-defined here
-            for strategy in ["kl","entropy_pred","train","eig","unif","eig_train","entropy"]:#"entropy_pred", "entropy","train", "unif","eig",]: # only train, entropy, eig, and unif are well-defined here
+            for strategy in ["kl","entropy_pred","train","eig","unif","entropy"]:#"entropy_pred", "entropy","train", "unif","eig",]: # only train, entropy, eig, and unif are well-defined here
+#            for strategy in ["train"]:
                 if strategy in ["eig","eig_train","kl"]:
                     args.num_steps = 50
 #            for strategy in ["train"]:
                 print("STRATEGY:", strategy)
                 if args.do_plot_wandb:
-                    config = {"n_init": N_INIT, "run": run, "strategy": strategy, "log_log_alpha_ratio": args.log_log_alpha_ratio, "prior_prob": args.prior_prob, "feature_type": args.feature_type, "converge_type": args.converge_type, "tolerance": args.tolerance, "n_init": N_INIT}
+                    config = {"n_init": N_INIT, "run": run, "strategy": strategy, "log_log_alpha_ratio": args.log_log_alpha_ratio, "prior_prob": args.prior_prob, "feature_type": args.feature_type, "converge_type": args.converge_type, "tolerance": args.tolerance, "n_init": N_INIT, "lexicon_file": args.lexicon_file}
                     tags = [] if args.tags is None else [t.strip() for t in args.tags.split(",")]
                     wandb_run = wandb.init(config=config, project=args.wandb_project, name=strategy, reinit=True, tags = tags) 
                 #if strategy == "train":
@@ -528,6 +533,7 @@ def main(args):
                         entropy_before_unique = None
                     probs_before = learner.hypotheses[0].probs.copy()
                     eig = learner.get_eig(candidate).item()
+                    kl = learner.get_kl(candidate).item()
                     # TODO: set length_norm to be a variable/parameter, but currently it is True in call to propose() below
                     entropy_of_candidate = learner.hypotheses[0].entropy(candidate, length_norm=True)
                     pred_prob_pos = np.exp(learner.hypotheses[0].logprob(candidate, True))
@@ -538,6 +544,7 @@ def main(args):
                                 "entropy_over_features": entropy_before, 
                                 "chosen_candidate": str(dataset.vocab.decode(candidate)), 
                                 "eig_of_candidate": eig, 
+                                "kl_of_candidate": kl, 
                                 "pred_prob_pos": pred_prob_pos, 
                                 "strategy_used": learner.strategy_for_this_candidate, 
                                 "pred_prob_pos": pred_prob_pos, 
@@ -573,7 +580,6 @@ def main(args):
                         # for atr_harmony, only look at features in "unique_features"
                         if args.feature_type in ["atr_harmony"]:
                             all_features = [(c, f, f_idx) for (c, f, f_idx) in all_features if f in unique_features]
-                            last_filtered_costs = last_costs
                         
                         # for english, only look at features that have been seen so far (including in candidate being proposed)
                         elif args.feature_type in ["english"]:
@@ -587,6 +593,8 @@ def main(args):
                             # to get the values to determine which points moved, get the costs for features;
                             # if they are not in last_costs_by_feat, they are just the prior prob (TODO: is this robust? it should be because features are only ever added?)
                             last_filtered_costs = [last_costs_by_feat[f_idx] if f_idx in last_costs_by_feat.keys() else args.prior_prob for (_, _, f_idx) in all_features]
+                        else:
+                            last_filtered_costs = last_costs
                         
                         title = f'Step: {step}\nLast candidate (word): {str_candidate}\nFeaturized:{featurized_candidate}\nJudgment:{judgment}'
                         feature_probs_plot = plot_feature_probs(features, costs, last_filtered_costs, title=title)
@@ -688,6 +696,9 @@ if __name__ == "__main__":
     parser.add_argument('--num_runs', type=int, default=5)
     parser.add_argument('--tags', type=str, default=None)
 
+    # If you want to give a lexicon file for the train strategy different from the default
+    parser.add_argument('--lexicon_file', type=str, default=None)
+
     parser.set_defaults(verbose=False)
     
     # batch defaults to True
@@ -702,6 +713,7 @@ if __name__ == "__main__":
     parser.add_argument('--shuffle_train', action='store_true')
     parser.add_argument('--no-shuffle_train', dest='shuffle_train', action='store_false')
     parser.set_defaults(shuffle_train=True)
+    
 
     args = parser.parse_args()
 

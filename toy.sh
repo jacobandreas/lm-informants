@@ -1,10 +1,10 @@
-for LOG in 2
+for LOG in 1 
 do
-	for PRIOR in 0.5
+	for PRIOR in 0.5 0.2
 	do
-		for tolerance in 0.001
+		for SYLLABLES in 3 4 10
 		do
-			python main.py --exp_dir results/0322_kiku/batch_prior=${PRIOR}-log_ratio=${LOG} --log_log_alpha_ratio ${LOG} --prior_prob ${PRIOR} --wandb_project lm-informants_0322_toy --num_steps 3 --num_runs 1 --feature_type kiku --no-eval_humans --no-shuffle_train  --converge_type symmetric --verbose --tolerance ${tolerance}
+			python main.py --exp_dir results/0404_kiku/batch_prior=${PRIOR}-log_ratio=${LOG} --log_log_alpha_ratio ${LOG} --prior_prob ${PRIOR} --wandb_project lm-informants_0404_kiku --num_steps 3 --num_runs 1 --feature_type kiku --no-eval_humans --no-shuffle_train  --converge_type symmetric --verbose --lexicon_file data/hw/kiku_lexicon_${SYLLABLES}.txt
 		done
 	done
 done

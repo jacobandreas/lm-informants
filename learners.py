@@ -8,7 +8,7 @@ from scipy.special import logsumexp
 from copy import deepcopy 
 
 import torch
-from torchmetrics.functional import kl_divergence
+#from torchmetrics.functional import kl_divergence
 from torch import nn, optim
 
 class Learner:
@@ -234,16 +234,18 @@ class VBLearner(Learner):
         all_equal = (orig_probs == self.hypotheses[0].probs)
         assert all_equal.all()
 
-        torch_p_before = (torch.from_numpy(orig_probs)).unsqueeze(0)
-        #print(torch_p_before.shape)
-        torch_p_after_false = (torch.from_numpy(p_after_false)).unsqueeze(0)
-        torch_p_after_true = (torch.from_numpy(p_after_true)).unsqueeze(0)
-        kl_pos = kl_divergence(torch_p_after_true, torch_p_before, reduction = "mean")
+        def kl(p, q):
+            return p * np.log(p/q) + (1-p) * np.log((1-p)/(1-q)) 
 
-        #kl_pos = torch.distributions.kl.kl_divergence(torch_p_after_true, torch_p_before, reduction = "sum")
-        kl_neg = kl_divergence(torch_p_after_false, torch_p_before, reduction = "mean")
+        kl_pos = kl(p_after_true, orig_probs).sum() 
+        kl_neg = kl(p_after_false, orig_probs).sum() 
 
         kl = kl_pos*prob_being_positive + kl_neg*prob_being_negative 
+#        print("kl: ", kl)
+#        print("kl pos: ", kl_pos)
+#        print("kl neg: ", kl_neg)
+
+        assert kl >= 0, f"The kl divergence is not >= 0: {kl}"
 
         return kl
 
