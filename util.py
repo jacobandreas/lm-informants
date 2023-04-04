@@ -25,10 +25,10 @@ def plot_feature_probs(features, costs, last_costs, title=""):
     else:
         colors = ["blue" if c == lc else "red" for c, lc in zip(costs, last_costs)] 
 
-    print("PLOTTING")
-    print("costs: ", costs)
-    print("last costs: ", last_costs)
-    print("colors: ", colors)
+#    print("PLOTTING")
+#    print("costs: ", costs)
+#    print("last costs: ", last_costs)
+#    print("colors: ", colors)
 
     # Create the plot
     plt.clf()

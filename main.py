@@ -591,7 +591,6 @@ def main(args):
                             last_filtered_costs = [last_costs_by_feat[f_idx] if f_idx in last_costs_by_feat.keys() else args.prior_prob for (_, _, f_idx) in all_features]
                         
                         title = f'Step: {step}\nLast candidate (word): {str_candidate}\nFeaturized:{featurized_candidate}\nJudgment:{judgment}'
-                        print("costs: ", costs)
                         feature_probs_plot = plot_feature_probs(features, costs, last_filtered_costs, title=title)
                         last_costs = costs.copy()
                         last_costs_by_feat = {x[2]: x[0] for x in all_features}
