@@ -234,18 +234,27 @@ class VBLearner(Learner):
         all_equal = (orig_probs == self.hypotheses[0].probs)
         assert all_equal.all()
 
-        def kl(p, q):
+        def kl_bern(p, q):
             return p * np.log(p/q) + (1-p) * np.log((1-p)/(1-q)) 
 
-        kl_pos = kl(p_after_true, orig_probs).sum() 
-        kl_neg = kl(p_after_false, orig_probs).sum() 
+        kl_pos = kl_bern(p_after_true, orig_probs).sum() 
+        kl_neg = kl_bern(p_after_false, orig_probs).sum() 
 
         kl = kl_pos*prob_being_positive + kl_neg*prob_being_negative 
 #        print("kl: ", kl)
 #        print("kl pos: ", kl_pos)
 #        print("kl neg: ", kl_neg)
 
-        assert kl >= 0, f"The kl divergence is not >= 0: {kl}"
+        q = orig_probs
+        p = p_after_true
+#        print("p * np.log(p/q)")
+#        print((p * np.log(p/q)).round(3))
+#        print("(1-p) * np.log((1-p)/(1-q))")
+#        print(((1-p) * np.log((1-p)/(1-q))).round(3))
+#        print("kl")
+#        print(kl_bern(p_after_true, orig_probs).round(3))
+
+        assert kl >= -1e-12, f"The kl divergence is not >= 0: {kl}, kl pos: {kl_pos}, kl_neg: {kl_neg}\norig probs: {orig_probs.round(3)}\np_after_true: {p_after_true.round(3)}\np_after_false: {p_after_false.round(3)}\n{orig_probs==p_after_true}"
 
         return kl
 
