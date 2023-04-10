@@ -80,7 +80,7 @@ class MeanFieldScorer: # this is us
         # seq is a list of (seq, features, judgment) tuples
 
         # contains a list of the unique features in the whole batch
-        # (i.e. the ones we want to update)
+            # (i.e. the ones we want to update)
         # features are represented as indices into self.probs
         if feats_to_update is None:
             feats_to_update = list(set([item for (_, feats, _) in seqs for item in feats])) 

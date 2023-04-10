@@ -36,12 +36,22 @@ def eval_auc(costs, labels):
     roc_auc = metrics.auc(fpr, tpr)
     return roc_auc
 
-def eval_corrs(costs, labels, sources): # nb, sources comes in via TIs, and labels are human judgments
+def eval_corrs(costs, labels, sources): # nb, sources comes in via TIs, and labels are human judgments. now, if soucres = 5, these are pulled off, and used for auc calculation
     data = pd.DataFrame({'costs': costs, 'labels': labels, 'sources': sources})
-    group_corr = data.groupby('sources').apply(lambda x: np.corrcoef(-x['costs'], x['labels'])[0, 1]).reset_index(        name='pearson_corr')
+    # Select rows with sources 1, 2, 3, or 4
+    df1 = data.loc[data['sources'].isin([1, 2, 3, 4])]
 
+    # Select rows with source 5
+    df2 = data.loc[data['sources'] == 5]
+
+    group_corr = df1.groupby('sources').apply(lambda x: np.corrcoef(-x['costs'], x['labels'])[0, 1]).reset_index(        name='pearson_corr')
+    # Extract 'costs' and 'labels' columns from df2 as lists
+    costs = df2['costs'].tolist()
+    labels = df2['labels'].tolist()
+    roc_auc = eval_auc(costs, labels)
     print(group_corr)
-    return group_corr
+    print("roc_auc is", roc_auc)
+    return group_corr, roc_auc
 
 
 def get_broad_annotations(feature_type):
@@ -227,7 +237,7 @@ def main(args):
         for run in range(num_runs):
             #for strategy in ["train","entropy","unif","max","std","diff"]: # ,"max","unif","interleave","diff","std"
 #            for strategy in ["", "eig", "unif","train"]: # only train, entropy, eig, and unif are well-defined here
-            for strategy in ["kl","entropy_pred","train","eig","unif","entropy"]:#"entropy_pred", "entropy","train", "unif","eig",]: # only train, entropy, eig, and unif are well-defined here
+            for strategy in ["kl_train","eig_train","train","unif"]:#,"entropy_pred","train","eig","unif","entropy"]:#"entropy_pred", "entropy","train", "unif","eig",]: # only train, entropy, eig, and unif are well-defined here
 #            for strategy in ["train"]:
 #                if strategy in ["eig","eig_train","kl"]:
 #                    args.num_steps = 50
@@ -304,7 +314,22 @@ def main(args):
 #                for i in range(75-N_INIT):
 #                for i in range(args.num_steps-N_INIT):
                 encountered_features = set() 
-                observed_features = set() 
+                observed_features = set()
+                #UNCOMMENT BELOW TO GET THE FEATURES IN THE TEST SET
+                # o = pd.read_csv("WordsAndScores.csv")
+                # p = o.loc[o["Source"].isin([1, 2, 3, 4])]["Word"].tolist()   # hithere
+                # print(p)
+                # z = open("temp_out.tsv","w",encoding="utf8")
+                # for word in p:
+                #     if word != " ":
+                #         print(word)
+                #         #assert False
+                #         candidate = dataset.vocab.encode([BOUNDARY]+word.split(' ')+[BOUNDARY])
+                #         featurized_candidate = set(learner.hypotheses[0]._featurize(candidate).nonzero()[0])
+                #         print(word, candidate, featurized_candidate)
+                #         z.write(str(word)+'\t'+str(candidate)+"\t"+str(list(featurized_candidate))+"\n")
+                #         z.flush()
+                # z.close()
                 for i in range(args.num_steps):
                     print("")
                     print(f"i: {i}")
@@ -315,7 +340,7 @@ def main(args):
                     #learner.cost()
                     if i < N_INIT:
                         candidate = init_examples[i]
-                        if strategy == "eig_train":
+                        if strategy in ["eig_train", "kl_train"]:
                             learner.strategy_for_this_candidate = "train"
 
                     elif strategy == "eig_train":
@@ -337,14 +362,17 @@ def main(args):
                             candidate = learner.propose(n_candidates=100,
                                                         forbidden_data=forbidden_data_that_cannot_be_queried_about,
                                                         length_norm=True)
-                            eig_from_candidate = learner.get_eig(candidate) # this is redundant
-                            print("mean gain from train:",mean_gain_from_train,". EIG from candidate:",eig_from_candidate,". ratio:",mean_gain_from_train/eig_from_candidate,". gain over gain + train:", eig_from_candidate/(eig_from_candidate+mean_gain_from_train))
+                            eig_from_candidate = learner.get_eig(candidate)  # this is redundant
+                            print("mean gain from train:", mean_gain_from_train, ". EIG from candidate:",
+                                  eig_from_candidate, ". ratio:", mean_gain_from_train / eig_from_candidate,
+                                  ". gain over gain + train:",
+                                  eig_from_candidate / (eig_from_candidate + mean_gain_from_train))
                             if mean_gain_from_train > eig_from_candidate:
                                 learner.strategy_name = "train"
                                 # then we want to take the train example as our candidate
                                 candidate = learner.propose(n_candidates=100,
-                                                        forbidden_data=forbidden_data_that_cannot_be_queried_about,
-                                                        length_norm=True)
+                                                            forbidden_data=forbidden_data_that_cannot_be_queried_about,
+                                                            length_norm=True)
                                 learner.strategy = "eig_train"
                                 learner.strategy_for_this_candidate = "train"
                             else:
@@ -355,17 +383,19 @@ def main(args):
                             print()
                             print("mean gain from train:", mean_gain_from_train)
                             print("expected value of candidate:", eig_from_candidate)
-                            print("strategy chosen was",learner.strategy_for_this_candidate)
+                            print("strategy chosen was", learner.strategy_for_this_candidate)
                             print()
                             print()
 
-                    elif strategy == "entropy_pred_train":
+                    elif strategy == "kl_train":
                         if learner.gain_list_from_train == []:
                             learner.strategy_name = "train"
                             learner.strategy_for_this_candidate = "train"
                             candidate = learner.propose(n_candidates=100,
                                                         forbidden_data=forbidden_data_that_cannot_be_queried_about,
                                                         length_norm=True)
+                            learner.strategy_name = "kl_train"
+
                             print()
                             print()
                             print("no train items yet, pulling from train")
@@ -374,27 +404,28 @@ def main(args):
                             print()
                         else:
                             mean_gain_from_train = np.mean(learner.gain_list_from_train)
-                            learner.strategy_name = "entropy_pred"
+                            learner.strategy_name = "kl"
                             candidate = learner.propose(n_candidates=100,
                                                         forbidden_data=forbidden_data_that_cannot_be_queried_about,
                                                         length_norm=True)
-                            entropy_pred_from_candidate = learner.hypotheses[0].entropy_pred(candidate) # this is redundant
-                            if mean_gain_from_train > entropy_pred_from_candidate:
+                            kl_from_candidate = learner.get_kl(candidate) # this is redundant
+                            learner.strategy_name = "kl_train"
+                            if mean_gain_from_train > kl_from_candidate:
                                 learner.strategy_name = "train"
                                 # then we want to take the train example as our candidate
                                 candidate = learner.propose(n_candidates=100,
                                                         forbidden_data=forbidden_data_that_cannot_be_queried_about,
                                                         length_norm=True)
-                                learner.strategy = "entropy_pred_train"
+                                learner.strategy_name = "kl_train"
                                 learner.strategy_for_this_candidate = "train"
                             else:
                                 # we observe the candidate from the eig strategy we're going to ask about
-                                learner.strategy_name = "entropy_pred_train"
-                                learner.strategy_for_this_candidate = "entropy_pred"
+                                learner.strategy_name = "kl_train"
+                                learner.strategy_for_this_candidate = "kl"
                             print()
                             print()
                             print("mean gain from train:", mean_gain_from_train)
-                            print("expected value of candidate:", entropy_pred_from_candidate)
+                            print("expected value of candidate:", kl_from_candidate)
                             print("strategy chosen was",learner.strategy_for_this_candidate)
                             print()
                             print()
@@ -559,7 +590,9 @@ def main(args):
                             if args.feature_type == "atr_harmony":
                                 log_results["auc"] = eval_auc(costs, labels)
                             elif args.feature_type == "english":
-                                corrs_df = eval_corrs(costs, labels, TIs)
+                                corrs_df, auc = eval_corrs(costs, labels, TIs)
+                                log_results["auc"] = auc
+
                                 table = wandb.Table(dataframe=corrs_df)
                             
                                 wandb.log({"corrs": table})
@@ -612,6 +645,11 @@ def main(args):
                     results_by_observations_writer.writerow([i, run, strategy, dataset.vocab.decode(candidate), judgment, last_result_DL["new_probs"], last_result_DL["p_all_off"], last_result_DL["update_unclipped"], last_result_DL["update_clipped"]])
                     
                     probs_after = learner.hypotheses[0].probs.copy()
+
+                    def kl_bern(p, q):
+                        return p * np.log(p / q) + (1 - p) * np.log((1 - p) / (1 - q))
+                    actual_kl = kl_bern(probs_before, probs_after).sum()# hithere
+                    print("actual kl is",actual_kl)
                     entropy_after = entropy(learner.hypotheses[0].probs)
                     if args.feature_type in ["atr_harmony","english"]:
                         entropy_after_unique = entropy(learner.hypotheses[0].probs[unique_feature_indices])
@@ -629,18 +667,26 @@ def main(args):
                         entropy_diff_unique = None
                     # TODO: add expected information gain
 
-                    if learner.strategy_name in ["eig_train","entropy_pred_train"]:
+                    if learner.strategy_name in ["eig_train"]:
                         print()
                         print()
                         print("actual gain from choice was", entropy_diff)
+                    elif learner.strategy_name in ["kl_train"]:
+
                         print()
                         print()
+                        print("actual gain from choice was", actual_kl)
+
                     if learner.strategy_for_this_candidate == "train":
                         print()
                         print()
                         print("old list of gains from trains is", learner.gain_list_from_train)
                         print("old mean is", np.mean(learner.gain_list_from_train))
-                        learner.gain_list_from_train.append(entropy_diff)
+                        if learner.strategy_name == "kl_train":
+
+                            learner.gain_list_from_train.append(actual_kl)
+                        elif learner.strategy_name == "eig_train":
+                            learner.gain_list_from_train.append(entropy_diff)
                         print("appending a new item to the list of entropy:", entropy_diff)
                         print("new list of gains from trains is", learner.gain_list_from_train)
                         print("new mean is", np.mean(learner.gain_list_from_train))
@@ -648,7 +694,10 @@ def main(args):
                         print()
 
                     print("information gain:", entropy_diff)
+                    print("kl divergence between before and after:", actual_kl)
                     print("expected information gain:", eig)
+                    print("expected kl:",kl)
+
                     print("predicted probability (acceptable):", pred_prob_pos)
                     print("change in probs (norm):", change_in_probs)
                     prob_positive = np.exp(learner.hypotheses[0].logprob(candidate, True))

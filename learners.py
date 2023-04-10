@@ -62,7 +62,7 @@ class Learner:
             pass
         elif strategy == "eig":
             pass
-        elif strategy in ["eig_train","entropy_pred_train"]:
+        elif strategy in ["eig_train","kl_train"]:
             pass
         elif strategy == "kl":
             pass
@@ -125,6 +125,7 @@ class VBLearner(Learner):
         super().__init__(dataset, strategy, linear_train_dataset, index_of_next_item)
         self.results_by_observations = []
         self.gain_list_from_train = []
+        self.gain_list_from_alternative = []
         self.strategy_for_this_candidate = None
         
     def initialize_hyp(self, log_log_alpha_ratio=1, prior_prob=0.5, converge_type="symmetric", feature_type="atr_harmony", tolerance=0.001):
@@ -761,3 +762,6 @@ class SimpleMHLearner(Learner):
             # + np.linalg.norm(hypothesis.weights1)
             # + np.linalg.norm(hypothesis.weights2)
         )
+class BayesianMaxEntLearner(Learner):
+    def __init__(self, dataset, strategy, n_hyps, dim):
+        super().__init__(self, dataset, strategy)
