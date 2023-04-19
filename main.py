@@ -16,6 +16,7 @@ from tqdm import tqdm
 from AnalyzeSyntheticData import is_ti
 import wandb
 import matplotlib.pyplot as plt
+import time
 
 from util import entropy, plot_feature_probs
 import csv
@@ -219,7 +220,7 @@ def main(args):
 
 
     results_by_observations_writer = get_csv_writer("ResultsByObservations.csv", args.exp_dir)
-    results_by_observations_writer.writerow(["Step", "Run", "strategy", "candidate", "judgment", "new_probs", "p_all_off", "update_unclipped", "update_clipped"])
+    results_by_observations_writer.writerow(["Step", "Run", "strategy", "candidate", "judgment", "new_probs", "log_p_all_off", "update_clipped"])
 
     for N_INIT in [0]:
         num_runs = args.num_runs 
@@ -227,7 +228,7 @@ def main(args):
         for run in range(num_runs):
             #for strategy in ["train","entropy","unif","max","std","diff"]: # ,"max","unif","interleave","diff","std"
 #            for strategy in ["", "eig", "unif","train"]: # only train, entropy, eig, and unif are well-defined here
-            for strategy in ["kl","entropy_pred","train","eig","unif","entropy"]:#"entropy_pred", "entropy","train", "unif","eig",]: # only train, entropy, eig, and unif are well-defined here
+            for strategy in ["eig"]:
 #            for strategy in ["train"]:
 #                if strategy in ["eig","eig_train","kl"]:
 #                    args.num_steps = 50
@@ -312,6 +313,7 @@ def main(args):
 #                    step=N_INIT+i
                     p = learner.hypotheses[0].probs
                    
+                    start_time = time.time()
                     #learner.cost()
                     if i < N_INIT:
                         candidate = init_examples[i]
@@ -402,6 +404,9 @@ def main(args):
 
                     else:
                         candidate = learner.propose(n_candidates=100, forbidden_data = forbidden_data_that_cannot_be_queried_about, length_norm=True)
+                    
+                    end_time = time.time()
+                    propose_duration = (end_time-start_time)/60
 
                     str_candidate = str(dataset.vocab.decode(candidate))
                     
@@ -569,11 +574,23 @@ def main(args):
 
                             else:
                                 raise NotImplementedError("Please select a valid feature type!")
-                        
-                        wandb.log(log_results)
+                    
 
+                    start_time = time.time()
                     learner.observe(candidate, judgment, verbose=args.verbose, do_plot_wandb=args.do_plot_wandb, batch=args.batch)
+                    end_time = time.time()
+                    update_duration = (end_time-start_time)/60
+                   
+                    efficiency_results = {"step": step}
+                    efficiency_results["update_duration_mins"] = update_duration
+                    efficiency_results["propose_duration_mins"] = propose_duration 
+                    
+                    if args.do_plot_wandb:
+                        wandb.log(log_results)
+                        wandb.log({f'efficiency/{k}': v for k,v in efficiency_results.items()})
+                    
                     observed_features.update(set(featurized_candidate))
+
                     if args.do_plot_wandb:
                         all_features = learner.all_features(return_indices=True)
 		
@@ -609,7 +626,7 @@ def main(args):
                     
                     last_result = learner.results_by_observations[-1] 
                     last_result_DL = {k: [dic[k] for dic in last_result] for k in last_result[0]}
-                    results_by_observations_writer.writerow([i, run, strategy, dataset.vocab.decode(candidate), judgment, last_result_DL["new_probs"], last_result_DL["p_all_off"], last_result_DL["update_unclipped"], last_result_DL["update_clipped"]])
+                    results_by_observations_writer.writerow([i, run, strategy, dataset.vocab.decode(candidate), judgment, last_result_DL["new_probs"], last_result_DL["log_p_all_off"], last_result_DL["update_clipped"]])
                     
                     probs_after = learner.hypotheses[0].probs.copy()
                     entropy_after = entropy(learner.hypotheses[0].probs)

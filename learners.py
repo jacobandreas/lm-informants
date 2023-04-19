@@ -88,7 +88,18 @@ class Learner:
                 ) for _ in range(n_hyps)
         ]
         self.observations = []
+        self.observed_seqs = []
+        self.observed_feats = []
+        self.observed_judgments = []
+        self.observed_feats_unique = set()
 
+        """
+        # this slowed things down for eig/kl because required copying large dictionaries; TODO: if don't initialize dictionaries with all features, but just ones seen, is it faster?
+        # these dictionaries store batch quantitities by each feature, precomputed for efficiency in update() 
+        self.batch_feats_by_feat = {f: [] for f in range(len(self.hypotheses[0].probs))}
+        self.batch_other_feats_by_feat = {f: [] for f in range(len(self.hypotheses[0].probs))}
+        self.batch_judgments_by_feat = {f: [] for f in range(len(self.hypotheses[0].probs))}
+        """
 
     def propose(self, n_candidates=100):
         obs_set = set(s for s, j in self.observations)
@@ -142,12 +153,51 @@ class VBLearner(Learner):
         assert update
         features = self.hypotheses[0]._featurize(seq).nonzero()[0]
         self.observations.append((seq, features, judgment))
+        self.observed_seqs.append(seq)
+        self.observed_feats.append(features)
+        self.observed_judgments.append(1 if judgment else -1)
+        self.observed_feats_unique.update(features)
+     
+        """
+        # for each feature in the sequence, add current sequence to stored batch values for that feature
+        for feat in features:
+            self.batch_feats_by_feat[feat].append(features)
+            self.batch_other_feats_by_feat[feat].append([f for f in features if f != feat])
+            self.batch_judgments_by_feat[feat].append(judgment) 
+        """
+
 #        _, results = self.hypotheses[0].update(seq, judgment)
         if batch:
             seqs_to_observe = self.observations
+            ordered_feats = self.observed_feats
+            ordered_judgments = self.observed_judgments
+            ordered_seqs = self.observed_seqs
+            feats_to_update = list(self.observed_feats_unique)
+        
+            """
+            batch_other_feats_by_feat = self.batch_other_feats_by_feat
+            batch_feats_by_feat = self.batch_feats_by_feat
+            batch_judgments_by_feat = self.batch_judgments_by_feat
+            """
+            
         else:
-            seqs_to_observe = self.observations[-1]
-        _, results = self.hypotheses[0].update(seqs_to_observe, verbose=verbose, do_plot_wandb=do_plot_wandb)
+            seqs_to_observe = [self.observations[-1]]
+            ordered_feats = [self.observed_feats[-1]]
+            ordered_judgments = [self.observed_judgments[-1]]
+            ordered_seqs = [self.observed_seqs[-1]]
+            feats_to_update = list(set(ordered_feats))
+
+            """
+            # TODO: make sure this is robust, we basically only look at this last sequence
+            batch_feats_by_feat = {feat: features for feat in features}
+            batch_other_feats_by_feat = {feat: [f for f in features if f != feat] for feat in features}
+            batch_judgments_by_feat = {feat: judgment for feat in features}
+            """
+
+        _, results = self.hypotheses[0].update(
+                ordered_feats, ordered_judgments, 
+                verbose=verbose, do_plot_wandb=do_plot_wandb, 
+                feats_to_update=feats_to_update)
         self.results_by_observations.append(results)
 
     # TODO: only consider features in sequence as in scorer.entropy()? (Should be equivalent bc probs for features not in seq won't change?)
@@ -175,14 +225,17 @@ class VBLearner(Learner):
 
 #        p, _ = self.hypotheses[0].update(seq, True, verbose=False)
         features = self.hypotheses[0]._featurize(seq).nonzero()[0]
-        p, results = self.hypotheses[0].update(self.observations + [(seq, features, True)], verbose=False)
+        
+        p, results = self.hypotheses[0].update(self.observed_feats+[features], self.observed_judgments+[True], verbose=False, )
         entropy_over_features_after_observing_item_positive = -1 * ((p * np.log(p) + (1 - p) * np.log(1 - p))).sum()
         assert entropy_over_features_after_observing_item_positive > 0, f"Entropy should be positive. Entropy={entropy_over_features_after_observing_item_positive}. Probs={p.round(decimals=3)}"
         self.hypotheses[0].probs = orig_probs 
         # reset learner
         # entropy over features after seeing if negative
 #        p, _ = self.hypotheses[0].update(seq, False, verbose=False)
-        p, results = self.hypotheses[0].update(self.observations + [(seq, features, False)], verbose=False)
+
+        # reset the judgments to False
+        p, results = self.hypotheses[0].update(self.observed_feats+[features], self.observed_judgments+[False], verbose=False, )
         entropy_over_features_after_observing_item_negative = -1 * ((p * np.log(p) + (1 - p) * np.log(1 - p))).sum()
         assert entropy_over_features_after_observing_item_negative > 0, f"Entropy should be positive. Entropy={entropy_over_features_after_observing_item_negative}. Probs={p.round(decimals=3)}"
         self.hypotheses[0].probs = orig_probs 
@@ -219,13 +272,14 @@ class VBLearner(Learner):
         assert prob_being_positive + prob_being_negative == 1
 
         features = self.hypotheses[0]._featurize(seq).nonzero()[0]
-        p, results = self.hypotheses[0].update(self.observations + [(seq, features, True)], verbose=False)
+        
+        p, results = self.hypotheses[0].update(self.observed_feats+[features], self.observed_judgments+[True], verbose=False)
         p_after_true = p.copy()
 
         # reset learner
         self.hypotheses[0].probs = orig_probs 
         
-        p, results = self.hypotheses[0].update(self.observations + [(seq, features, False)], verbose=False)
+        p, results = self.hypotheses[0].update(self.observed_feats+[features], self.observed_judgments+[False], verbose=False)
         p_after_false = p.copy()
 
         # reset learner
