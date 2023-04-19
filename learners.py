@@ -398,7 +398,10 @@ class VBLearner(Learner):
             pool.close()
             pool.join()
         elif self.strategy_name == "kl":
-            scores = [self.get_kl(c) for c in candidates]
+            pool = multiprocessing.Pool()
+            scores = pool.map(self.get_kl, candidates)
+            pool.close()
+            pool.join()
         else:
             raise NotImplementedError(f"strategy {self.strategy_name} not implemented")
         scored_candidates = list(zip(candidates, scores))
