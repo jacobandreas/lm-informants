@@ -1,6 +1,7 @@
 from collections import Counter
 from functools import reduce
 import itertools as it
+import multiprocessing
 import numpy as np
 import scorers
 from tqdm import tqdm
@@ -391,7 +392,11 @@ class VBLearner(Learner):
         elif self.strategy_name == "unif" or self.propose_train > 0:
             scores = [0 for c in candidates]
         elif self.strategy_name == "eig":
-            scores = [self.get_eig(c) for c in candidates]
+            pool = multiprocessing.Pool()
+#            scores = [self.get_eig(c) for c in candidates]
+            scores = pool.map(self.get_eig, candidates)
+            pool.close()
+            pool.join()
         elif self.strategy_name == "kl":
             scores = [self.get_kl(c) for c in candidates]
         else:
