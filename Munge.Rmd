@@ -507,3 +507,53 @@ a %>%
   theme_bw()
 ```
 
+
+# calculate best possible correlation between model and rating under this featurization
+
+```{r}
+dat <- read_csv("out_analysis.csv") 
+
+addins <- read_csv("WordsAndScores.csv") %>% 
+  select(Word,Score,Source) %>% 
+  filter(Source != 5)
+
+d <- dat %>% 
+  left_join(addins)
+
+
+
+df_1 <- d %>% 
+  filter(Source == 1) %>% 
+  select(-Word,-Source)
+
+df_1_model <- lm(Score ~ ., data = df_1)
+rsq_1 <- summary(df_1_model)$adj.r.squared
+
+df_2 <- d %>% 
+  filter(Source == 2) %>% 
+  select(-Word,-Source)
+
+df_2_model <- lm(Score ~ ., data = df_2)
+summary(df_2_model)
+rsq_2 <- summary(df_2_model)$adj.r.squared
+
+
+df_3 <- d %>% 
+  filter(Source == 3) %>% 
+  select(-Word,-Source)
+
+df_3_model <- lm(Score ~ ., data = df_3)
+summary(df_3_model)
+rsq_3 <- summary(df_3_model)$adj.r.squared
+
+
+df_4 <- d %>% 
+  filter(Source == 4) %>% 
+  select(-Word,-Source)
+
+df_4_model <- lm(Score ~ ., data = df_4)
+summary(df_4_model)
+rsq_4 <- summary(df_4_model)$adj.r.squared
+
+```
+
