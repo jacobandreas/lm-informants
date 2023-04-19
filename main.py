@@ -239,7 +239,7 @@ def main(args):
             #for strategy in ["train","entropy","unif","max","std","diff"]: # ,"max","unif","interleave","diff","std"
 #            for strategy in ["", "eig", "unif","train"]: # only train, entropy, eig, and unif are well-defined here
 #            for strategy in ["entropy","entropy_pred","train","unif"]:#,"entropy_pred","train","eig","unif","entropy"]:#"entropy_pred", "entropy","train", "unif","eig",]: # only train, entropy, eig, and unif are well-defined here
-            for strategy in ["eig", "kl", "train", "unif", "entropy", "entropy_pred"]:
+            for strategy in ["eig", "kl", "train", "unif", "entropy", "entropy_pred","kl_train","eig_train"],:
 #                if strategy in ["eig","eig_train","kl"]:
 #                    args.num_steps = 50
 #            for strategy in ["train"]:
@@ -652,14 +652,14 @@ def main(args):
                             last_filtered_costs = [last_costs_by_feat[f_idx] if f_idx in last_costs_by_feat.keys() else args.prior_prob for (_, _, f_idx) in all_features]
                         else:
                             last_filtered_costs = last_costs
-                        
-                        title = f'Step: {step}\nLast candidate (word): {str_candidate}\nFeaturized:{featurized_candidate}\nJudgment:{judgment}'
-                        feature_probs_plot = plot_feature_probs(features, costs, last_filtered_costs, title=title)
-                        last_costs = costs.copy()
-                        last_costs_by_feat = {x[2]: x[0] for x in all_features}
-
-                        wandb.log({"feature_probs/plot": wandb.Image(feature_probs_plot)})
-                        plt.close()
+                        #
+                        # title = f'Step: {step}\nLast candidate (word): {str_candidate}\nFeaturized:{featurized_candidate}\nJudgment:{judgment}'
+                        # feature_probs_plot = plot_feature_probs(features, costs, last_filtered_costs, title=title)
+                        # last_costs = costs.copy()
+                        # last_costs_by_feat = {x[2]: x[0] for x in all_features}
+                        #
+                        # wandb.log({"feature_probs/plot": wandb.Image(feature_probs_plot)})
+                        # plt.close()
 
                         if i == 0:
                             wandb.log({"features": wandb.Table(columns=["feature_idx", "feature"], data=[[f[-1], f[-2]] for f in all_features])})
