@@ -230,7 +230,7 @@ def main(args):
 
 
     results_by_observations_writer = get_csv_writer("ResultsByObservations.csv", args.exp_dir)
-    results_by_observations_writer.writerow(["Step", "Run", "strategy", "candidate", "judgment", "new_probs", "log_p_all_off", "update_clipped"])
+    results_by_observations_writer.writerow(["Step", "Run", "strategy", "candidate", "judgment", "new_probs", "log_p_all_off", "update_sum"])
 
     for N_INIT in [0]:
         num_runs = args.num_runs 
@@ -331,6 +331,7 @@ def main(args):
                 #         z.write(str(word)+'\t'+str(candidate)+"\t"+str(list(featurized_candidate))+"\n")
                 #         z.flush()
                 # z.close()
+                auc_streak = 0
                 for i in range(args.num_steps):
                     print("")
                     print(f"i: {i}")
@@ -594,6 +595,7 @@ def main(args):
                         if eval_humans:
                             if args.feature_type == "atr_harmony":
                                 log_results["auc"] = eval_auc(costs, labels)
+                                
                             elif args.feature_type == "english":
                                 corrs_df, auc = eval_corrs(costs, labels, TIs)
                                 log_results["auc"] = auc
@@ -607,6 +609,11 @@ def main(args):
 
                             else:
                                 raise NotImplementedError("Please select a valid feature type!")
+                                
+                            if log_results["auc"] >= 0.97:
+                                auc_streak += 1
+                            else:
+                                auc_streak = 0
                     
 
                     start_time = time.time()
@@ -659,7 +666,7 @@ def main(args):
                     
                     last_result = learner.results_by_observations[-1] 
                     last_result_DL = {k: [dic[k] for dic in last_result] for k in last_result[0]}
-                    results_by_observations_writer.writerow([i, run, strategy, dataset.vocab.decode(candidate), judgment, last_result_DL["new_probs"], last_result_DL["log_p_all_off"], last_result_DL["update_clipped"]])
+                    results_by_observations_writer.writerow([i, run, strategy, dataset.vocab.decode(candidate), judgment, last_result_DL["new_probs"], last_result_DL["log_p_all_off"], last_result_DL["update_sum"]])
                     
                     probs_after = learner.hypotheses[0].probs.copy()
 
@@ -735,6 +742,11 @@ def main(args):
                     #corral_of_judged_human_forms = []
 
                     # print(learner.hypotheses[0].entropy(candidate, debug=True))
+
+                    if auc_streak >= 5:
+                        break
+
+                    
                 logs[strategy].append(log)
                 # create a scatter plot using wandb.plot()
 

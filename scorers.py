@@ -145,7 +145,7 @@ class MeanFieldScorer: # this is us
         # TODO: need to return updates for each feature
         results = {
                 "new_probs": new_probs, 
-                "update_clipped": update_sum,
+                "update_sum": update_sum,
 #                "update_unclipped": update_unclipped,
                 "log_p_all_off": np.mean(log_probs_all_off), # TODO: do we want the sum?
                 }
@@ -204,6 +204,7 @@ class MeanFieldScorer: # this is us
             batch_other_feats_by_feat[idx] = [[f for f in feats if f != curr_feat] for feats in temp_feats]
 
         best_error = np.inf
+        update_sums = []
         while (do_converge and error > self.tolerance) or num_updates == 0:
             if verbose:
                 print(f"  Update {num_updates}:")
@@ -216,6 +217,7 @@ class MeanFieldScorer: # this is us
                         batch_judgments_by_feat,
                         batch_other_feats_by_feat,
                         verbose=verbose) 
+                update_sums.append(step_results["update_sum"])
                 new_probs = step_results["new_probs"]
                 results.append(step_results)
                 difference_vector = np.subtract(new_probs, old_probs)
@@ -277,7 +279,7 @@ class MeanFieldScorer: # this is us
             section = "updates"
             # TODO: redundant with code in main
             change_in_probs = np.linalg.norm(probs_before_update - self.probs)
-            log_results = {"step": len(ordered_feats)-1, "num_updates": num_updates, "change_in_probs_norm": change_in_probs}
+            log_results = {"step": len(ordered_feats)-1, "num_updates": num_updates, "change_in_probs_norm": change_in_probs, "update_sum_mean": np.mean(update_sums)}
             wandb.log({f"{section}/{k}": v for k, v in log_results.items()})
 
         #print("converged!",error)
