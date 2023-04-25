@@ -229,7 +229,7 @@ class VBLearner(Learner):
         entropy_before = entropy(probs_before)
         entropy_after = entropy(self.hypotheses[0].probs)
         entropy_diff = entropy_before - entropy_after
-        kl = kl_bern(probs_before, self.hypotheses[0].probs.copy())
+        kl = kl_bern(self.hypotheses[0].probs.copy(), probs_before).sum()
       
         # TODO: hacky; this assumes that observe() is always called after propose(), bc self.chosen_strategies is appended to when a candidate is proposed
         chosen_strategy = self.chosen_strategies[-1]
@@ -406,7 +406,7 @@ class VBLearner(Learner):
         else:
             raise NotImplementedError
         pool = multiprocessing.Pool()
-        scores = pool.map(self.get_eig, candidates)
+        scores = pool.map(func, candidates)
         pool.close()
         pool.join()
         return scores
@@ -507,7 +507,6 @@ class VBLearner(Learner):
             return chosen_cand
         else:
             raise NotImplementedError(f"strategy {self.strategy_name} not implemented")
-
 
         scored_candidates = list(zip(candidates, scores))
         best = max(scored_candidates, key=lambda p: p[1])

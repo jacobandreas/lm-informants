@@ -240,7 +240,7 @@ def main(args):
 #            for strategy in ["", "eig", "unif","train"]: # only train, entropy, eig, and unif are well-defined here
 #            for strategy in ["entropy","entropy_pred","train","unif"]:#,"entropy_pred","train","eig","unif","entropy"]:#"entropy_pred", "entropy","train", "unif","eig",]: # only train, entropy, eig, and unif are well-defined here
 #            for strategy in ["kl", "eig", "train", "unif", "entropy", "entropy_pred","kl_train","eig_train"]:
-            for strategy in ["eig_train_retrospective", "eig_train_prospective", "kl_train_retrospective", "kl_train_prospective"]:
+            for strategy in ["kl_train_prospective", "kl_train_retrospective", "eig", "kl", "eig_train_retrospective", "eig_train_prospective"]:
 #                if strategy in ["eig","eig_train","kl"]:
 #                    args.num_steps = 50
 #            for strategy in ["train"]:
@@ -480,7 +480,7 @@ def main(args):
                         entropy_before_unique = None
                     probs_before = learner.hypotheses[0].probs.copy()
                     eig = learner.get_eig(candidate).item()
-                    kl = learner.get_kl(candidate).item()
+                    expected_kl = learner.get_kl(candidate).item()
                     # TODO: set length_norm to be a variable/parameter, but currently it is True in call to propose() below
                     entropy_of_candidate = learner.hypotheses[0].entropy(candidate, length_norm=True)
                     pred_prob_pos = np.exp(learner.hypotheses[0].logprob(candidate, True))
@@ -492,7 +492,7 @@ def main(args):
                                 "entropy_over_features": entropy_before, 
                                 "chosen_candidate": str(dataset.vocab.decode(candidate)), 
                                 "eig_of_candidate": eig, 
-                                "kl_of_candidate": kl, 
+                                "expected_kl_of_candidate": expected_kl, 
                                 "pred_prob_pos": pred_prob_pos, 
                                 "strategy_used": chosen_strategy,
                                 "pred_prob_pos": pred_prob_pos, 
@@ -598,6 +598,8 @@ def main(args):
                     print("entropy after: ", entropy_after)
                     entropy_diff = entropy_before-entropy_after
                     print("entropy diff: ", entropy_diff)
+                    actual_kl = kl_bern(probs_after, probs_before).sum()
+                    print("actual kl: ", actual_kl)
                     if args.feature_type in ["atr_harmony", "english"]:
                         entropy_diff_unique = entropy_before_unique-entropy_after_unique
                     else:
