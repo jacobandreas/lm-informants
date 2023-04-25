@@ -1,6 +1,7 @@
 from collections import Counter
 from functools import reduce
 import itertools as it
+import random
 import multiprocessing
 import numpy as np
 import scorers
@@ -11,6 +12,7 @@ from copy import deepcopy
 import torch
 #from torchmetrics.functional import kl_divergence
 from torch import nn, optim
+from util import kl_bern, entropy
 
 class Learner:
     def __init__(self, dataset, strategy, linear_train_dataset, index_of_next_item):
@@ -63,7 +65,7 @@ class Learner:
             pass
         elif strategy == "eig":
             pass
-        elif strategy in ["eig_train","kl_train"]:
+        elif strategy in ["eig_train_prospective", "eig_train_retrospective", "kl_train_retrospective", "kl_train_prospective"]:
             pass
         elif strategy == "kl":
             pass
@@ -71,9 +73,10 @@ class Learner:
             assert False
 
         self.strategy_name = strategy
-
         self.hypotheses = None
         self.observations = None
+        
+        self.chosen_strategies = []
 
     def initialize(
             self, n_hyps,
@@ -93,6 +96,24 @@ class Learner:
         self.observed_feats = []
         self.observed_judgments = []
         self.observed_feats_unique = set()
+
+        if self.strategy_name in [
+                "eig_train_prospective", 
+                "eig_train_retrospective"]: 
+            # track eig/kl
+            metric_to_track = "entropy_diff"
+        elif self.strategy_name in [
+                "kl_train_prospective", 
+                "kl_train_retrospective"]:
+            metric_to_track = "kl"
+        else:
+            metric_to_track = None
+        
+        self.metric_to_track = metric_to_track 
+           
+        # TODO: one of these is a dummy, eg will only populate train/eig for eig_train
+        self.kls_by_strategy = {"train": [], "eig": [], "kl": []}
+        self.entropy_diffs_by_strategy = {"train": [], "eig": [], "kl": []}
 
         """
         # this slowed things down for eig/kl because required copying large dictionaries; TODO: if don't initialize dictionaries with all features, but just ones seen, is it faster?
@@ -137,7 +158,7 @@ class VBLearner(Learner):
         super().__init__(dataset, strategy, linear_train_dataset, index_of_next_item)
         self.results_by_observations = []
         self.gain_list_from_train = []
-        self.gain_list_from_alternative = []
+        self.gain_list_from_alterative = []
         self.strategy_for_this_candidate = None
         
     def initialize_hyp(self, log_log_alpha_ratio=1, prior_prob=0.5, converge_type="symmetric", feature_type="atr_harmony", tolerance=0.001):
@@ -196,11 +217,24 @@ class VBLearner(Learner):
             batch_judgments_by_feat = {feat: judgment for feat in features}
             """
 
+        # TODO: redundant with some calculations in main.py; remove there?
+        probs_before = self.hypotheses[0].probs.copy()
+
         _, results = self.hypotheses[0].update(
                 ordered_feats, ordered_judgments, 
                 verbose=verbose, do_plot_wandb=do_plot_wandb, 
                 feats_to_update=feats_to_update)
         self.results_by_observations.append(results)
+
+        entropy_before = entropy(probs_before)
+        entropy_after = entropy(self.hypotheses[0].probs)
+        entropy_diff = entropy_before - entropy_after
+        kl = kl_bern(probs_before, self.hypotheses[0].probs.copy())
+      
+        # TODO: hacky; this assumes that observe() is always called after propose(), bc self.chosen_strategies is appended to when a candidate is proposed
+        chosen_strategy = self.chosen_strategies[-1]
+        self.kls_by_strategy[chosen_strategy].append(kl)
+        self.entropy_diffs_by_strategy[chosen_strategy].append(entropy_diff)
 
     # TODO: only consider features in sequence as in scorer.entropy()? (Should be equivalent bc probs for features not in seq won't change?)
     def get_eig(self, seq):
@@ -290,9 +324,6 @@ class VBLearner(Learner):
         all_equal = (orig_probs == self.hypotheses[0].probs)
         assert all_equal.all()
 
-        def kl_bern(p, q):
-            return p * np.log(p/q) + (1-p) * np.log((1-p)/(1-q)) 
-
         kl_pos = kl_bern(p_after_true, orig_probs).sum() 
         kl_neg = kl_bern(p_after_false, orig_probs).sum() 
 
@@ -363,47 +394,121 @@ class VBLearner(Learner):
                 feats.append((hyp.probs[i].item(), parts))
         return sorted(feats)
 
-    def propose(self, n_candidates, forbidden_data, length_norm):
-        #print("in propose, strategy is",self.strategy_name)
+    def get_scores(self, metric, candidates, length_norm):
+        if metric == "entropy":
+            func = lambda c: self.hypotheses[0].entropy(c, length_norm=length_norm) 
+        elif metric == "eig":
+            func = self.get_eig
+        elif metric == "kl":
+            func = self.get_kl
+        elif metric == "entropy_pred": 
+            func = self.hypotheses[0].entropy_pred
+        else:
+            raise NotImplementedError
+        pool = multiprocessing.Pool()
+        scores = pool.map(self.get_eig, candidates)
+        pool.close()
+        pool.join()
+        return scores
+
+    def get_train_candidate(self, n_candidates, obs_set):
+        #print(self.linear_train_dataset)
+        while True:
+            seq = self.linear_train_dataset[self.index_of_next_item]
+            #print("proposing item",seq,"with index",self.index_of_next_item)
+            self.index_of_next_item += 1
+            #seq = self.dataset.random_example()
+            if seq not in obs_set:
+                return seq
+
+    def propose(self, n_candidates, forbidden_data, length_norm, verbose=False):
         obs_set_a = set(s for s, _, j in self.observations)
         obs_set = set(s for s in (forbidden_data+list(obs_set_a)))
-        #print(self.linear_train_dataset)
+        
+        chosen_strategy = self.strategy_name
+        
+        # get train
         if np.random.random() < self.propose_train or self.strategy_name == "train":
-            while True:
-                seq = self.linear_train_dataset[self.index_of_next_item]
-                #print("proposing item",seq,"with index",self.index_of_next_item)
-                self.index_of_next_item += 1
-                #seq = self.dataset.random_example()
-                if seq not in obs_set:
-                    return seq
+            return get_train_candidate(self, n_candidates, obs_set)
+
         candidates = []
         while len(candidates) == 0:
             candidates = [self.dataset.random_seq() for _ in range(n_candidates)]
             candidates = [c for c in candidates if c not in obs_set]
+        # TODO: for super strategies, compute based on running averages OR have argument to propose that determines strategy, and if that is not there, default to self.strategy_name
+
         #print("candidates: ", candidates)
         #import ipdb; ipdb.set_trace()
-        if self.strategy_name == "entropy":
-            scores = [
-                self.hypotheses[0].entropy(c, length_norm=length_norm)
-                for c in candidates
-            ]
-        elif self.strategy_name == "entropy_pred":
-            scores = [self.hypotheses[0].entropy_pred(c) for c in candidates]
-        elif self.strategy_name == "unif" or self.propose_train > 0:
+        if self.strategy_name == "unif" or self.propose_train > 0:
             scores = [0 for c in candidates]
-        elif self.strategy_name == "eig":
-            pool = multiprocessing.Pool()
-#            scores = [self.get_eig(c) for c in candidates]
-            scores = pool.map(self.get_eig, candidates)
-            pool.close()
-            pool.join()
-        elif self.strategy_name == "kl":
-            pool = multiprocessing.Pool()
-            scores = pool.map(self.get_kl, candidates)
-            pool.close()
-            pool.join()
+        elif self.strategy_name in ["entropy", "eig", "kl", "entropy_pred"]:
+            scores = self.get_scores(self.strategy_name, candidates, length_norm)
+        elif self.strategy_name in [
+                "eig_train_prospective", 
+                "eig_train_retrospective", 
+                "kl_train_prospective", 
+                "kl_train_retrospective"]:
+            if self.strategy_name == "eig_train_prospective":
+                metric, is_retro = "eig", False
+            elif self.strategy_name == "eig_train_retrospective":
+                metric, is_retro = "eig", True 
+            elif self.strategy_name == "kl_train_prospective":
+                metric, is_retro = "kl", False
+            elif self.strategy_name == "kl_train_retrospective":
+                metric, is_retro = "kl", True 
+
+            if self.metric_to_track == "kl":
+                metrics_by_strategy = self.kls_by_strategy
+            elif self.metric_to_track == "entropy_diff":
+                metrics_by_strategy = self.entropy_diffs_by_strategy
+            else:
+                raise ValueError()
+
+            train_mean = np.mean(metrics_by_strategy["train"])
+            strategy_mean = np.mean(metrics_by_strategy[metric])
+
+            scores = self.get_scores(metric, candidates, length_norm)
+            scored_candidates = list(zip(candidates, scores))
+            best_cand, expected_score = max(scored_candidates, key=lambda p: p[1])
+           
+            # if is retrospective, compare with retrospective (strategy_mean); else expected_score
+            comparison_score = strategy_mean if is_retro else expected_score
+            num_observations = len(self.observations)
+            if (not is_retro) and (num_observations == 0):
+                print("choosing train for the first step...")
+                choose_train = True
+            elif (is_retro and num_observations == 0):
+                choose_train = random.sample([True, False], 1)[0]
+                print("choosing train for step=0? ", choose_train)
+            elif (is_retro and num_observations == 1):
+                # at second step, choose whatever strategy wasn't already chosen
+                choose_train = True if self.chosen_strategies[0] != "train" else False
+                print("choosing train for step=1? ", choose_train)
+            elif train_mean > comparison_score:
+                choose_train = True
+            else:
+                choose_train = False
+
+            if choose_train:
+                train_cand = self.get_train_candidate(n_candidates, forbidden_data)
+                chosen_cand, chosen_strategy = train_cand, "train"
+            else:
+                chosen_cand, chosen_strategy = best_cand, metric
+
+            print(f"chosen strategy: {chosen_strategy}")
+            print(f"current train mean: {train_mean} ({metrics_by_strategy['train']})")
+            if is_retro:
+                print(f"current strategy mean: {strategy_mean} ({metrics_by_strategy[metric]})")
+            else:
+                print(f"expected score: {expected_score}")
+            
+            # TODO: reorganize so that appending this score happens in the same place for all strategies
+            self.chosen_strategies.append(chosen_strategy)
+            return chosen_cand
         else:
             raise NotImplementedError(f"strategy {self.strategy_name} not implemented")
+
+
         scored_candidates = list(zip(candidates, scores))
         best = max(scored_candidates, key=lambda p: p[1])
         #print(be, self.strategy(best[1]))
@@ -415,6 +520,9 @@ class VBLearner(Learner):
         print(f"# candidates: {len(sorted_scores)}")
         for c, s in sorted_scores[:5]:
             print(c, s)
+
+        # keep track of which strategies were chosen
+        self.chosen_strategies.append(self.strategy_name)
         return best[0]
 
 class LogisticLearner(Learner):

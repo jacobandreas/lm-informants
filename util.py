@@ -15,6 +15,9 @@ def entropy(probs, length_norm=False):
     else:
         return ent.sum()
 
+# helper function for getting kl div of bernoullis 
+def kl_bern(p, q):
+    return p * np.log(p/q) + (1-p) * np.log((1-p)/(1-q)) 
 
 def plot_feature_probs(features, costs, last_costs, title=""):
 

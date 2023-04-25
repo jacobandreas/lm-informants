@@ -113,6 +113,7 @@ class MeanFieldScorer: # this is us
                 np.log(this_prob) - np.log(1-this_prob) - update_sum
             )
             # for debugging
+            """
             if verbose:
                 print(f"  Feat: {curr_feat}")
                 print(f"\t | feats (batch): {featurized_seqs}")
@@ -124,6 +125,7 @@ class MeanFieldScorer: # this is us
 #                print(f"\t | update_unclipped (batch): {update_unclipped.round(5)}")
 #                print(f"\t | update_check (batch): {update_check.round(5)}")
                 print(f"\t | update_sum (batch): {update_sum}")
+            """
 
             # TODO: want a one-sided clip?
             log_score = np.clip(log_score, -clip_val, clip_val)
