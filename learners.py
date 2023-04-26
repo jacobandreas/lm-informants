@@ -233,8 +233,12 @@ class VBLearner(Learner):
       
         # TODO: hacky; this assumes that observe() is always called after propose(), bc self.chosen_strategies is appended to when a candidate is proposed
         chosen_strategy = self.chosen_strategies[-1]
-        self.kls_by_strategy[chosen_strategy].append(kl)
-        self.entropy_diffs_by_strategy[chosen_strategy].append(entropy_diff)
+        if chosen_strategy in self.kls_by_strategy:
+            self.kls_by_strategy[chosen_strategy].append(kl)
+            self.entropy_diffs_by_strategy[chosen_strategy].append(entropy_diff)
+        else:
+            self.kls_by_strategy[chosen_strategy] = [kl]
+            self.entropy_diffs_by_strategy[chosen_strategy] = [entropy_diff]
 
     # TODO: only consider features in sequence as in scorer.entropy()? (Should be equivalent bc probs for features not in seq won't change?)
     def get_eig(self, seq):
@@ -396,7 +400,8 @@ class VBLearner(Learner):
 
     def get_scores(self, metric, candidates, length_norm):
         if metric == "entropy":
-            func = lambda c: self.hypotheses[0].entropy(c, length_norm=length_norm) 
+            # TODO: implement multiprocessing; nontrivial bc requires non-local function
+            return [self.hypotheses[0].entropy(c, length_norm=length_norm) for c in candidates]
         elif metric == "eig":
             func = self.get_eig
         elif metric == "kl":
