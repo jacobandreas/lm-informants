@@ -1,4 +1,4 @@
-for LOG in 1 2 4
+for LOG in 4
 do
 	for PRIOR in 0.1 0.2 0.5
 	do
