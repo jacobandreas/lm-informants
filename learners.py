@@ -65,7 +65,7 @@ class Learner:
             pass
         elif strategy == "eig":
             pass
-        elif strategy in ["eig_train_mixed", "eig_train_history", "kl_train_history", "kl_train_mixed"]:
+        elif strategy in ["eig_train_mixed", "eig_train_history", "kl_train_history", "kl_train_mixed", "eig_train_model", "kl_train_model"]:
             pass
         elif strategy == "kl":
             pass
@@ -244,10 +244,45 @@ class VBLearner(Learner):
             self.kls_by_strategy[chosen_strategy] = [kl]
             self.entropy_diffs_by_strategy[chosen_strategy] = [entropy_diff]
 
+    # Helper function to get the information gain from observing seq with label (call in get_eig and computing eig for an unobserved train example)
+    def get_info_gain(self, featurized_seq, label=True, orig_probs=None):
+        # entropy over features before seeing
+
+        if orig_probs is None:
+            orig_probs = deepcopy(self.hypotheses[0].probs)
+        
+        entropy_over_features_before_observing_item = -1 * ((orig_probs * np.log(orig_probs) + (1 - orig_probs) * np.log(1 - orig_probs))).sum()
+        assert entropy_over_features_before_observing_item > 0
+    
+        
+        p, results = self.hypotheses[0].update(self.observed_feats+[featurized_seq], self.observed_judgments+[label], verbose=False, )
+        entropy_over_features_after_observing_item = -1 * ((p * np.log(p) + (1 - p) * np.log(1 - p))).sum()
+        assert entropy_over_features_after_observing_item > 0, f"Entropy should be positive. Entropy={entropy_over_features_after_observing_item_positive}. Probs={p.round(decimals=3)}"
+
+        # reset
+        self.hypotheses[0].probs = orig_probs
+
+        return entropy_over_features_before_observing_item - entropy_over_features_after_observing_item
+    
+    # Helper function to get the kl from observing seq with label (call in get_ekl and computing ekl for an unobserved train example)
+    def get_kl(self, featurized_seq, label=True, orig_probs=None):
+
+        if orig_probs is None:
+            orig_probs = deepcopy(self.hypotheses[0].probs)
+        
+        p_after, _ = self.hypotheses[0].update(self.observed_feats+[featurized_seq], self.observed_judgments+[label], verbose=False)
+        
+        kl = kl_bern(p_after, orig_probs).sum() 
+        
+        # reset
+        self.hypotheses[0].probs = orig_probs
+        
+        return kl
+    
     # TODO: only consider features in sequence as in scorer.entropy()? (Should be equivalent bc probs for features not in seq won't change?)
     def get_eig(self, seq):
         orig_probs = deepcopy(self.hypotheses[0].probs)
-#        print("learner before fussing around:", learner_before_fussing_around.probs)
+        features = self.hypotheses[0]._featurize(seq).nonzero()[0]
 
         # prob of the thing being positive or negative
         prob_being_positive_a = np.exp(self.hypotheses[0].logprob(seq, True))
@@ -256,47 +291,13 @@ class VBLearner(Learner):
         prob_being_negative = 1-prob_being_positive
         assert prob_being_positive + prob_being_negative == 1
 
-        # entropy over features before seeing
-        p = self.hypotheses[0].probs
-        # TODO: confirm -1 after sum
-        entropy_over_features_before_observing_item = -1 * ((p * np.log(p) + (1 - p) * np.log(1 - p))).sum()
-        test_entropy_over_features_before_observing_item = (-1 * (p * np.log(p) + (1 - p) * np.log(1 - p))).sum()
-        assert entropy_over_features_before_observing_item > 0
-        assert entropy_over_features_before_observing_item == test_entropy_over_features_before_observing_item
-    
-
-        # entropy over features after seeing if positive
-
-#        p, _ = self.hypotheses[0].update(seq, True, verbose=False)
-        features = self.hypotheses[0]._featurize(seq).nonzero()[0]
-        
-        p, results = self.hypotheses[0].update(self.observed_feats+[features], self.observed_judgments+[True], verbose=False, )
-        entropy_over_features_after_observing_item_positive = -1 * ((p * np.log(p) + (1 - p) * np.log(1 - p))).sum()
-        assert entropy_over_features_after_observing_item_positive > 0, f"Entropy should be positive. Entropy={entropy_over_features_after_observing_item_positive}. Probs={p.round(decimals=3)}"
-        self.hypotheses[0].probs = orig_probs 
-        # reset learner
-        # entropy over features after seeing if negative
-#        p, _ = self.hypotheses[0].update(seq, False, verbose=False)
-
-        # reset the judgments to False
-        p, results = self.hypotheses[0].update(self.observed_feats+[features], self.observed_judgments+[False], verbose=False, )
-        entropy_over_features_after_observing_item_negative = -1 * ((p * np.log(p) + (1 - p) * np.log(1 - p))).sum()
-        assert entropy_over_features_after_observing_item_negative > 0, f"Entropy should be positive. Entropy={entropy_over_features_after_observing_item_negative}. Probs={p.round(decimals=3)}"
-        self.hypotheses[0].probs = orig_probs 
-        # reset learner
-#        print("learner after fussing around:", self.hypotheses[0].probs)
         all_equal = (orig_probs == self.hypotheses[0].probs)
         assert all_equal.all()
 
-
         # either:
-        delta_positive = (entropy_over_features_before_observing_item-entropy_over_features_after_observing_item_positive)
-        delta_negative = (entropy_over_features_before_observing_item-entropy_over_features_after_observing_item_negative)
-        eig = delta_positive*prob_being_positive + delta_negative*prob_being_negative # reduce my entropy
-
-        # OR
-
-        # the kl-divergence between posteriors before --> observe yes*p(yes) + before --> observe no * p(no)
+        delta_positive = self.get_info_gain(features, label=True, orig_probs=orig_probs)
+        delta_negative = self.get_info_gain(features, label=False, orig_probs=orig_probs)
+        eig = (delta_positive * prob_being_positive) + (delta_negative * prob_being_negative) # reduce my entropy
 
        # if args.verbose:
        #      print("delta positive:", delta_positive)
@@ -304,7 +305,7 @@ class VBLearner(Learner):
        #      print("prob being positive:", prob_being_positive)
         return eig
 
-    def get_kl(self, seq):
+    def get_ekl(self, seq):
         orig_probs = deepcopy(self.hypotheses[0].probs)
 #        print("learner before fussing around:", learner_before_fussing_around.probs)
 
@@ -316,38 +317,14 @@ class VBLearner(Learner):
         assert prob_being_positive + prob_being_negative == 1
 
         features = self.hypotheses[0]._featurize(seq).nonzero()[0]
-        
-        p, results = self.hypotheses[0].update(self.observed_feats+[features], self.observed_judgments+[True], verbose=False)
-        p_after_true = p.copy()
 
-        # reset learner
-        self.hypotheses[0].probs = orig_probs 
-        
-        p, results = self.hypotheses[0].update(self.observed_feats+[features], self.observed_judgments+[False], verbose=False)
-        p_after_false = p.copy()
-
-        # reset learner
-        self.hypotheses[0].probs = orig_probs 
+        kl_pos = self.get_kl(features, label=True, orig_probs=orig_probs)
+        kl_neg = self.get_kl(features, label=False, orig_probs=orig_probs)
         
         all_equal = (orig_probs == self.hypotheses[0].probs)
         assert all_equal.all()
 
-        kl_pos = kl_bern(p_after_true, orig_probs).sum() 
-        kl_neg = kl_bern(p_after_false, orig_probs).sum() 
-
         kl = kl_pos*prob_being_positive + kl_neg*prob_being_negative 
-#        print("kl: ", kl)
-#        print("kl pos: ", kl_pos)
-#        print("kl neg: ", kl_neg)
-
-        q = orig_probs
-        p = p_after_true
-#        print("p * np.log(p/q)")
-#        print((p * np.log(p/q)).round(3))
-#        print("(1-p) * np.log((1-p)/(1-q))")
-#        print(((1-p) * np.log((1-p)/(1-q))).round(3))
-#        print("kl")
-#        print(kl_bern(p_after_true, orig_probs).round(3))
 
         assert kl >= -1e-12, f"The kl divergence is not >= 0: {kl}, kl pos: {kl_pos}, kl_neg: {kl_neg}\norig probs: {orig_probs.round(3)}\np_after_true: {p_after_true.round(3)}\np_after_false: {p_after_false.round(3)}\n{orig_probs==p_after_true}"
 
@@ -409,7 +386,7 @@ class VBLearner(Learner):
         elif metric == "eig":
             func = self.get_eig
         elif metric == "kl":
-            func = self.get_kl
+            func = self.get_ekl
         elif metric == "entropy_pred": 
             func = self.hypotheses[0].entropy_pred
         else:
@@ -419,6 +396,32 @@ class VBLearner(Learner):
         pool.close()
         pool.join()
         return scores
+
+    # expected metrics of a train candidate over randomly sampled sequences (candidates) 
+    def get_train_metric(self, metric, candidates):
+        featurized_candidates = [self.hypotheses[0]._featurize(seq).nonzero()[0] for seq in candidates]
+        pool = multiprocessing.Pool()
+        # TODO: standardize kl/eig names (both are expectations, should be ekl?)
+        if metric == "kl":
+            func = self.get_kl
+        elif metric == "eig":
+            func = self.get_info_gain
+        else:
+            raise ValueError
+        metrics = pool.map(func, featurized_candidates)
+        pool.close()
+        pool.join()
+            
+        p_trains = np.array([np.exp(self.hypotheses[0].logprob(seq, True)) for seq in candidates])
+        print('p trains before normalizing: ', p_trains)
+        p_trains /= p_trains.sum()
+        assert np.isclose(p_trains.sum(), 1.0)
+
+        print('p trains: ', p_trains)
+        expectation = (p_trains * metrics).sum()
+        print(metric, metrics)
+        print('expected metric: ', expectation)
+        return expectation 
 
     def get_train_candidate(self, n_candidates, obs_set):
         #print(self.linear_train_dataset)
@@ -454,48 +457,68 @@ class VBLearner(Learner):
             scores = self.get_scores(self.strategy_name, candidates, length_norm)
         elif self.strategy_name in [
                 "eig_train_mixed", 
-                "eig_train_history", 
+                "eig_train_history",
+                "eig_train_model",
                 "kl_train_mixed", 
-                "kl_train_history"]:
+                "kl_train_history",
+                "kl_train_model"]:
 
             # the mixed strategies are history-based for train and model-based for strategy
             if self.strategy_name == "eig_train_mixed":
-                metric, is_history = "eig", False
+                metric, strategy_is_history, train_is_history = "eig", False, True
             elif self.strategy_name == "eig_train_history":
-                metric, is_history = "eig", True 
+                metric, strategy_is_history, train_is_history = "eig", True, True
+            elif self.strategy_name == "eig_train_model":
+                metric, strategy_is_history, train_is_history = "eig", False, False 
             elif self.strategy_name == "kl_train_mixed":
-                metric, is_history = "kl", False
+                metric, strategy_is_history, train_is_history = "kl", False, True
             elif self.strategy_name == "kl_train_history":
-                metric, is_history = "kl", True 
+                metric, strategy_is_history, train_is_history = "kl", True, True
+            elif self.strategy_name == "kl_train_model":
+                metric, strategy_is_history, train_is_history = "kl", False, False 
             
-            if self.metric_to_track == "kl":
-                metrics_by_strategy = self.kls_by_strategy
-            elif self.metric_to_track == "entropy_diff":
-                metrics_by_strategy = self.entropy_diffs_by_strategy
+            
+            if self.metric_to_track is None:
+                assert self.strategy_name in ["eig_train_model", "kl_train_model"]
             else:
-                raise ValueError()
-
-            train_mean = np.mean(metrics_by_strategy["train"])
-            strategy_mean = np.mean(metrics_by_strategy[metric])
-
+                if self.metric_to_track == "kl":
+                    metrics_by_strategy = self.kls_by_strategy
+                elif self.metric_to_track == "entropy_diff":
+                    metrics_by_strategy = self.entropy_diffs_by_strategy
+                else:
+                    raise ValueError()
+                train_mean = np.mean(metrics_by_strategy["train"])
+                strategy_mean = np.mean(metrics_by_strategy[metric])
+            
             scores = self.get_scores(metric, candidates, length_norm)
             scored_candidates = list(zip(candidates, scores))
             best_cand, expected_score = max(scored_candidates, key=lambda p: p[1])
-           
+            
             # if is history, compare with history (strategy_mean); else expected_score
-            comparison_score = strategy_mean if is_history else expected_score
+            if train_is_history:
+                train_score = train_mean
+            else:
+                train_score = self.get_train_metric(metric, candidates)
+
+            if strategy_is_history:
+                strategy_score = strategy_mean
+            else:
+                strategy_score = expected_score
+
             num_observations = len(self.observations)
-            if (not is_history) and (num_observations == 0):
-                print("choosing train for the first step...")
-                choose_train = True
-            elif (is_history and num_observations == 0):
+            # if both are history, randomly sample one to be first
+            if (train_is_history and strategy_is_history and num_observations == 0):
                 choose_train = random.sample([True, False], 1)[0]
                 print("choosing train for step=0? ", choose_train)
-            elif (is_history and num_observations == 1):
+            # this is the mixed strategy, with history for train; choose train on 0th step to get an estimate
+            elif (train_is_history and (not strategy_is_history)) and (num_observations == 0):
+                print("choosing train for the first step...")
+                choose_train = True
+            elif (train_is_history and strategy_is_history and num_observations == 1):
                 # at second step, choose whatever strategy wasn't already chosen
                 choose_train = True if self.chosen_strategies[0] != "train" else False
                 print("choosing train for step=1? ", choose_train)
-            elif train_mean > comparison_score:
+            elif train_score > strategy_score:
                 choose_train = True
             else:
                 choose_train = False
@@ -507,11 +530,19 @@ class VBLearner(Learner):
                 chosen_cand, chosen_strategy = best_cand, metric
 
             print(f"chosen strategy: {chosen_strategy}")
-            print(f"current train mean: {train_mean} ({metrics_by_strategy['train']})")
-            if is_history:
-                print(f"current strategy mean: {strategy_mean} ({metrics_by_strategy[metric]})")
+            if train_is_history:
+                print("train: history")
+                print(f"current train score: {train_score} ({metrics_by_strategy['train']})")
             else:
-                print(f"expected score: {expected_score}")
+                print("train: model")
+                print(f"expected train score: {train_score}") 
+            
+            if strategy_is_history:
+                print("strategy: history")
+                print(f"current strategy score: {strategy_score} ({metrics_by_strategy[metric]})")
+            else:
+                print("strategy: model")
+                print(f"expected strategy score: {strategy_score}") 
             
             # TODO: reorganize so that appending this score happens in the same place for all strategies
             self.chosen_strategies.append(chosen_strategy)
