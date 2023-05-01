@@ -245,7 +245,7 @@ def main(args):
                     "eig_train_model",  
                     "eig_train_history", "eig_train_mixed", 
                     "kl_train_mixed", "kl_train_history", 
-                    "eig", "kl", "entropy", "entropy_pred", "unif", "train",
+                   # "eig", "kl", "entropy", "entropy_pred", "unif", "train",
                     ]:
 #                if strategy in ["eig","eig_train","kl"]:
 #                    args.num_steps = 50
