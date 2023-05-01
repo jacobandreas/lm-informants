@@ -241,8 +241,8 @@ def main(args):
 #            for strategy in ["entropy","entropy_pred","train","unif"]:#,"entropy_pred","train","eig","unif","entropy"]:#"entropy_pred", "entropy","train", "unif","eig",]: # only train, entropy, eig, and unif are well-defined here
 #            for strategy in ["kl", "eig", "train", "unif", "entropy", "entropy_pred","kl_train","eig_train"]:
             for strategy in [
-                    "kl_train_model", "kl_train_history", 
-                    "eig_train_history", "eig_train_model", 
+                    "kl_train_mixed", "kl_train_history", 
+                    "eig_train_history", "eig_train_mixed", 
 #                    "eig", "kl", "entropy", "entropy_pred", "unif", "train",
                     ]:
 #                if strategy in ["eig","eig_train","kl"]:

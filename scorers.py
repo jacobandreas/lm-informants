@@ -186,7 +186,6 @@ class MeanFieldScorer: # this is us
         max_updates = 25 
 
         if self.warm_start:
-            print("warm start: ", )
             self.probs = self.prior.copy()
 
         probs_before_update = self.probs.copy()

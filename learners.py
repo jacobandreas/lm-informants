@@ -65,7 +65,7 @@ class Learner:
             pass
         elif strategy == "eig":
             pass
-        elif strategy in ["eig_train_model", "eig_train_history", "kl_train_history", "kl_train_model"]:
+        elif strategy in ["eig_train_mixed", "eig_train_history", "kl_train_history", "kl_train_mixed"]:
             pass
         elif strategy == "kl":
             pass
@@ -85,10 +85,13 @@ class Learner:
             converge_type="symmetric",
             feature_type="atr_harmony",
             tolerance=0.001,
+            warm_start=False,
             ):
         self.hypotheses = [
             self.initialize_hyp(
-                log_log_alpha_ratio=log_log_alpha_ratio, prior_prob=prior_prob, converge_type=converge_type, feature_type=feature_type, tolerance=tolerance,
+                log_log_alpha_ratio=log_log_alpha_ratio, prior_prob=prior_prob, converge_type=converge_type, 
+                feature_type=feature_type, tolerance=tolerance,
+                warm_start=warm_start,
                 ) for _ in range(n_hyps)
         ]
         self.observations = []
@@ -98,12 +101,12 @@ class Learner:
         self.observed_feats_unique = set()
 
         if self.strategy_name in [
-                "eig_train_model", 
+                "eig_train_mixed", 
                 "eig_train_history"]: 
             # track eig/kl
             metric_to_track = "entropy_diff"
         elif self.strategy_name in [
-                "kl_train_model", 
+                "kl_train_mixed", 
                 "kl_train_history"]:
             metric_to_track = "kl"
         else:
@@ -450,19 +453,21 @@ class VBLearner(Learner):
         elif self.strategy_name in ["entropy", "eig", "kl", "entropy_pred"]:
             scores = self.get_scores(self.strategy_name, candidates, length_norm)
         elif self.strategy_name in [
-                "eig_train_model", 
+                "eig_train_mixed", 
                 "eig_train_history", 
-                "kl_train_model", 
+                "kl_train_mixed", 
                 "kl_train_history"]:
-            if self.strategy_name == "eig_train_model":
+
+            # the mixed strategies are history-based for train and model-based for strategy
+            if self.strategy_name == "eig_train_mixed":
                 metric, is_history = "eig", False
             elif self.strategy_name == "eig_train_history":
                 metric, is_history = "eig", True 
-            elif self.strategy_name == "kl_train_model":
+            elif self.strategy_name == "kl_train_mixed":
                 metric, is_history = "kl", False
             elif self.strategy_name == "kl_train_history":
                 metric, is_history = "kl", True 
-
+            
             if self.metric_to_track == "kl":
                 metrics_by_strategy = self.kls_by_strategy
             elif self.metric_to_track == "entropy_diff":
