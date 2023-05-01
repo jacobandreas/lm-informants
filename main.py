@@ -241,8 +241,10 @@ def main(args):
 #            for strategy in ["entropy","entropy_pred","train","unif"]:#,"entropy_pred","train","eig","unif","entropy"]:#"entropy_pred", "entropy","train", "unif","eig",]: # only train, entropy, eig, and unif are well-defined here
 #            for strategy in ["kl", "eig", "train", "unif", "entropy", "entropy_pred","kl_train","eig_train"]:
             for strategy in [
-#                    "kl_train_prospective", "kl_train_retrospective", "eig", "kl", "eig_train_retrospective", "eig_train_prospective", 
-                    "entropy", "entropy_pred", "unif", "train"]:
+                    "kl_train_model", "kl_train_history", 
+                    "eig_train_history", "eig_train_model", 
+#                    "eig", "kl", "entropy", "entropy_pred", "unif", "train",
+                    ]:
 #                if strategy in ["eig","eig_train","kl"]:
 #                    args.num_steps = 50
 #            for strategy in ["train"]:
@@ -276,7 +278,7 @@ def main(args):
                 log = []
                 #learner = learners.LogisticLearner(dataset, strategy=strategy)
                 learner = learners.VBLearner(dataset, strategy=strategy, linear_train_dataset = linear_train_dataset, index_of_next_item = index_of_next_item) 
-                learner.initialize(n_hyps=1, log_log_alpha_ratio=args.log_log_alpha_ratio, prior_prob=args.prior_prob, converge_type=args.converge_type, feature_type=args.feature_type, tolerance=args.tolerance)
+                learner.initialize(n_hyps=1, log_log_alpha_ratio=args.log_log_alpha_ratio, prior_prob=args.prior_prob, converge_type=args.converge_type, feature_type=args.feature_type, tolerance=args.tolerance, warm_start=args.warm_start)
 
                 all_features = learner.all_features(return_indices=True)
                 unique_feature_indices = [f_idx for (_, f, f_idx) in all_features if f in unique_features]
@@ -671,6 +673,10 @@ if __name__ == "__main__":
     parser.add_argument('--lexicon_file', type=str, default=None)
 
     parser.set_defaults(verbose=False)
+   
+    # cold or warm start; defaults to cold (i.e. warm_start=False)
+    parser.add_argument('--warm_start', action='store_true', dest='warm_start')
+    parser.set_defaults(warm_start=False)
     
     # batch defaults to True
     parser.add_argument('--batch', action='store_true')

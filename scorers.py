@@ -54,7 +54,8 @@ class MeanFieldScorer: # this is us
             prior_prob=0.5, 
             converge_type="symmetric",
             feature_type="atr_harmony",
-            tolerance = 0.001,
+            tolerance=0.001,
+            warm_start=False,
             ):
         self.ORDER = 3
 #        self.LOG_LOG_ALPHA_RATIO = 45 # 45 is what Jacob set # was 500
@@ -63,6 +64,7 @@ class MeanFieldScorer: # this is us
         self.LOG_LOG_ALPHA_RATIO = log_log_alpha_ratio
         self.tolerance = tolerance
         self.feature_type = feature_type
+        self.warm_start = warm_start 
         
         if converge_type not in ["symmetric", "asymmetric", "none"]:
             raise ValueError(f"Invalid value for converge_type given: {converge_type}")
@@ -182,7 +184,11 @@ class MeanFieldScorer: # this is us
         # updarte if first update *or* have not converged yet
         num_updates = 0
         max_updates = 25 
-        self.probs = self.prior.copy()
+
+        if self.warm_start:
+            print("warm start: ", )
+            self.probs = self.prior.copy()
+
         probs_before_update = self.probs.copy()
 
         # precompute feats_to_update for efficiency

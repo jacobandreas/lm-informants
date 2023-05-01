@@ -65,7 +65,7 @@ class Learner:
             pass
         elif strategy == "eig":
             pass
-        elif strategy in ["eig_train_prospective", "eig_train_retrospective", "kl_train_retrospective", "kl_train_prospective"]:
+        elif strategy in ["eig_train_model", "eig_train_history", "kl_train_history", "kl_train_model"]:
             pass
         elif strategy == "kl":
             pass
@@ -98,13 +98,13 @@ class Learner:
         self.observed_feats_unique = set()
 
         if self.strategy_name in [
-                "eig_train_prospective", 
-                "eig_train_retrospective"]: 
+                "eig_train_model", 
+                "eig_train_history"]: 
             # track eig/kl
             metric_to_track = "entropy_diff"
         elif self.strategy_name in [
-                "kl_train_prospective", 
-                "kl_train_retrospective"]:
+                "kl_train_model", 
+                "kl_train_history"]:
             metric_to_track = "kl"
         else:
             metric_to_track = None
@@ -161,7 +161,7 @@ class VBLearner(Learner):
         self.gain_list_from_alterative = []
         self.strategy_for_this_candidate = None
         
-    def initialize_hyp(self, log_log_alpha_ratio=1, prior_prob=0.5, converge_type="symmetric", feature_type="atr_harmony", tolerance=0.001):
+    def initialize_hyp(self, log_log_alpha_ratio=1, prior_prob=0.5, converge_type="symmetric", feature_type="atr_harmony", tolerance=0.001, warm_start=False):
         return scorers.MeanFieldScorer(
                 self.dataset, 
                 log_log_alpha_ratio=log_log_alpha_ratio, 
@@ -169,6 +169,7 @@ class VBLearner(Learner):
                 converge_type=converge_type,
                 feature_type=feature_type,
                 tolerance=tolerance,
+                warm_start=warm_start,
                 )
 
     def observe(self, seq, judgment, update=True, do_plot_wandb=False, verbose=False, batch=True):
@@ -449,18 +450,18 @@ class VBLearner(Learner):
         elif self.strategy_name in ["entropy", "eig", "kl", "entropy_pred"]:
             scores = self.get_scores(self.strategy_name, candidates, length_norm)
         elif self.strategy_name in [
-                "eig_train_prospective", 
-                "eig_train_retrospective", 
-                "kl_train_prospective", 
-                "kl_train_retrospective"]:
-            if self.strategy_name == "eig_train_prospective":
-                metric, is_retro = "eig", False
-            elif self.strategy_name == "eig_train_retrospective":
-                metric, is_retro = "eig", True 
-            elif self.strategy_name == "kl_train_prospective":
-                metric, is_retro = "kl", False
-            elif self.strategy_name == "kl_train_retrospective":
-                metric, is_retro = "kl", True 
+                "eig_train_model", 
+                "eig_train_history", 
+                "kl_train_model", 
+                "kl_train_history"]:
+            if self.strategy_name == "eig_train_model":
+                metric, is_history = "eig", False
+            elif self.strategy_name == "eig_train_history":
+                metric, is_history = "eig", True 
+            elif self.strategy_name == "kl_train_model":
+                metric, is_history = "kl", False
+            elif self.strategy_name == "kl_train_history":
+                metric, is_history = "kl", True 
 
             if self.metric_to_track == "kl":
                 metrics_by_strategy = self.kls_by_strategy
@@ -476,16 +477,16 @@ class VBLearner(Learner):
             scored_candidates = list(zip(candidates, scores))
             best_cand, expected_score = max(scored_candidates, key=lambda p: p[1])
            
-            # if is retrospective, compare with retrospective (strategy_mean); else expected_score
-            comparison_score = strategy_mean if is_retro else expected_score
+            # if is history, compare with history (strategy_mean); else expected_score
+            comparison_score = strategy_mean if is_history else expected_score
             num_observations = len(self.observations)
-            if (not is_retro) and (num_observations == 0):
+            if (not is_history) and (num_observations == 0):
                 print("choosing train for the first step...")
                 choose_train = True
-            elif (is_retro and num_observations == 0):
+            elif (is_history and num_observations == 0):
                 choose_train = random.sample([True, False], 1)[0]
                 print("choosing train for step=0? ", choose_train)
-            elif (is_retro and num_observations == 1):
+            elif (is_history and num_observations == 1):
                 # at second step, choose whatever strategy wasn't already chosen
                 choose_train = True if self.chosen_strategies[0] != "train" else False
                 print("choosing train for step=1? ", choose_train)
@@ -502,7 +503,7 @@ class VBLearner(Learner):
 
             print(f"chosen strategy: {chosen_strategy}")
             print(f"current train mean: {train_mean} ({metrics_by_strategy['train']})")
-            if is_retro:
+            if is_history:
                 print(f"current strategy mean: {strategy_mean} ({metrics_by_strategy[metric]})")
             else:
                 print(f"expected score: {expected_score}")
