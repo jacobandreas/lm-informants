@@ -441,7 +441,8 @@ class VBLearner(Learner):
         
         # get train
         if np.random.random() < self.propose_train or self.strategy_name == "train":
-            return self.get_train_candidate(self, n_candidates, obs_set)
+            self.chosen_strategies.append(chosen_strategy)
+            return self.get_train_candidate(n_candidates, obs_set)
 
         candidates = []
         while len(candidates) == 0:
@@ -524,7 +525,7 @@ class VBLearner(Learner):
                 choose_train = False
 
             if choose_train:
-                train_cand = self.get_train_candidate(n_candidates, forbidden_data)
+                train_cand = self.get_train_candidate(n_candidates, obs_set)
                 chosen_cand, chosen_strategy = train_cand, "train"
             else:
                 chosen_cand, chosen_strategy = best_cand, metric

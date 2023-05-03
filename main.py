@@ -232,6 +232,8 @@ def main(args):
     results_by_observations_writer = get_csv_writer("ResultsByObservations.csv", args.exp_dir)
     results_by_observations_writer.writerow(["Step", "Run", "strategy", "candidate", "judgment", "new_probs", "log_p_all_off", "update_sum"])
 
+    super_strategies = ["eig_train_model", "kl_train_model", "eig_train_history", "kl_train_history", "kl_train_mixed", "eig_train_mixed"]
+
     for N_INIT in [0]:
         num_runs = args.num_runs 
 
@@ -490,7 +492,7 @@ def main(args):
                     # TODO: set length_norm to be a variable/parameter, but currently it is True in call to propose() below
                     entropy_of_candidate = learner.hypotheses[0].entropy(candidate, length_norm=True)
                     pred_prob_pos = np.exp(learner.hypotheses[0].logprob(candidate, True))
-                    chosen_strategy = learner.chosen_strategies[-1]
+                    chosen_strategy = learner.chosen_strategies[-1] 
 
                     if args.do_plot_wandb:
                         log_results = {
@@ -646,7 +648,7 @@ def main(args):
 
                 # TODO: look at correlations for other domains
                 color_map = {"train": "blue", "eig": "orange", "kl": "purple"}
-                if args.feature_type == "atr_harmony" and strategy in ["eig_train_model","eig_train_history", "eig_train_mixed", "kl_train_mixed", "kl_train_history"]:
+                if args.feature_type == "atr_harmony" and strategy in super_strategies:
                     fig = plt.figure()
                     plt.plot(steps, aucs, color="gray")
                     for step, auc, strat in zip(steps, aucs, learner.chosen_strategies):
