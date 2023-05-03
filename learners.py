@@ -441,7 +441,7 @@ class VBLearner(Learner):
         
         # get train
         if np.random.random() < self.propose_train or self.strategy_name == "train":
-            return get_train_candidate(self, n_candidates, obs_set)
+            return self.get_train_candidate(self, n_candidates, obs_set)
 
         candidates = []
         while len(candidates) == 0:

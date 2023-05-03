@@ -646,7 +646,7 @@ def main(args):
 
                 # TODO: look at correlations for other domains
                 color_map = {"train": "blue", "eig": "orange", "kl": "purple"}
-                if args.feature_type == "atr_harmony": 
+                if args.feature_type == "atr_harmony" and strategy in ["eig_train_model","eig_train_history", "eig_train_mixed", "kl_train_mixed", "kl_train_history"]:
                     fig = plt.figure()
                     plt.plot(steps, aucs, color="gray")
                     for step, auc, strat in zip(steps, aucs, learner.chosen_strategies):
