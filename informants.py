@@ -34,8 +34,8 @@ class HWInformant:
         self.scorer = scorer
 
     def judge(self, seq):
-        #return self.scorer.cost(seq) < 3
-        return self.scorer.cost(seq) == 0
+        return self.scorer.cost(seq) < 2.53 # this is a hack!
+        #return self.scorer.cost(seq) == 0
 
     def cost(self, seq):
         #return self.scorer.cost(seq) < 3
