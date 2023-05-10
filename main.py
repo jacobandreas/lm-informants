@@ -45,7 +45,7 @@ def eval_corrs(costs, labels, sources): # nb, sources comes in via TIs, and labe
     # Select rows with source 5
     df2 = data.loc[data['sources'] == 5]
 
-    group_corr = df1.groupby('sources').apply(lambda x: np.corrcoef(-x['costs'], x['labels'])[0, 1]).reset_index(        name='pearson_corr')
+    group_corr = df1.groupby('sources').apply(lambda x: np.corrcoef(-x['costs'], x['labels'])[0, 1]).reset_index(        name='spearman_corr')
     # Extract 'costs' and 'labels' columns from df2 as lists
     costs = df2['costs'].tolist()
     labels = df2['labels'].tolist()
@@ -243,16 +243,6 @@ def main(args):
 #            for strategy in ["entropy","entropy_pred","train","unif"]:#,"entropy_pred","train","eig","unif","entropy"]:#"entropy_pred", "entropy","train", "unif","eig",]: # only train, entropy, eig, and unif are well-defined here
 #            for strategy in ["kl", "eig", "train", "unif", "entropy", "entropy_pred","kl_train","eig_train"]:
             for strategy in args.strategies: 
-#            [
-#                    "kl_train_model",
-#                    "eig_train_model",
-#                    "eig_train_history", "eig_train_mixed",
-#                    "kl_train_mixed", "kl_train_history",
-#                    "eig", "kl", "entropy", "entropy_pred", "unif", "train",
-#                    ]:
-#                if strategy in ["eig","eig_train","kl"]:
-#                    args.num_steps = 50
-#            for strategy in ["train"]:
                 print("STRATEGY:", strategy)
                 if args.do_plot_wandb:
                     config = {"n_init": N_INIT, "run": run, "strategy": strategy, "log_log_alpha_ratio": args.log_log_alpha_ratio, "prior_prob": args.prior_prob, "feature_type": args.feature_type, "converge_type": args.converge_type, "tolerance": args.tolerance, "n_init": N_INIT, "lexicon_file": args.lexicon_file, "warm_start": args.warm_start}
@@ -526,7 +516,7 @@ def main(args):
                             
                                 wandb.log({"corrs": table})
                                
-                                corrs_df = corrs_df.set_index('sources')['pearson_corr']
+                                corrs_df = corrs_df.set_index('sources')['spearman_corr']
                                 log_results.update({f"human_correlation_{k}": v for k, v in corrs_df.to_dict().items()})
 
                             else:
