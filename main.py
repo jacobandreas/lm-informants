@@ -242,13 +242,14 @@ def main(args):
 #            for strategy in ["", "eig", "unif","train"]: # only train, entropy, eig, and unif are well-defined here
 #            for strategy in ["entropy","entropy_pred","train","unif"]:#,"entropy_pred","train","eig","unif","entropy"]:#"entropy_pred", "entropy","train", "unif","eig",]: # only train, entropy, eig, and unif are well-defined here
 #            for strategy in ["kl", "eig", "train", "unif", "entropy", "entropy_pred","kl_train","eig_train"]:
-            for strategy in [
-                    "kl_train_model",
-                    "eig_train_model",
-                    "eig_train_history", "eig_train_mixed",
-                    "kl_train_mixed", "kl_train_history",
+            for strategy in args.strategies: 
+#            [
+#                    "kl_train_model",
+#                    "eig_train_model",
+#                    "eig_train_history", "eig_train_mixed",
+#                    "kl_train_mixed", "kl_train_history",
 #                    "eig", "kl", "entropy", "entropy_pred", "unif", "train",
-                    ]:
+#                    ]:
 #                if strategy in ["eig","eig_train","kl"]:
 #                    args.num_steps = 50
 #            for strategy in ["train"]:
@@ -531,10 +532,10 @@ def main(args):
                             else:
                                 raise NotImplementedError("Please select a valid feature type!")
                                 
-                            if log_results["auc"] >= 0.97:
-                                auc_streak += 1
-                            else:
-                                auc_streak = 0
+#                            if log_results["auc"] >= 0.97:
+#                                auc_streak += 1
+#                            else:
+#                                auc_streak = 0
                     
                     steps.append(step)
                     
@@ -694,7 +695,15 @@ if __name__ == "__main__":
     parser.add_argument('--shuffle_train', action='store_true')
     parser.add_argument('--no-shuffle_train', dest='shuffle_train', action='store_false')
     parser.set_defaults(shuffle_train=True)
-    
+
+    strategies = [
+            "kl_train_model",
+            "eig_train_model",
+            "eig_train_history", "eig_train_mixed",
+            "kl_train_mixed", "kl_train_history",
+            "eig", "kl", "entropy", "entropy_pred", "unif", "train"
+            ]
+    parser.add_argument('--strategies', nargs='+', required=False, default=strategies)
 
     args = parser.parse_args()
 
@@ -704,5 +713,6 @@ if __name__ == "__main__":
         args.do_plot_wandb=False
 
     print("args: ", args)
+    print("strategies: ", args.strategies)
 
     main(args)
