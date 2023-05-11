@@ -58,6 +58,7 @@ class MeanFieldScorer: # this is us
             warm_start=False,
             ):
         self.ORDER = 3
+        self._featurized_cache = {}
 #        self.LOG_LOG_ALPHA_RATIO = 45 # 45 is what Jacob set # was 500
 #        alpha = 0.9999999999999999
 #        self.LOG_LOG_ALPHA_RATIO = np.log(np.log(alpha/(1-alpha))) # 45 is what Jacob set # was 500
@@ -299,12 +300,18 @@ class MeanFieldScorer: # this is us
         return new_probs, results
 
     def _featurize(self, seq): # Canaan edit to do long distance
-        features = np.zeros(len(self.ngram_features))
-        for i in range(len(seq) - self.ORDER + 1):
-            features_here = [self.phoneme_features[seq[j]].nonzero()[0] for j in range(i, i+self.ORDER)]
-            for ff in it.product(*features_here):
-                features[self.ngram_features[ff]] += 1
-        return features
+        if seq in self._featurized_cache:
+            print("popping from cache!")
+            return self._featurized_cache[seq]
+        else:
+            print("computing and cacheing!")
+            features = np.zeros(len(self.ngram_features))
+            for i in range(len(seq) - self.ORDER + 1):
+                features_here = [self.phoneme_features[seq[j]].nonzero()[0] for j in range(i, i+self.ORDER)]
+                for ff in it.product(*features_here):
+                    features[self.ngram_features[ff]] += 1
+            self._featurized_cache[seq] = features
+            return features
 
     def cost(self, seq):
         return -self.logprob(seq, True)
