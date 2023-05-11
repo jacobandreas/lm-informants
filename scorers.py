@@ -301,10 +301,10 @@ class MeanFieldScorer: # this is us
 
     def _featurize(self, seq): # Canaan edit to do long distance
         if seq in self._featurized_cache:
-            print("popping from cache!")
+            #print("popping from cache!")
             return self._featurized_cache[seq]
         else:
-            print("computing and cacheing!")
+            #print("computing and cacheing!")
             features = np.zeros(len(self.ngram_features))
             for i in range(len(seq) - self.ORDER + 1):
                 features_here = [self.phoneme_features[seq[j]].nonzero()[0] for j in range(i, i+self.ORDER)]
