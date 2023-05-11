@@ -18,6 +18,8 @@ import wandb
 import matplotlib.pyplot as plt
 import time
 
+import cProfile
+
 from util import entropy, plot_feature_probs, kl_bern
 import csv
 
@@ -547,7 +549,7 @@ def main(args):
 
                     if args.do_plot_wandb:
                         all_features = learner.all_features(return_indices=True)
-		
+                
                         # for atr_harmony, only look at features in "unique_features"
                         if args.feature_type in ["atr_harmony"]:
                             all_features = [(c, f, f_idx) for (c, f, f_idx) in all_features if f in unique_features]
@@ -633,8 +635,9 @@ def main(args):
 
 #                with open(f"results_{strategy}.json", "w") as writer:
 #                    json.dump(logs, writer)
-                wandb_table = wandb.Table(columns=["step", "strategy", "proposed_form", "judgment", "features", "eig", "entropy_before", "entropy_after", "entropy_diff", "entropy_before_unique", "entropy_after_unique", "entropy_diff_unique", "change_in_probs", "strategy_for_this_candidate"], data=wandb_table_data) 
-                wandb.log({"Model Eval Logs": wandb_table})
+                if args.do_plot_wandb:
+                    wandb_table = wandb.Table(columns=["step", "strategy", "proposed_form", "judgment", "features", "eig", "entropy_before", "entropy_after", "entropy_diff", "entropy_before_unique", "entropy_after_unique", "entropy_diff_unique", "change_in_probs", "strategy_for_this_candidate"], data=wandb_table_data) 
+                    wandb.log({"Model Eval Logs": wandb_table})
 
 
                 # TODO: look at correlations for other domains
@@ -654,8 +657,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--exp_dir", type=str, default="./")
     parser.add_argument("--wandb_project", type=str, default=None)
-    parser.add_argument("--log_log_alpha_ratio", type=float, default=1)
-    parser.add_argument("--prior_prob", type=float, default=0.5)
+    parser.add_argument("--log_log_alpha_ratio", type=float, default=2)
+    parser.add_argument("--prior_prob", type=float, default=0.1)
     parser.add_argument("--feature_type", type=str, default="atr_harmony")
     parser.add_argument('--verbose', dest='verbose', action='store_true')
     parser.add_argument('--converge_type', type=str, default="symmetric")
@@ -686,6 +689,8 @@ if __name__ == "__main__":
     parser.add_argument('--no-shuffle_train', dest='shuffle_train', action='store_false')
     parser.set_defaults(shuffle_train=True)
 
+    parser.add_argument('--profile_name', default='my_profile')
+
     strategies = [
             "kl_train_model",
             "eig_train_model",
@@ -705,4 +710,8 @@ if __name__ == "__main__":
     print("args: ", args)
     print("strategies: ", args.strategies)
 
-    main(args)
+    os.makedirs('profiles', exist_ok=True)
+    profile_path = f'profiles/{args.profile_name}.prof'
+    cProfile.run('main(args)', filename=profile_path)
+    print("Wrote profiler output to:", profile_path)
+    

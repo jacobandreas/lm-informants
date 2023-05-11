@@ -594,7 +594,6 @@ class LogisticLearner(Learner):
         return sorted(feats)[-5:]
 
 
-    #@profile
     def _retrain(self, hypothesis):
         #subsample_indices = np.random.randint(
         #    len(self.observations),
