@@ -49,7 +49,8 @@ class BilinearScorer:
 
 
 class MeanFieldScorer: # this is us
-    def __init__(self,_featurized_cache, dataset,
+    def __init__(self ,
+                 dataset,
             log_log_alpha_ratio=1, 
             prior_prob=0.5, 
             converge_type="symmetric",
@@ -58,7 +59,7 @@ class MeanFieldScorer: # this is us
             warm_start=False,
             ):
         self.ORDER = 3
-        self._featurized_cache = _featurized_cache
+        self._featurized_cache = {}
 #        self.LOG_LOG_ALPHA_RATIO = 45 # 45 is what Jacob set # was 500
 #        alpha = 0.9999999999999999
 #        self.LOG_LOG_ALPHA_RATIO = np.log(np.log(alpha/(1-alpha))) # 45 is what Jacob set # was 500
