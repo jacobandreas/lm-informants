@@ -17,6 +17,7 @@ from util import kl_bern, entropy
 class Learner:
     def __init__(self, dataset, strategy, linear_train_dataset, index_of_next_item):
         self.dataset = dataset
+        #self._featurized_cache = _featurized_cache
         self.linear_train_dataset = linear_train_dataset
         self.index_of_next_item = index_of_next_item
         #self.next_token_button = next_token_button
@@ -80,6 +81,7 @@ class Learner:
 
     def initialize(
             self, n_hyps,
+            _featurized_cache,
             log_log_alpha_ratio=1, 
             prior_prob=0.5,
             converge_type="symmetric",
@@ -89,6 +91,7 @@ class Learner:
             ):
         self.hypotheses = [
             self.initialize_hyp(
+                _featurized_cache=_featurized_cache,
                 log_log_alpha_ratio=log_log_alpha_ratio, prior_prob=prior_prob, converge_type=converge_type, 
                 feature_type=feature_type, tolerance=tolerance,
                 warm_start=warm_start,
@@ -153,8 +156,9 @@ class Learner:
 
 class VBLearner(Learner):
     def __init__(
-            self, 
-            dataset, 
+            self,
+            _featurized_cache,
+            dataset,
             strategy, 
             linear_train_dataset,index_of_next_item, 
             ):
@@ -164,9 +168,10 @@ class VBLearner(Learner):
         self.gain_list_from_alterative = []
         self.strategy_for_this_candidate = None
         
-    def initialize_hyp(self, log_log_alpha_ratio=1, prior_prob=0.5, converge_type="symmetric", feature_type="atr_harmony", tolerance=0.001, warm_start=False):
+    def initialize_hyp(self, _featurized_cache,log_log_alpha_ratio=1, prior_prob=0.5, converge_type="symmetric", feature_type="atr_harmony", tolerance=0.001, warm_start=False):
         return scorers.MeanFieldScorer(
-                self.dataset, 
+                self.dataset,
+                _featurized_cache=_featurized_cache,
                 log_log_alpha_ratio=log_log_alpha_ratio, 
                 prior_prob=prior_prob,
                 converge_type=converge_type,

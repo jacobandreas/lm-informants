@@ -142,6 +142,7 @@ def get_csv_writer(file_name, out_dir):
 
 #@profile
 def main(args):
+
     list_of_words_to_get_features_from = open("all_sylls.csv","r").read().split('\n')
     list_of_words_to_get_features_from = [i for i in list_of_words_to_get_features_from if i]
 #    print(list_of_words_to_get_features_from)
@@ -160,7 +161,7 @@ def main(args):
         lexicon_file_name = args.lexicon_file
         assert os.path.exists(lexicon_file_name) 
     dataset = datasets.load_lexicon(lexicon_file_name)
-
+    global_featurized_cache = {}
     random = np.random.RandomState(0)
     if get_prior_prob_of_test_set:
         prior_probs_writer = get_csv_writer("prior_probabilities_of_test_set_items.csv", args.exp_dir)
@@ -274,8 +275,8 @@ def main(args):
                     logs[strategy] = []
                 log = []
                 #learner = learners.LogisticLearner(dataset, strategy=strategy)
-                learner = learners.VBLearner(dataset, strategy=strategy, linear_train_dataset = linear_train_dataset, index_of_next_item = index_of_next_item) 
-                learner.initialize(n_hyps=1, log_log_alpha_ratio=args.log_log_alpha_ratio, prior_prob=args.prior_prob, converge_type=args.converge_type, feature_type=args.feature_type, tolerance=args.tolerance, warm_start=args.warm_start)
+                learner = learners.VBLearner(_featurized_cache=global_featurized_cache, dataset=dataset, strategy=strategy, linear_train_dataset = linear_train_dataset, index_of_next_item = index_of_next_item)
+                learner.initialize(_featurized_cache=global_featurized_cache,n_hyps=1, log_log_alpha_ratio=args.log_log_alpha_ratio, prior_prob=args.prior_prob, converge_type=args.converge_type, feature_type=args.feature_type, tolerance=args.tolerance, warm_start=args.warm_start)
 
                 all_features = learner.all_features(return_indices=True)
                 unique_feature_indices = [f_idx for (_, f, f_idx) in all_features if f in unique_features]
@@ -624,7 +625,7 @@ def main(args):
                     if auc_streak >= 5:
                         break
 
-                    
+                global_featurized_cache = learner.hypotheses[0]._featurized_cache
                 logs[strategy].append(log)
                 # create a scatter plot using wandb.plot()
 
