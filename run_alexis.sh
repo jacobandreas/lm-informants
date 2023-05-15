@@ -1,6 +1,7 @@
 EXP_DIR=results/0510
 
-for LOG in .5 1 2 4 8
+#for LOG in .5 1 2 4 8
+for LOG in 1 2 4 8
 do
 	for PRIOR in .1 .2 .35
 	do

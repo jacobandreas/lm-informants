@@ -17,6 +17,7 @@ from AnalyzeSyntheticData import is_ti
 import wandb
 import matplotlib.pyplot as plt
 import time
+import multiprocessing
 
 import cProfile
 
@@ -162,6 +163,7 @@ def main(args):
     dataset = datasets.load_lexicon(lexicon_file_name)
 
     random = np.random.RandomState(0)
+    mean_field_scorer = scorers.MeanFieldScorer(dataset, feature_type=args.feature_type) 
     if get_prior_prob_of_test_set:
         prior_probs_writer = get_csv_writer("prior_probabilities_of_test_set_items.csv", args.exp_dir)
         prior_probs_writer.writerow(["Word", "ProbAcceptable"])
@@ -192,11 +194,14 @@ def main(args):
 
         broad_test_set_t = read_in_blicks("WordsToBeScored.csv")
         broad_test_set = []
-        for item in broad_test_set_t:
+        print("Reading test set...")
+        for item in tqdm(broad_test_set_t):
             phonemes = [BOUNDARY] + item + [BOUNDARY]
             # print(phonemes,"is phonemes")
             encoded_word = dataset.vocab.encode(phonemes)  # expects a list of arpabet chars
-            broad_test_set.append((item, encoded_word))
+            featurized = mean_field_scorer._featurize(encoded_word).nonzero()
+            broad_test_set.append((item, encoded_word, featurized))
+        print("# test: ", len(broad_test_set))
 
         broad_licit_annotations, broad_TI_annotations = get_broad_annotations(args.feature_type)
     elif eval_humans:
@@ -432,8 +437,8 @@ def main(args):
                             out_human_evals.flush()
 
                         items, labels, TIs, costs = [], [], [], []
-                        for item_idx, (item, encoded_word) in enumerate(broad_test_set):
-                            c = learner.cost(encoded_word)
+                        for item_idx, (item, encoded_word, featurized) in tqdm(enumerate(broad_test_set)):
+                            c = learner.cost(encoded_word, features=featurized)
                             costs.append(c)
                             #j = informant.cost(encoded_word)
                             #corral_of_judged_human_forms.append((item,c))
@@ -483,8 +488,8 @@ def main(args):
                     eig = learner.get_eig(candidate).item()
                     expected_kl = learner.get_kl(candidate).item()
                     # TODO: set length_norm to be a variable/parameter, but currently it is True in call to propose() below
-                    entropy_of_candidate = learner.hypotheses[0].entropy(candidate, length_norm=True)
-                    pred_prob_pos = np.exp(learner.hypotheses[0].logprob(candidate, True))
+                    entropy_of_candidate = learner.hypotheses[0].entropy(candidate, length_norm=True, features=featurized_candidate)
+                    pred_prob_pos = np.exp(learner.hypotheses[0].logprob(candidate, True, features=featurized_candidate))
                     chosen_strategy = learner.chosen_strategies[-1] 
 
                     if args.do_plot_wandb:
@@ -652,7 +657,6 @@ def main(args):
                     plt.legend(markers, temp_color_map.keys(), numpoints=1)
                     wandb.log({"custom_plots/auc": wandb.Image(fig)})
                     plt.close()
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--exp_dir", type=str, default="./")

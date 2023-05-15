@@ -156,7 +156,7 @@ class VBLearner(Learner):
             self, 
             dataset, 
             strategy, 
-            linear_train_dataset,index_of_next_item, 
+            linear_train_dataset,index_of_next_item,
             ):
         super().__init__(dataset, strategy, linear_train_dataset, index_of_next_item)
         self.results_by_observations = []
@@ -174,6 +174,18 @@ class VBLearner(Learner):
                 tolerance=tolerance,
                 warm_start=warm_start,
                 )
+
+    # this is for using multiprocessing: 
+    # https://stackoverflow.com/questions/25382455/python-notimplementederror-pool-objects-cannot-be-passed-between-processes
+    """
+    def __getstate__(self):
+        self_dict = self.__dict__.copy()
+        del self_dict['pool']
+        return self_dict
+
+    def __setstate__(self, state):
+        self.__dict__.update(state)
+    """
 
     def observe(self, seq, judgment, update=True, do_plot_wandb=False, verbose=False, batch=True):
         assert len(self.hypotheses) == 1
@@ -285,8 +297,8 @@ class VBLearner(Learner):
         features = self.hypotheses[0]._featurize(seq).nonzero()[0]
 
         # prob of the thing being positive or negative
-        prob_being_positive_a = np.exp(self.hypotheses[0].logprob(seq, True))
-        prob_being_negative_a = np.exp(self.hypotheses[0].logprob(seq, False))
+        prob_being_positive_a = np.exp(self.hypotheses[0].logprob(seq, True, features=features))
+        prob_being_negative_a = np.exp(self.hypotheses[0].logprob(seq, False, features=features))
         prob_being_positive = prob_being_positive_a/(prob_being_positive_a+prob_being_negative_a)
         prob_being_negative = 1-prob_being_positive
         assert prob_being_positive + prob_being_negative == 1
@@ -309,14 +321,14 @@ class VBLearner(Learner):
         orig_probs = deepcopy(self.hypotheses[0].probs)
 #        print("learner before fussing around:", learner_before_fussing_around.probs)
 
+        features = self.hypotheses[0]._featurize(seq).nonzero()[0]
+        
         # prob of the thing being positive or negative
-        prob_being_positive_a = np.exp(self.hypotheses[0].logprob(seq, True))
-        prob_being_negative_a = np.exp(self.hypotheses[0].logprob(seq, False))
+        prob_being_positive_a = np.exp(self.hypotheses[0].logprob(seq, True, features=features))
+        prob_being_negative_a = np.exp(self.hypotheses[0].logprob(seq, False, features=features))
         prob_being_positive = prob_being_positive_a/(prob_being_positive_a+prob_being_negative_a)
         prob_being_negative = 1-prob_being_positive
         assert prob_being_positive + prob_being_negative == 1
-
-        features = self.hypotheses[0]._featurize(seq).nonzero()[0]
 
         kl_pos = self.get_kl(features, label=True, orig_probs=orig_probs)
         kl_neg = self.get_kl(features, label=False, orig_probs=orig_probs)
@@ -330,8 +342,8 @@ class VBLearner(Learner):
 
         return kl
 
-    def cost(self, seq):
-        return self.hypotheses[0].cost(seq)
+    def cost(self, seq, features=None):
+        return self.hypotheses[0].cost(seq, features=features)
 
     def full_nll(self, data):
         if len(data) == 0:
@@ -380,6 +392,7 @@ class VBLearner(Learner):
         return sorted(feats)
 
     def get_scores(self, metric, candidates, length_norm):
+        print("Getting scores...")
         if metric == "entropy":
             # TODO: implement multiprocessing; nontrivial bc requires non-local function
             return [self.hypotheses[0].entropy(c, length_norm=length_norm) for c in candidates]
@@ -391,16 +404,14 @@ class VBLearner(Learner):
             func = self.hypotheses[0].entropy_pred
         else:
             raise NotImplementedError
-        pool = multiprocessing.Pool()
-        scores = pool.map(func, candidates)
-        pool.close()
-        pool.join()
+        with multiprocessing.Pool() as pool:
+            scores = pool.map(func, candidates)
+        print("Done.")
         return scores
 
     # expected metrics of a train candidate over randomly sampled sequences (candidates) 
     def get_train_metric(self, metric, candidates):
         featurized_candidates = [self.hypotheses[0]._featurize(seq).nonzero()[0] for seq in candidates]
-        pool = multiprocessing.Pool()
         # TODO: standardize kl/eig names (both are expectations, should be ekl?)
         if metric == "kl":
             func = self.get_kl
@@ -408,10 +419,8 @@ class VBLearner(Learner):
             func = self.get_info_gain
         else:
             raise ValueError
-        metrics = pool.map(func, featurized_candidates)
-        pool.close()
-        pool.join()
-            
+        with multiprocessing.Pool() as pool:
+            metrics = pool.map(func, featurized_candidates)
         p_trains = np.array([np.exp(self.hypotheses[0].logprob(seq, True)) for seq in candidates])
         print('p trains before normalizing: ', p_trains)
         p_trains /= p_trains.sum()
@@ -452,6 +461,7 @@ class VBLearner(Learner):
 
         #print("candidates: ", candidates)
         #import ipdb; ipdb.set_trace()
+        print(f"# candidates: {len(candidates)}")
         if self.strategy_name == "unif" or self.propose_train > 0:
             scores = [0 for c in candidates]
         elif self.strategy_name in ["entropy", "eig", "kl", "entropy_pred"]:
@@ -558,8 +568,8 @@ class VBLearner(Learner):
         #assert False
         #print(best[1])
         # Print sorted scores
+        print("# sorted: ", len(scored_candidates))
         sorted_scores = sorted([x for x in scored_candidates], key=lambda tup: tup[1], reverse=True)
-        print(f"# candidates: {len(sorted_scores)}")
         for c, s in sorted_scores[:5]:
             print(c, s)
 

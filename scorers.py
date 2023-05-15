@@ -65,6 +65,7 @@ class MeanFieldScorer: # this is us
         self.tolerance = tolerance
         self.feature_type = feature_type
         self.warm_start = warm_start 
+        self._featurized_cache = {}
         
         if converge_type not in ["symmetric", "asymmetric", "none"]:
             raise ValueError(f"Invalid value for converge_type given: {converge_type}")
@@ -95,10 +96,6 @@ class MeanFieldScorer: # this is us
         for idx, curr_feat in enumerate(feats_to_update):
             this_prob = self.probs[curr_feat]
      
-#            for (_, feats, _) in seqs:
-#                other_feats = [f for f in feats if f != curr_feat]
-#                other_probs = self.probs[other_feats]
-            
             featurized_seqs = batch_feats_by_feat[idx]
             other_feats = batch_other_feats_by_feat[idx]
 
@@ -106,6 +103,8 @@ class MeanFieldScorer: # this is us
 
             # TODO: speed up this operation by vectorizing
             log_probs_all_off = np.array([np.log(1-self.probs[o]).sum() for o in other_feats])
+#            probs_off = 1 - self.probs
+#            log_probs_all_off = np.log(other_feats.dot(probs_off))
 
             update_vector = (judgments * np.exp(np.clip(log_probs_all_off + self.LOG_LOG_ALPHA_RATIO, -np.inf, clip_val)))
             update_sum = update_vector.sum()
@@ -133,8 +132,6 @@ class MeanFieldScorer: # this is us
             log_score = np.clip(log_score, -clip_val, clip_val)
 
             posterior = 1 / (1 + np.exp(-log_score))
-#            new_probs[features[i]] = posterior = np.clip(posterior, 0.000001, 0.999999)
-#            new_probs[curr_feat] = posterior = np.clip(posterior, 0.000001, 0.999999)
             posterior = np.clip(posterior, 1e-5, 1-1e-5)
             new_probs[curr_feat] = posterior
 
@@ -145,7 +142,7 @@ class MeanFieldScorer: # this is us
 
         #print("extrema", new_probs.max(), new_probs.min(), new_probs.mean())
 
-        self.probs = new_probs
+#        self.probs = new_probs
         # TODO: need to return updates for each feature
         results = {
                 "new_probs": new_probs, 
@@ -210,13 +207,22 @@ class MeanFieldScorer: # this is us
             # has features of all sequences in batch that contain curr_feat in feats_to_update *excluding curr_feat*
             batch_other_feats_by_feat[idx] = [[f for f in feats if f != curr_feat] for feats in temp_feats]
 
+            # other_feats has shape: b x num_feat (where b is # sequences with the current feature)
+#            other_feats = np.zeros((len(temp_feats), self.probs.shape[0]))
+            # set to 1 all features that are in temp_feats but != curr_feat
+#            for seq_idx, feats in enumerate(temp_feats):
+#                for f in feats:
+#                    if f != curr_feat:
+#                        other_feats[seq_idx, f] = 1
+#            batch_other_feats_by_feat[idx] = other_feats
+
         best_error = np.inf
         update_sums = []
         while (do_converge and error > self.tolerance) or num_updates == 0:
             if verbose:
                 print(f"  Update {num_updates}:")
             if not target_item:
-                old_probs = self.probs.copy()
+#                old_probs = self.probs.copy()
                 step_results = self.update_one_step(
                         ordered_feats, ordered_judgments,
                         feats_to_update, 
@@ -224,10 +230,12 @@ class MeanFieldScorer: # this is us
                         batch_judgments_by_feat,
                         batch_other_feats_by_feat,
                         verbose=verbose) 
-                update_sums.append(step_results["update_sum"])
                 new_probs = step_results["new_probs"]
+                # update probs after the step
+                update_sums.append(step_results["update_sum"])
                 results.append(step_results)
-                difference_vector = np.subtract(new_probs, old_probs)
+                difference_vector = np.subtract(new_probs, self.probs)
+                self.probs = new_probs
                 error = abs(difference_vector).sum()
                 #print(error)
                 #print(new_probs)
@@ -299,18 +307,23 @@ class MeanFieldScorer: # this is us
         return new_probs, results
 
     def _featurize(self, seq): # Canaan edit to do long distance
-        features = np.zeros(len(self.ngram_features))
-        for i in range(len(seq) - self.ORDER + 1):
-            features_here = [self.phoneme_features[seq[j]].nonzero()[0] for j in range(i, i+self.ORDER)]
-            for ff in it.product(*features_here):
-                features[self.ngram_features[ff]] += 1
-        return features
+        if seq in self._featurized_cache:
+            return self._featurized_cache[seq]
+        else:
+            features = np.zeros(len(self.ngram_features))
+            for i in range(len(seq) - self.ORDER + 1):
+                features_here = [self.phoneme_features[seq[j]].nonzero()[0] for j in range(i, i+self.ORDER)]
+                for ff in it.product(*features_here):
+                    features[self.ngram_features[ff]] += 1
+            self._featurized_cache[seq] = features
+            return features
 
-    def cost(self, seq):
-        return -self.logprob(seq, True)
+    def cost(self, seq, features=None):
+        return -self.logprob(seq, True, features=features)
 
-    def logprob(self, seq, judgment, length_norm = False):
-        features = self._featurize(seq).nonzero()[0]
+    def logprob(self, seq, judgment, length_norm = False, features=None):
+        if features is None:
+            features = self._featurize(seq).nonzero()[0]
         num_features_active = len(features)
         constraint_probs = self.probs[features]
 
@@ -332,8 +345,9 @@ class MeanFieldScorer: # this is us
 
                 return np.log1p(-torch.exp(logprob_ok))
 
-    def entropy(self, seq, debug=False, length_norm=False):
-        features = self._featurize(seq).nonzero()[0]
+    def entropy(self, seq, debug=False, length_norm=False, features=None):
+        if features is None:
+            features = self._featurize(seq).nonzero()[0]
         constraint_probs = self.probs[features]
         feat_entropies = (
             -constraint_probs * np.log(constraint_probs) 
