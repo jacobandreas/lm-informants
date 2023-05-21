@@ -374,8 +374,11 @@ def main(args):
                     features2 = mean_field_scorer._featurize(candidate).nonzero()[0]
 
                     # UNCOMMENT UNTIL ASSERT FALSE TO FIND OUT HOW MANY FEATURES THERE ARE IN THE DATA!!
-                    # a = open("all_feats_in_data.csv","w")
-                    # for cand in list_of_words_to_get_features_from:
+                    # a = open("all_feats_in_data_english.csv","w")
+                    # p = []
+                    # s = open("all_words_english.csv","r",encoding="utf8").read().strip().split('\n')
+                    # for cand in tqdm(s):
+                    #     #if cand != "":
                     #     phonemes = [BOUNDARY] + cand.split(" ") + [BOUNDARY]
                     #     # print(phonemes,"is phonemes")
                     #     encoded_word = dataset.vocab.encode(phonemes)
@@ -385,10 +388,12 @@ def main(args):
                     #         for ff in it.product(*features_here):
                     #             # features[mean_field_scorer.ngram_features[ff]] += 1
                     #             parts = " :: ".join(mean_field_scorer.feature_vocab.get_rev(f) for f in ff)
+                    #             p.append(parts)
+                    #                 #
+                    #                 #print("adding",parts)
                     #
-                    #             print(parts)
-                    #
-                    #             a.write(parts+"\n")
+                    # for q in list(set(p)):
+                    #     a.write(q+"\n")
                     #
                     # assert False
                     #print("feat specific locally",features2)
