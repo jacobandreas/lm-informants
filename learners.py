@@ -398,6 +398,7 @@ class VBLearner(Learner):
             return [self.hypotheses[0].entropy(c, length_norm=length_norm) for c in candidates]
         elif metric == "eig":
             func = self.get_eig
+#            return [self.get_eig(c) for c in candidates]
         elif metric == "kl":
             func = self.get_ekl
         elif metric == "entropy_pred": 
@@ -405,6 +406,7 @@ class VBLearner(Learner):
         else:
             raise NotImplementedError
         with multiprocessing.Pool() as pool:
+            # TODO: pre-featurize
             scores = pool.map(func, candidates)
         print("Done.")
         return scores

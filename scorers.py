@@ -79,6 +79,7 @@ class MeanFieldScorer: # this is us
         self.probs = prior_prob * np.ones(len(self.ngram_features))
         self.prior = self.probs.copy()
 
+#    @profile
     def update_one_step(self, ordered_feats, ordered_judgments, feats_to_update, 
             batch_feats_by_feat, 
             batch_judgments_by_feat,
@@ -103,8 +104,10 @@ class MeanFieldScorer: # this is us
 
             # TODO: speed up this operation by vectorizing
             log_probs_all_off = np.array([np.log(1-self.probs[o]).sum() for o in other_feats])
-#            probs_off = 1 - self.probs
-#            log_probs_all_off = np.log(other_feats.dot(probs_off))
+            """
+            probs_off = 1 - self.probs
+            log_probs_all_off = np.ma.log(other_feats * probs_off).sum(1)
+            """
 
             update_vector = (judgments * np.exp(np.clip(log_probs_all_off + self.LOG_LOG_ALPHA_RATIO, -np.inf, clip_val)))
             update_sum = update_vector.sum()
@@ -155,6 +158,7 @@ class MeanFieldScorer: # this is us
 
         return results 
 
+#    @profile
     def update(self, ordered_feats, ordered_judgments, 
             verbose=False, do_plot_wandb=False, 
             feats_to_update=None):
@@ -199,6 +203,11 @@ class MeanFieldScorer: # this is us
         batch_judgments_by_feat = [None] * len(feats_to_update)
        
         for idx, curr_feat in enumerate(feats_to_update):
+#            temp_feats = []
+#            temp_judgments = []
+#            for (j, feats) in zip(ordered_judgments, ordered_feats):
+#                temp_feats.append(feats)
+#                temp_judgments.append(j)
             temp_feats = [feats for feats in ordered_feats if curr_feat in feats]
             temp_judgments = [j for (j, feats) in zip(ordered_judgments, ordered_feats) if curr_feat in feats]
             # has features of all sequences in batch that contain curr_feat in feats_to_update
@@ -206,15 +215,16 @@ class MeanFieldScorer: # this is us
             batch_judgments_by_feat[idx] = temp_judgments 
             # has features of all sequences in batch that contain curr_feat in feats_to_update *excluding curr_feat*
             batch_other_feats_by_feat[idx] = [[f for f in feats if f != curr_feat] for feats in temp_feats]
-
+            """ 
             # other_feats has shape: b x num_feat (where b is # sequences with the current feature)
-#            other_feats = np.zeros((len(temp_feats), self.probs.shape[0]))
+            other_feats = np.zeros((len(temp_feats), self.probs.shape[0]))
             # set to 1 all features that are in temp_feats but != curr_feat
-#            for seq_idx, feats in enumerate(temp_feats):
-#                for f in feats:
-#                    if f != curr_feat:
-#                        other_feats[seq_idx, f] = 1
-#            batch_other_feats_by_feat[idx] = other_feats
+            for seq_idx, feats in enumerate(temp_feats):
+                for f in feats:
+                    if f != curr_feat:
+                        other_feats[seq_idx, f] = 1
+            batch_other_feats_by_feat[idx] = other_feats
+            """ 
 
         best_error = np.inf
         update_sums = []

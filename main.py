@@ -185,7 +185,8 @@ def main(args):
             phonemes = [BOUNDARY] + item + [BOUNDARY]
             # print(phonemes,"is phonemes")
             encoded_word = dataset.vocab.encode(phonemes)  # expects a list of arpabet chars
-            broad_test_set.append((item, encoded_word))
+            featurized = mean_field_scorer._featurize(encoded_word).nonzero()
+            broad_test_set.append((item, encoded_word, featurized))
 
         broad_licit_annotations, broad_TI_annotations = get_broad_annotations(args.feature_type)
     elif eval_humans and args.feature_type == "english":
@@ -714,8 +715,9 @@ if __name__ == "__main__":
     print("args: ", args)
     print("strategies: ", args.strategies)
 
-    os.makedirs('profiles', exist_ok=True)
-    profile_path = f'profiles/{args.profile_name}.prof'
-    cProfile.run('main(args)', filename=profile_path)
-    print("Wrote profiler output to:", profile_path)
-    
+#    os.makedirs('profiles', exist_ok=True)
+#    profile_path = f'profiles/{args.profile_name}.prof'
+    main(args)
+#    cProfile.run('main(args)', filename=profile_path)
+#    print("Wrote profiler output to:", profile_path)
+#    
