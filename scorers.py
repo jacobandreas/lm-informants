@@ -9,10 +9,11 @@ import itertools as it
 import numpy as np
 from scipy.special import logsumexp
 import re
+from torch import nn
 
 import torch
 from util import plot_feature_probs
-from torch import nn
+from optimize import * 
 
 class BilinearScorer:
     def __init__(self, vocab, dim, embeddings=None, weights=None):
@@ -56,6 +57,7 @@ class MeanFieldScorer: # this is us
             feature_type="atr_harmony",
             tolerance=0.001,
             warm_start=False,
+            features=None,
             ):
         self.ORDER = 3
 #        self.LOG_LOG_ALPHA_RATIO = 45 # 45 is what Jacob set # was 500
@@ -75,7 +77,12 @@ class MeanFieldScorer: # this is us
         self.phoneme_features, self.feature_vocab = _load_phoneme_features(dataset, self.feature_type)
         self.ngram_features = {}
         for ff in it.product(range(len(self.feature_vocab)), repeat=self.ORDER):
+            # if features is not None, filter enumerated features to make sure they are in given features
+#            if features is not None and ff not in features:
+#                continue
             self.ngram_features[ff] = len(self.ngram_features)
+
+        print("# features: ", len(self.ngram_features))
         self.probs = prior_prob * np.ones(len(self.ngram_features))
         self.prior = self.probs.copy()
 
@@ -162,152 +169,41 @@ class MeanFieldScorer: # this is us
     def update(self, ordered_feats, ordered_judgments, 
             verbose=False, do_plot_wandb=False, 
             feats_to_update=None):
-        results = []
 
-        orig_probs = self.probs.copy()
+        if self.warm_start:
+            # don't need to copy because probs copied in update()
+            orig_probs = self.prior
+        else:
+            orig_probs = self.probs
+
         if verbose:
             print(f"Items in batch:")
             for feats, judgment in zip(ordered_feats, ordered_judgments):
                 print(f"\t{feats}, {judgment}")
-        target_item = False 
 
-        # This is the same as manually updating once first
-        error = np.inf
-#        do_converge = (judgment == True or judgment == False) # asymmetric update; if you want asymmetric, comment out after true
-#        do_converge = (judgment == True)
-        if self.converge_type == "symmetric":
-            do_converge = True
-        # In asymmetric case, only converge for positive examples
-        elif self.converge_type == "asymmetric":
-            do_converge = (judgment == True)
-        elif self.converge_type == "none":
-            do_converge = False
-        # updarte if first update *or* have not converged yet
-        num_updates = 0
-        max_updates = 25 
+        new_probs, results = update(
+                                ordered_feats,
+                                ordered_judgments,
+                                self.converge_type,
+                                orig_probs,
+                                verbose=verbose,
+                                tolerance=self.tolerance,
+                                log_log_alpha_ratio=self.LOG_LOG_ALPHA_RATIO,
+                                feats_to_update=feats_to_update,
+                            )
+        num_updates = len(results)
 
-        if self.warm_start:
-            self.probs = self.prior.copy()
+        self.probs = new_probs
 
-        probs_before_update = self.probs.copy()
-
-        # precompute feats_to_update for efficiency
-        # contains a list of the unique features in the whole batch
-        # (i.e. the ones we want to update)
-        # features are represented as indices into self.probs
-        if feats_to_update is None:
-            feats_to_update = list(set([item for feats in ordered_feats for item in feats]))
-        
-        batch_feats_by_feat = [None] * len(feats_to_update)
-        batch_other_feats_by_feat = [None] * len(feats_to_update)
-        batch_judgments_by_feat = [None] * len(feats_to_update)
-       
-        for idx, curr_feat in enumerate(feats_to_update):
-#            temp_feats = []
-#            temp_judgments = []
-#            for (j, feats) in zip(ordered_judgments, ordered_feats):
-#                temp_feats.append(feats)
-#                temp_judgments.append(j)
-            temp_feats = [feats for feats in ordered_feats if curr_feat in feats]
-            temp_judgments = [j for (j, feats) in zip(ordered_judgments, ordered_feats) if curr_feat in feats]
-            # has features of all sequences in batch that contain curr_feat in feats_to_update
-            batch_feats_by_feat[idx] = temp_feats 
-            batch_judgments_by_feat[idx] = temp_judgments 
-            # has features of all sequences in batch that contain curr_feat in feats_to_update *excluding curr_feat*
-            batch_other_feats_by_feat[idx] = [[f for f in feats if f != curr_feat] for feats in temp_feats]
-            """ 
-            # other_feats has shape: b x num_feat (where b is # sequences with the current feature)
-            other_feats = np.zeros((len(temp_feats), self.probs.shape[0]))
-            # set to 1 all features that are in temp_feats but != curr_feat
-            for seq_idx, feats in enumerate(temp_feats):
-                for f in feats:
-                    if f != curr_feat:
-                        other_feats[seq_idx, f] = 1
-            batch_other_feats_by_feat[idx] = other_feats
-            """ 
-
-        best_error = np.inf
-        update_sums = []
-        while (do_converge and error > self.tolerance) or num_updates == 0:
-            if verbose:
-                print(f"  Update {num_updates}:")
-            if not target_item:
-#                old_probs = self.probs.copy()
-                step_results = self.update_one_step(
-                        ordered_feats, ordered_judgments,
-                        feats_to_update, 
-                        batch_feats_by_feat, 
-                        batch_judgments_by_feat,
-                        batch_other_feats_by_feat,
-                        verbose=verbose) 
-                new_probs = step_results["new_probs"]
-                # update probs after the step
-                update_sums.append(step_results["update_sum"])
-                results.append(step_results)
-                difference_vector = np.subtract(new_probs, self.probs)
-                self.probs = new_probs
-                error = abs(difference_vector).sum()
-                #print(error)
-                #print(new_probs)
-            else:
-                # TODO: check if robust
-                # TODO: allow logprob to be called with featurized seqs
-                old_cost = np.array([self.logprob(s, j) for (s, j) in seqs]) 
-                # TODO: fix update_one_step call
-                step_results = self.update_one_step(seqs, verbose=verbose)
-                new_probs = step_results["new_probs"]
-                results.append(step_results)
-                new_cost = np.array([self.logprob(s, j) for (s, j) in seqs]) 
-#                    new_cost = self.logprob(seq, judgment)
-
-                difference_vector = np.subtract(new_cost, old_cost)
-                error = abs(difference_vector).sum()
-                #print(old_cost, new_cost, "cost thing", difference_vector)
-
-#            print("")
-#            print("num updates: ", num_updates)
-#            print("error: ", error)
-#            for idx, (diff, new, old) in enumerate(zip(difference_vector, new_probs, old_probs)):
-#                if abs(diff) >= 1e-4:
-#                    print(f"feat: {idx}, diff: {round(diff, 3)}, new prob: {round(new, 3)}, old prob: {round(old, 3)}")
-#                    seqs_with_feat = [(j) for (_, feats, j) in seqs if idx in feats]
-#                    print("true sequences with features: ", sum(seqs_with_feat), "/", len(seqs_with_feat)) 
-#            print('difference: ', difference_vector.round(3))
-#            print('new_probs: ', new_probs.round(3))
-#            print('old_probs: ', old_probs.round(3))
-
-
-            """
-            if do_plot_wandb:
-                # TODO: these features will be different than the features in the other heatmap, these are only plotting the ones updating
-                probs_to_plot = self.probs[feats_to_update]
-                title = f'Prob vs Feature for Step: {len(ordered_feats)-1}, Update: {num_updates}' 
-                str_feats_to_update = [str(f) for f in feats_to_update]
-                feature_probs_plot = plot_feature_probs(str_feats_to_update, probs_to_plot, old_probs[feats_to_update], title=title)
-
-                wandb.log({"intermediate_feature_probs/plot": wandb.Image(feature_probs_plot)})
-                plt.close()
-                wandb.log({"intermediate_updates/error": error, "intermediate_updates/step": len(ordered_feats)-1, "intermediate_updates/update": num_updates})
-            """
-            
-            num_updates += 1
-            
-            if error <= best_error:
-                best_error = error
-            else:
-                if verbose:
-                    print(f"error stopped decreasing after {num_updates} updates")
-                    print('difference: ', difference_vector.round(3))
-#                assert False
-                break
         if do_plot_wandb:
             section = "updates"
             # TODO: redundant with code in main
-            change_in_probs = np.linalg.norm(probs_before_update - self.probs)
-            log_results = {"step": len(ordered_feats)-1, "num_updates": num_updates, "change_in_probs_norm": change_in_probs, "update_sum_mean": np.mean(update_sums)}
+            change_in_probs = np.linalg.norm(orig_probs - self.probs)
+            log_results = {"step": len(ordered_feats)-1, "num_updates": num_updates, "change_in_probs_norm": change_in_probs, 
+#                    "update_sum_mean": np.mean(update_sums)
+                    }
             wandb.log({f"{section}/{k}": v for k, v in log_results.items()})
 
-        #print("converged!",error)
         if verbose:
 #            print(f"Probs after updating: {new_probs}")
             feature_prob_changes = new_probs[feats_to_update]-orig_probs[feats_to_update]

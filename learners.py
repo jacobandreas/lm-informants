@@ -12,7 +12,9 @@ from copy import deepcopy
 import torch
 #from torchmetrics.functional import kl_divergence
 from torch import nn, optim
+
 from util import kl_bern, entropy
+from optimize import * 
 
 class Learner:
     def __init__(self, dataset, strategy, linear_train_dataset, index_of_next_item):
@@ -86,12 +88,13 @@ class Learner:
             feature_type="atr_harmony",
             tolerance=0.001,
             warm_start=False,
+            features=None,
             ):
         self.hypotheses = [
             self.initialize_hyp(
                 log_log_alpha_ratio=log_log_alpha_ratio, prior_prob=prior_prob, converge_type=converge_type, 
                 feature_type=feature_type, tolerance=tolerance,
-                warm_start=warm_start,
+                warm_start=warm_start, features=features,
                 ) for _ in range(n_hyps)
         ]
         self.observations = []
@@ -164,7 +167,7 @@ class VBLearner(Learner):
         self.gain_list_from_alterative = []
         self.strategy_for_this_candidate = None
         
-    def initialize_hyp(self, log_log_alpha_ratio=1, prior_prob=0.5, converge_type="symmetric", feature_type="atr_harmony", tolerance=0.001, warm_start=False):
+    def initialize_hyp(self, log_log_alpha_ratio=1, prior_prob=0.5, converge_type="symmetric", feature_type="atr_harmony", tolerance=0.001, warm_start=False, features=None):
         return scorers.MeanFieldScorer(
                 self.dataset, 
                 log_log_alpha_ratio=log_log_alpha_ratio, 
@@ -173,6 +176,7 @@ class VBLearner(Learner):
                 feature_type=feature_type,
                 tolerance=tolerance,
                 warm_start=warm_start,
+                features=features,
                 )
 
     # this is for using multiprocessing: 
@@ -256,45 +260,36 @@ class VBLearner(Learner):
             self.kls_by_strategy[chosen_strategy] = [kl]
             self.entropy_diffs_by_strategy[chosen_strategy] = [entropy_diff]
 
-    # Helper function to get the information gain from observing seq with label (call in get_eig and computing eig for an unobserved train example)
-    def get_info_gain(self, featurized_seq, label=True, orig_probs=None):
-        # entropy over features before seeing
-
-        if orig_probs is None:
-            orig_probs = deepcopy(self.hypotheses[0].probs)
-        
-        entropy_over_features_before_observing_item = -1 * ((orig_probs * np.log(orig_probs) + (1 - orig_probs) * np.log(1 - orig_probs))).sum()
-        assert entropy_over_features_before_observing_item > 0
-    
-        
-        p, results = self.hypotheses[0].update(self.observed_feats+[featurized_seq], self.observed_judgments+[label], verbose=False, )
-        entropy_over_features_after_observing_item = -1 * ((p * np.log(p) + (1 - p) * np.log(1 - p))).sum()
-        assert entropy_over_features_after_observing_item > 0, f"Entropy should be positive. Entropy={entropy_over_features_after_observing_item_positive}. Probs={p.round(decimals=3)}"
-
-        # reset
-        self.hypotheses[0].probs = orig_probs
-
-        return entropy_over_features_before_observing_item - entropy_over_features_after_observing_item
-    
     # Helper function to get the kl from observing seq with label (call in get_ekl and computing ekl for an unobserved train example)
     def get_kl(self, featurized_seq, label=True, orig_probs=None):
-
+        # TODOnow: delete these eventually for efficiency
         if orig_probs is None:
             orig_probs = deepcopy(self.hypotheses[0].probs)
+
+        kl = get_kl(featurized_seq, self.hypotheses[0].probs, self.observed_feats, self.observed_judgments, self.observed_feats_unique, self.hypotheses[0].converge_type, self.hypotheses[0].LOG_LOG_ALPHA_RATIO, self.hypotheses[0].tolerance, label=label)
         
-        p_after, _ = self.hypotheses[0].update(self.observed_feats+[featurized_seq], self.observed_judgments+[label], verbose=False)
-        
-        kl = kl_bern(p_after, orig_probs).sum() 
-        
-        # reset
-        self.hypotheses[0].probs = orig_probs
+        # TODOnow: delete these eventually for efficiency
+        all_equal = (orig_probs == self.hypotheses[0].probs)
+        assert all_equal.all()
         
         return kl
-    
-    # TODO: only consider features in sequence as in scorer.entropy()? (Should be equivalent bc probs for features not in seq won't change?)
-    def get_eig(self, seq):
-        orig_probs = deepcopy(self.hypotheses[0].probs)
-        features = self.hypotheses[0]._featurize(seq).nonzero()[0]
+
+    def get_info_gain(self, features, orig_probs=None, label=True):
+        # TODOnow: delete these eventually for efficiency
+        if orig_probs is None:
+            orig_probs = deepcopy(self.hypotheses[0].probs)
+
+        ig = get_info_gain(features, self.hypotheses[0].probs, self.observed_feats, self.observed_judgments, self.observed_feats_unique, self.hypotheses[0].converge_type, self.hypotheses[0].LOG_LOG_ALPHA_RATIO, self.hypotheses[0].tolerance, label=label)
+
+        # TODOnow: delete these eventually for efficiency
+        all_equal = (orig_probs == self.hypotheses[0].probs)
+        assert all_equal.all()
+
+        return ig
+
+    def get_expected_metric(self, seq, pos_val, neg_val, features=None):
+        if features is None:
+            features = self.hypotheses[0]._featurize(seq).nonzero()[0]
 
         # prob of the thing being positive or negative
         prob_being_positive_a = np.exp(self.hypotheses[0].logprob(seq, True, features=features))
@@ -303,44 +298,49 @@ class VBLearner(Learner):
         prob_being_negative = 1-prob_being_positive
         assert prob_being_positive + prob_being_negative == 1
 
+        exp = (pos_val * prob_being_positive) + (neg_val * prob_being_negative)
+
+        return exp
+
+    # TODO: only consider features in sequence as in scorer.entropy()? (Should be equivalent bc probs for features not in seq won't change?)
+    def get_eig(self, seq, delta_positive=None, delta_negative=None, features=None):
+        # TODOnow: delete these eventually for efficiency
+        orig_probs = deepcopy(self.hypotheses[0].probs)
+        
+        if features is None:
+            features = self.hypotheses[0]._featurize(seq).nonzero()[0]
+        
         all_equal = (orig_probs == self.hypotheses[0].probs)
         assert all_equal.all()
 
-        # either:
-        delta_positive = self.get_info_gain(features, label=True, orig_probs=orig_probs)
-        delta_negative = self.get_info_gain(features, label=False, orig_probs=orig_probs)
-        eig = (delta_positive * prob_being_positive) + (delta_negative * prob_being_negative) # reduce my entropy
-
-       # if args.verbose:
-       #      print("delta positive:", delta_positive)
-       #      print("delta negative:", delta_negative)
-       #      print("prob being positive:", prob_being_positive)
+        if delta_positive is None:
+            delta_positive = self.get_info_gain(features, label=True, orig_probs=orig_probs)
+        if delta_negative is None:
+            delta_negative = self.get_info_gain(features, label=False, orig_probs=orig_probs)
+        
+        eig = self.get_expected_metric(seq, delta_positive, delta_negative) 
         return eig
 
-    def get_ekl(self, seq):
+    def get_ekl(self, seq, delta_positive=None, delta_negative=None):
+        # TODOnow: delete these eventually for efficiency
         orig_probs = deepcopy(self.hypotheses[0].probs)
-#        print("learner before fussing around:", learner_before_fussing_around.probs)
-
-        features = self.hypotheses[0]._featurize(seq).nonzero()[0]
         
-        # prob of the thing being positive or negative
-        prob_being_positive_a = np.exp(self.hypotheses[0].logprob(seq, True, features=features))
-        prob_being_negative_a = np.exp(self.hypotheses[0].logprob(seq, False, features=features))
-        prob_being_positive = prob_being_positive_a/(prob_being_positive_a+prob_being_negative_a)
-        prob_being_negative = 1-prob_being_positive
-        assert prob_being_positive + prob_being_negative == 1
-
-        kl_pos = self.get_kl(features, label=True, orig_probs=orig_probs)
-        kl_neg = self.get_kl(features, label=False, orig_probs=orig_probs)
+        if features is None:
+            features = self.hypotheses[0]._featurize(seq).nonzero()[0]
         
         all_equal = (orig_probs == self.hypotheses[0].probs)
         assert all_equal.all()
 
-        kl = kl_pos*prob_being_positive + kl_neg*prob_being_negative 
+        if kl_pos is None:
+            kl_pos = self.get_kl(features, label=True, orig_probs=orig_probs)
+        if kl_neg is None:
+            kl_neg = self.get_kl(features, label=False, orig_probs=orig_probs)
+        
+        ekl = self.get_expected_metric(seq, kl_pos, kl_neg) 
 
-        assert kl >= -1e-12, f"The kl divergence is not >= 0: {kl}, kl pos: {kl_pos}, kl_neg: {kl_neg}\norig probs: {orig_probs.round(3)}\np_after_true: {p_after_true.round(3)}\np_after_false: {p_after_false.round(3)}\n{orig_probs==p_after_true}"
+        assert ekl >= -1e-12, f"The ekl divergence is not >= 0: {ekl}, kl pos: {kl_pos}, kl_neg: {kl_neg}\norig probs: {orig_probs.round(3)}\np_after_true: {p_after_true.round(3)}\np_after_false: {p_after_false.round(3)}\n{orig_probs==p_after_true}"
 
-        return kl
+        return ekl
 
     def cost(self, seq, features=None):
         return self.hypotheses[0].cost(seq, features=features)
@@ -391,38 +391,56 @@ class VBLearner(Learner):
                 feats.append((hyp.probs[i].item(), parts))
         return sorted(feats)
 
+    @profile
     def get_scores(self, metric, candidates, length_norm):
-        print("Getting scores...")
         if metric == "entropy":
             # TODO: implement multiprocessing; nontrivial bc requires non-local function
             return [self.hypotheses[0].entropy(c, length_norm=length_norm) for c in candidates]
-        elif metric == "eig":
-            func = self.get_eig
-#            return [self.get_eig(c) for c in candidates]
-        elif metric == "kl":
-            func = self.get_ekl
+        elif metric in ["eig", "kl"]:
+            hyp = self.hypotheses[0]
+            if self.hypotheses[0].warm_start:
+                probs = hyp.prior
+            else:
+                probs = hyp.probs
+
+            inputs = [(hyp._featurize(seq).nonzero()[0], probs, self.observed_feats, self.observed_judgments, self.observed_feats_unique, hyp.converge_type, hyp.LOG_LOG_ALPHA_RATIO, hyp.tolerance) for seq in candidates]
+
+            pos_func = get_ig_pos if metric == "eig" else get_kl_pos
+            neg_func = get_ig_neg if metric == "eig" else get_kl_neg
+
+            with multiprocessing.Pool(processes=48) as pool:
+                pos_scores = pool.map(pos_func, inputs)
+                neg_scores = pool.map(neg_func, inputs)
+
+            scores = [self.get_expected_metric(seq, pos, neg, features=inp[0]) for (inp, seq, pos, neg) in zip(inputs, candidates, pos_scores, neg_scores)]
+            return scores
+
         elif metric == "entropy_pred": 
-            func = self.hypotheses[0].entropy_pred
+            # TODO: implement multiprocessing; nontrivial bc requires non-local function
+            return [self.hypotheses[0].entropy_pred(c) for c in candidates]
         else:
             raise NotImplementedError
-        with multiprocessing.Pool() as pool:
-            # TODO: pre-featurize
-            scores = pool.map(func, candidates)
-        print("Done.")
         return scores
 
     # expected metrics of a train candidate over randomly sampled sequences (candidates) 
     def get_train_metric(self, metric, candidates):
         featurized_candidates = [self.hypotheses[0]._featurize(seq).nonzero()[0] for seq in candidates]
         # TODO: standardize kl/eig names (both are expectations, should be ekl?)
-        if metric == "kl":
-            func = self.get_kl
-        elif metric == "eig":
-            func = self.get_info_gain
+        if metric in ["eig", "kl"]:
+            hyp = self.hypotheses[0]
+            if self.hypotheses[0].warm_start:
+                probs = hyp.prior
+            else:
+                probs = hyp.probs
+
+            inputs = [(hyp._featurize(seq).nonzero()[0], probs, self.observed_feats, self.observed_judgments, self.observed_feats_unique, hyp.converge_type, hyp.LOG_LOG_ALPHA_RATIO, hyp.tolerance) for seq in candidates]
+
+            func = get_ig_pos if metric == "eig" else get_kl_pos 
+
+            with multiprocessing.Pool(processes=48) as pool:
+                metrics = pool.map(func, inputs)
         else:
             raise ValueError
-        with multiprocessing.Pool() as pool:
-            metrics = pool.map(func, featurized_candidates)
         p_trains = np.array([np.exp(self.hypotheses[0].logprob(seq, True)) for seq in candidates])
         print('p trains before normalizing: ', p_trains)
         p_trains /= p_trains.sum()

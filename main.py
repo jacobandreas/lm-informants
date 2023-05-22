@@ -162,8 +162,15 @@ def main(args):
         assert os.path.exists(lexicon_file_name) 
     dataset = datasets.load_lexicon(lexicon_file_name)
 
+    if args.feature_type == "english":
+        filtered_features = pd.read_csv('all_feats_in_data_english.csv', header=None)[0].values
+        print(filtered_features)
+        print(len(filtered_features))
+    else:
+        filtered_features = None
+
     random = np.random.RandomState(0)
-    mean_field_scorer = scorers.MeanFieldScorer(dataset, feature_type=args.feature_type) 
+    mean_field_scorer = scorers.MeanFieldScorer(dataset, feature_type=args.feature_type, features=filtered_features) 
     if get_prior_prob_of_test_set:
         prior_probs_writer = get_csv_writer("prior_probabilities_of_test_set_items.csv", args.exp_dir)
         prior_probs_writer.writerow(["Word", "ProbAcceptable"])
@@ -267,38 +274,25 @@ def main(args):
                 if args.shuffle_train:
                     random.shuffle(linear_train_dataset) # turn this off if you want to have train be always the same order.
                     
-                #print(len(dataset.data))
                 init_examples = []
                 for _ in range(N_INIT):
                     init_examples.append(linear_train_dataset[index_of_next_item])
                     index_of_next_item += 1
-                #print("init examples are",init_examples)
-
-                #assert False
 
                 if strategy not in logs:
                     logs[strategy] = []
                 log = []
-                #learner = learners.LogisticLearner(dataset, strategy=strategy)
                 learner = learners.VBLearner(dataset, strategy=strategy, linear_train_dataset = linear_train_dataset, index_of_next_item = index_of_next_item) 
-                learner.initialize(n_hyps=1, log_log_alpha_ratio=args.log_log_alpha_ratio, prior_prob=args.prior_prob, converge_type=args.converge_type, feature_type=args.feature_type, tolerance=args.tolerance, warm_start=args.warm_start)
+                learner.initialize(n_hyps=1, log_log_alpha_ratio=args.log_log_alpha_ratio, prior_prob=args.prior_prob, converge_type=args.converge_type, feature_type=args.feature_type, tolerance=args.tolerance, warm_start=args.warm_start, features=filtered_features)
 
                 all_features = learner.all_features(return_indices=True)
                 unique_feature_indices = [f_idx for (_, f, f_idx) in all_features if f in unique_features]
                 
                 wandb_table_data = []
 
-#                if len(init_examples) > 0:
-#                    for example in init_examples:
-#                        learner.observe(example, True, update=True, verbose=args.verbose, batch=args.batch, do_plot_wandb=args.do_plot_wandb)
-#                    learner.observe(init_examples[-1], True, update=True, verbose=args.verbose, batch=args.batch, do_plot_wandb=args.do_plot_wandb)
-                    
                 #scores = evaluate_with_external_data(good_dataset,bad_dataset, eval_informant, learner)
                 scores = evaluate(dataset, eval_informant, learner)
 
-                #for k, v in scores.items():
-                    #print(f"{k:8s} {v:.4f}")
-                print()
                 # if eval_humans:
                 #     for item, encoded_word in dataset_to_judge:
                 #         #c = learner.cost(encoded_word)
@@ -487,7 +481,9 @@ def main(args):
                         entropy_before_unique = None
                     probs_before = learner.hypotheses[0].probs.copy()
                     eig = learner.get_eig(candidate).item()
+
                     expected_kl = learner.get_kl(candidate).item()
+
                     # TODO: set length_norm to be a variable/parameter, but currently it is True in call to propose() below
                     entropy_of_candidate = learner.hypotheses[0].entropy(candidate, length_norm=True, features=featurized_candidate)
                     pred_prob_pos = np.exp(learner.hypotheses[0].logprob(candidate, True, features=featurized_candidate))
