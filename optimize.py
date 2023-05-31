@@ -91,7 +91,8 @@ def update(ordered_feats, ordered_judgments,
             # probs is orig_probs for the first iteration, then the last new_probs
             difference_vector = np.subtract(new_probs, probs)
             probs = new_probs
-            error = abs(difference_vector).sum()
+#            error = abs(difference_vector).sum()
+            error = abs(difference_vector).mean()
             if num_updates > 400:
                 if num_updates % 250 == 0:
                     print(f"  Update {num_updates}, error: {error}")
