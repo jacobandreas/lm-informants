@@ -68,6 +68,9 @@ class MeanFieldScorer: # this is us
         self.feature_type = feature_type
         self.warm_start = warm_start 
         self._featurized_cache = {}
+
+        # TODO: this is super hacky, used for plotting intermediate updates
+        self.num_total_updates = 0
         
         if converge_type not in ["symmetric", "asymmetric", "none"]:
             raise ValueError(f"Invalid value for converge_type given: {converge_type}")
@@ -192,6 +195,7 @@ class MeanFieldScorer: # this is us
                                 feats_to_update=feats_to_update,
                             )
         num_updates = len(results)
+        step = len(ordered_feats)-1
 
         self.probs = new_probs
 
@@ -199,10 +203,20 @@ class MeanFieldScorer: # this is us
             section = "updates"
             # TODO: redundant with code in main
             change_in_probs = np.linalg.norm(orig_probs - self.probs)
-            log_results = {"step": len(ordered_feats)-1, "num_updates": num_updates, "change_in_probs_norm": change_in_probs, 
+            log_results = {"step": step, "num_updates": num_updates, "change_in_probs_norm": change_in_probs, 
 #                    "update_sum_mean": np.mean(update_sums)
                     }
             wandb.log({f"{section}/{k}": v for k, v in log_results.items()})
+
+            for r_idx, r in enumerate(results):
+                temp_results = ({f"intermediate_updates/{k}": r[k] for k in ["error"]})
+                temp_results['intermediate_updates/step'] = step
+                temp_results['intermediate_updates/update_idx'] = r_idx
+                temp_results['intermediate_updates/global_update_idx'] = r_idx + self.num_total_updates 
+
+                wandb.log(temp_results)
+        
+        self.num_total_updates += num_updates
 
         if verbose:
 #            print(f"Probs after updating: {new_probs}")
