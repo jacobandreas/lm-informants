@@ -203,7 +203,7 @@ def main(args):
         broad_test_set_t = read_in_blicks("WordsToBeScored.csv")
         broad_test_set = []
         print("Reading test set...")
-        for item in tqdm(broad_test_set_t):
+        for item in tqdm(broad_test_set_t[0:50]):
             phonemes = [BOUNDARY] + item + [BOUNDARY]
             # print(phonemes,"is phonemes")
             encoded_word = dataset.vocab.encode(phonemes)  # expects a list of arpabet chars
@@ -282,7 +282,7 @@ def main(args):
                 if strategy not in logs:
                     logs[strategy] = []
                 log = []
-                learner = learners.VBLearner(dataset, strategy=strategy, linear_train_dataset = linear_train_dataset, index_of_next_item = index_of_next_item) 
+                learner = learners.VBLearner(dataset, strategy=strategy, linear_train_dataset = linear_train_dataset, index_of_next_item = index_of_next_item, num_steps=args.num_steps, num_features=len(mean_field_scorer.ngram_features)) 
                 learner.initialize(n_hyps=1, log_log_alpha_ratio=args.log_log_alpha_ratio, prior_prob=args.prior_prob, converge_type=args.converge_type, feature_type=args.feature_type, tolerance=args.tolerance, warm_start=args.warm_start, features=filtered_features)
 
                 all_features = learner.all_features(return_indices=True)
@@ -482,7 +482,7 @@ def main(args):
                     probs_before = learner.hypotheses[0].probs.copy()
                     eig = learner.get_eig(candidate).item()
 
-                    expected_kl = learner.get_kl(candidate).item()
+                    expected_kl = learner.get_ekl(candidate).item()
 
                     # TODO: set length_norm to be a variable/parameter, but currently it is True in call to propose() below
                     entropy_of_candidate = learner.hypotheses[0].entropy(candidate, length_norm=True, features=featurized_candidate)

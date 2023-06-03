@@ -5,6 +5,7 @@ from util import kl_bern, entropy
 @profile
 def update(ordered_feats, ordered_judgments,
         converge_type, orig_probs,
+        batch_observations,
         verbose=False,
         tolerance=0.001,
         log_log_alpha_ratio=45,
@@ -56,7 +57,8 @@ def update(ordered_feats, ordered_judgments,
         batch_feats_by_feat[idx] = temp_feats 
         batch_judgments_by_feat[idx] = temp_judgments 
         # has features of all sequences in batch that contain curr_feat in feats_to_update *excluding curr_feat*
-        batch_other_feats_by_feat[idx] = [[f for f in feats if f != curr_feat] for feats in temp_feats]
+#        batch_other_feats_by_feat[idx] = [[f for f in feats if f != curr_feat] for feats in temp_feats]
+        
         """ 
         # other_feats has shape: b x num_feat (where b is # sequences with the current feature)
         other_feats = np.zeros((len(temp_feats), probs.shape[0]))
@@ -81,8 +83,9 @@ def update(ordered_feats, ordered_judgments,
                     feats_to_update, 
                     batch_feats_by_feat, 
                     batch_judgments_by_feat,
-                    batch_other_feats_by_feat,
+#                    batch_other_feats_by_feat,
                     log_log_alpha_ratio,
+                    batch_observations,
                     verbose=verbose)
             new_probs = step_results["new_probs"]
             # update probs after the step
@@ -142,8 +145,9 @@ def update_one_step(probs,
         feats_to_update, 
         batch_feats_by_feat, 
         batch_judgments_by_feat,
-        batch_other_feats_by_feat,
+#        batch_other_feats_by_feat,
         log_log_alpha_ratio,
+        batch_observations,
         verbose=False): # was originally called update
 
     clip_val = np.inf
@@ -158,16 +162,50 @@ def update_one_step(probs,
         this_prob = probs[curr_feat]
  
         featurized_seqs = batch_feats_by_feat[idx]
-        other_feats = batch_other_feats_by_feat[idx]
+#        other_feats = batch_other_feats_by_feat[idx]
 
         judgments = batch_judgments_by_feat[idx]
 
         # TODO: speed up this operation by vectorizing
-        log_probs_all_off = np.array([np.log(1-probs[o]).sum() for o in other_feats])
-        """
+#        log_probs_all_off = np.array([np.log(1-probs[o]).sum() for o in other_feats])
         probs_off = 1 - probs
+        """
         log_probs_all_off = np.ma.log(other_feats * probs_off).sum(1)
         """
+
+#        print("curr feat : ", curr_feat)
+        temp_batch = batch_observations[batch_observations[:, curr_feat]==1]
+#        print("temp batch : ", list(temp_batch[0].nonzero()))
+#        print("other_feats", other_feats[0])
+        curr_feat_col = temp_batch[:, curr_feat].copy()
+        temp_batch[:, curr_feat] = 0
+
+        np.ma.log(temp_batch * probs_off, out=temp_batch)
+        log_probs_all_off = np.sum(temp_batch, axis=1) 
+        """
+        log_probs_all_off = np.ma.log(temp_batch * probs_off).sum(1)
+        """
+        temp_batch[:, curr_feat] = curr_feat_col
+
+#        print("log probs all off: ", log_probs_all_off)
+#        print("temp log probs all off: ", temp_log_probs_all_off)
+#        print("temp log probs all off sum: ", np.ma.log(temp_batch * (1-probs).sum(0)))
+#        print("ordered feats: ", ordered_feats)
+
+#        try:
+#            assert np.allclose(log_probs_all_off, temp_log_probs_all_off), f"log: {log_probs_all_off}, temp: {temp_log_probs_all_off}"
+#        except:
+#            print(f"log: {log_probs_all_off}, temp: {temp_log_probs_all_off}")
+#
+#            print("OTHER FEATS: ")
+#            for o in other_feats:
+#                print(list(o.nonzero()[0]))
+#
+#            print("TEMP BATCH: ")
+#            for b in temp_batch:
+#                print(list(b.nonzero()[0]))
+#            break
+
 
         update_vector = (judgments * np.exp(np.clip(log_probs_all_off + log_log_alpha_ratio, -np.inf, clip_val)))
         update_sum = update_vector.sum()
@@ -205,7 +243,7 @@ def update_one_step(probs,
     
 # Helper function to get the information gain from observing seq with label (call in get_eig and computing eig for an unobserved train example)
 @profile
-def get_info_gain(featurized_seq, orig_probs, observed_feats, observed_judgments, observed_feats_unique, converge_type, log_log_alpha_ratio, tolerance, label=True):
+def get_info_gain(featurized_seq, orig_probs, observed_feats, observed_judgments, observed_feats_unique, converge_type, log_log_alpha_ratio, tolerance, batch_observations, label=True):
     # entropy over features before seeing
 
     entropy_over_features_before_observing_item = -1 * ((orig_probs * np.log(orig_probs) + (1 - orig_probs) * np.log(1 - orig_probs))).sum()
@@ -213,7 +251,11 @@ def get_info_gain(featurized_seq, orig_probs, observed_feats, observed_judgments
 
     feats_to_update = {*observed_feats_unique, *featurized_seq}
 
-    p, results = update(observed_feats+[featurized_seq], observed_judgments+[label], converge_type, orig_probs, feats_to_update=feats_to_update, verbose=False)
+    temp_batch_observations = batch_observations.copy()
+    for f in featurized_seq:
+        temp_batch_observations[len(observed_judgments)][f] = 1
+
+    p, results = update(observed_feats+[featurized_seq], observed_judgments+[label], converge_type, orig_probs, temp_batch_observations, feats_to_update=feats_to_update, verbose=False)
     entropy_over_features_after_observing_item = -1 * ((p * np.log(p) + (1 - p) * np.log(1 - p))).sum()
     assert entropy_over_features_after_observing_item > 0, f"Entropy should be positive. Entropy={entropy_over_features_after_observing_item_positive}. Probs={p.round(decimals=3)}"
         
@@ -232,11 +274,15 @@ def get_kl_neg(c):
     return get_kl(*c, label=False)
 
 @profile
-def get_kl(featurized_seq, orig_probs, observed_feats, observed_judgments, observed_feats_unique, converge_type, log_log_alpha_ratio, tolerance, label=True):
-    
+def get_kl(featurized_seq, orig_probs, observed_feats, observed_judgments, observed_feats_unique, converge_type, log_log_alpha_ratio, tolerance, batch_observations, label=True):
+   
     feats_to_update = {*observed_feats_unique, *featurized_seq}
+    
+    temp_batch_observations = batch_observations.copy()
+    for f in featurized_seq:
+        temp_batch_observations[len(observed_judgments)][f] = 1
 
-    p, results = update(observed_feats+[featurized_seq], observed_judgments+[label], converge_type, orig_probs, feats_to_update=feats_to_update, verbose=False)
+    p, results = update(observed_feats+[featurized_seq], observed_judgments+[label], converge_type, orig_probs, temp_batch_observations, feats_to_update=feats_to_update, verbose=False)
 
     kl = kl_bern(p, orig_probs).sum()
 
