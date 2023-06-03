@@ -194,7 +194,8 @@ class VBLearner(Learner):
     def observe(self, seq, judgment, update=True, do_plot_wandb=False, verbose=False, batch=True):
         assert len(self.hypotheses) == 1
         assert update
-        features = self.hypotheses[0]._featurize(seq).nonzero()[0]
+        featurized = self.hypotheses[0]._featurize(seq)
+        features = featurized.nonzero()[0]
         self.observations.append((seq, features, judgment))
         self.observed_seqs.append(seq)
         self.observed_feats.append(features)

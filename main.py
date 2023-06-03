@@ -515,6 +515,7 @@ def main(args):
                             elif args.feature_type == "english":
                                 corrs_df, auc = eval_corrs(costs, labels, TIs)
                                 log_results["auc"] = auc
+                                aucs.append(auc)
 
                                 table = wandb.Table(dataframe=corrs_df)
                             
@@ -644,7 +645,8 @@ def main(args):
 
                 # TODO: look at correlations for other domains
                 color_map = {"train": "blue", "eig": "orange", "kl": "purple"}
-                if args.feature_type == "atr_harmony" and strategy in super_strategies:
+#                if args.feature_type == "atr_harmony" and strategy in super_strategies:
+                if strategy in super_strategies:
                     fig = plt.figure()
                     plt.plot(steps, aucs, color="gray")
                     for step, auc, strat in zip(steps, aucs, learner.chosen_strategies):
