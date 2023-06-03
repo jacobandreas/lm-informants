@@ -169,8 +169,7 @@ class MeanFieldScorer: # this is us
         return results 
 
 #    @profile
-    def update(self, ordered_feats, ordered_judgments,
-            batch_observations,
+    def update(self, ordered_feats, ordered_judgments, 
             verbose=False, do_plot_wandb=False, 
             feats_to_update=None):
 
@@ -190,7 +189,6 @@ class MeanFieldScorer: # this is us
                                 ordered_judgments,
                                 self.converge_type,
                                 orig_probs,
-                                batch_observations,
                                 verbose=verbose,
                                 tolerance=self.tolerance,
                                 log_log_alpha_ratio=self.LOG_LOG_ALPHA_RATIO,

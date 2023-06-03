@@ -160,15 +160,12 @@ class VBLearner(Learner):
             dataset, 
             strategy, 
             linear_train_dataset,index_of_next_item,
-            num_steps, num_features,
             ):
         super().__init__(dataset, strategy, linear_train_dataset, index_of_next_item)
         self.results_by_observations = []
         self.gain_list_from_train = []
         self.gain_list_from_alterative = []
         self.strategy_for_this_candidate = None
-        self.num_features = num_features 
-        self.batch_observations = np.zeros((num_steps, num_features)) 
         
     def initialize_hyp(self, log_log_alpha_ratio=1, prior_prob=0.5, converge_type="symmetric", feature_type="atr_harmony", tolerance=0.001, warm_start=False, features=None):
         return scorers.MeanFieldScorer(
@@ -198,10 +195,7 @@ class VBLearner(Learner):
         assert len(self.hypotheses) == 1
         assert update
         featurized = self.hypotheses[0]._featurize(seq)
-        i = len(self.observations)
         features = featurized.nonzero()[0]
-        for f in features:
-            self.batch_observations[i, f] = 1 
         self.observations.append((seq, features, judgment))
         self.observed_seqs.append(seq)
         self.observed_feats.append(features)
@@ -248,8 +242,7 @@ class VBLearner(Learner):
         probs_before = self.hypotheses[0].probs.copy()
 
         _, results = self.hypotheses[0].update(
-                ordered_feats, ordered_judgments,
-                self.batch_observations,
+                ordered_feats, ordered_judgments, 
                 verbose=verbose, do_plot_wandb=do_plot_wandb, 
                 feats_to_update=feats_to_update)
         self.results_by_observations.append(results)
@@ -274,7 +267,7 @@ class VBLearner(Learner):
         if orig_probs is None:
             orig_probs = deepcopy(self.hypotheses[0].probs)
 
-        kl = get_kl(featurized_seq, self.hypotheses[0].probs, self.observed_feats, self.observed_judgments, self.observed_feats_unique, self.hypotheses[0].converge_type, self.hypotheses[0].LOG_LOG_ALPHA_RATIO, self.hypotheses[0].tolerance, self.batch_observations, label=label)
+        kl = get_kl(featurized_seq, self.hypotheses[0].probs, self.observed_feats, self.observed_judgments, self.observed_feats_unique, self.hypotheses[0].converge_type, self.hypotheses[0].LOG_LOG_ALPHA_RATIO, self.hypotheses[0].tolerance, label=label)
         
         # TODOnow: delete these eventually for efficiency
         all_equal = (orig_probs == self.hypotheses[0].probs)
@@ -287,7 +280,7 @@ class VBLearner(Learner):
         if orig_probs is None:
             orig_probs = deepcopy(self.hypotheses[0].probs)
 
-        ig = get_info_gain(features, self.hypotheses[0].probs, self.observed_feats, self.observed_judgments, self.observed_feats_unique, self.hypotheses[0].converge_type, self.hypotheses[0].LOG_LOG_ALPHA_RATIO, self.hypotheses[0].tolerance, self.batch_observations, label=label)
+        ig = get_info_gain(features, self.hypotheses[0].probs, self.observed_feats, self.observed_judgments, self.observed_feats_unique, self.hypotheses[0].converge_type, self.hypotheses[0].LOG_LOG_ALPHA_RATIO, self.hypotheses[0].tolerance, label=label)
 
         # TODOnow: delete these eventually for efficiency
         all_equal = (orig_probs == self.hypotheses[0].probs)
@@ -329,7 +322,7 @@ class VBLearner(Learner):
         eig = self.get_expected_metric(seq, delta_positive, delta_negative) 
         return eig
 
-    def get_ekl(self, seq, kl_neg=None, kl_pos=None, features=None):
+    def get_ekl(self, seq, delta_positive=None, delta_negative=None):
         # TODOnow: delete these eventually for efficiency
         orig_probs = deepcopy(self.hypotheses[0].probs)
         
@@ -411,7 +404,7 @@ class VBLearner(Learner):
             else:
                 probs = hyp.probs
 
-            inputs = [(hyp._featurize(seq).nonzero()[0], probs, self.observed_feats, self.observed_judgments, self.observed_feats_unique, hyp.converge_type, hyp.LOG_LOG_ALPHA_RATIO, hyp.tolerance, self.batch_observations) for seq in candidates]
+            inputs = [(hyp._featurize(seq).nonzero()[0], probs, self.observed_feats, self.observed_judgments, self.observed_feats_unique, hyp.converge_type, hyp.LOG_LOG_ALPHA_RATIO, hyp.tolerance) for seq in candidates]
 
             pos_func = get_ig_pos if metric == "eig" else get_kl_pos
             neg_func = get_ig_neg if metric == "eig" else get_kl_neg
@@ -441,7 +434,7 @@ class VBLearner(Learner):
             else:
                 probs = hyp.probs
 
-            inputs = [(hyp._featurize(seq).nonzero()[0], probs, self.observed_feats, self.observed_judgments, self.observed_feats_unique, hyp.converge_type, hyp.LOG_LOG_ALPHA_RATIO, hyp.tolerance, self.batch_observations) for seq in candidates]
+            inputs = [(hyp._featurize(seq).nonzero()[0], probs, self.observed_feats, self.observed_judgments, self.observed_feats_unique, hyp.converge_type, hyp.LOG_LOG_ALPHA_RATIO, hyp.tolerance) for seq in candidates]
 
             func = get_ig_pos if metric == "eig" else get_kl_pos 
 
