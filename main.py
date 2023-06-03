@@ -348,7 +348,7 @@ def main(args):
                     if i < N_INIT:
                         candidate = init_examples[i]
 
-                    candidate = learner.propose(n_candidates=100, forbidden_data = forbidden_data_that_cannot_be_queried_about, length_norm=True, verbose=args.verbose)
+                    candidate = learner.propose(n_candidates=args.num_candidates, forbidden_data = forbidden_data_that_cannot_be_queried_about, length_norm=True, verbose=args.verbose)
                     
                     end_time = time.time()
                     propose_duration = (end_time-start_time)/60
@@ -482,7 +482,7 @@ def main(args):
                     probs_before = learner.hypotheses[0].probs.copy()
                     eig = learner.get_eig(candidate).item()
 
-                    expected_kl = learner.get_kl(candidate).item()
+                    expected_kl = learner.get_ekl(candidate).item()
 
                     # TODO: set length_norm to be a variable/parameter, but currently it is True in call to propose() below
                     entropy_of_candidate = learner.hypotheses[0].entropy(candidate, length_norm=True, features=featurized_candidate)
@@ -693,6 +693,8 @@ if __name__ == "__main__":
     parser.set_defaults(shuffle_train=True)
 
     parser.add_argument('--profile_name', default='my_profile')
+
+    parser.add_argument('--num_candidates', default=100)
 
     strategies = [
             "kl_train_model",

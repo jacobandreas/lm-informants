@@ -322,7 +322,7 @@ class VBLearner(Learner):
         eig = self.get_expected_metric(seq, delta_positive, delta_negative) 
         return eig
 
-    def get_ekl(self, seq, delta_positive=None, delta_negative=None):
+    def get_ekl(self, seq, kl_pos=None, kl_neg=None, features=None):
         # TODOnow: delete these eventually for efficiency
         orig_probs = deepcopy(self.hypotheses[0].probs)
         
