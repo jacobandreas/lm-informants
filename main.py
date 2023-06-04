@@ -260,7 +260,7 @@ def main(args):
             for strategy in args.strategies: 
                 print("STRATEGY:", strategy)
                 if args.do_plot_wandb:
-                    config = {"n_init": N_INIT, "run": run, "strategy": strategy, "log_log_alpha_ratio": args.log_log_alpha_ratio, "prior_prob": args.prior_prob, "feature_type": args.feature_type, "converge_type": args.converge_type, "tolerance": args.tolerance, "n_init": N_INIT, "lexicon_file": args.lexicon_file, "warm_start": args.warm_start}
+                    config = {"n_init": N_INIT, "run": run, "strategy": strategy, "log_log_alpha_ratio": args.log_log_alpha_ratio, "prior_prob": args.prior_prob, "feature_type": args.feature_type, "converge_type": args.converge_type, "tolerance": args.tolerance, "n_init": N_INIT, "lexicon_file": args.lexicon_file, "warm_start": args.warm_start, "num_candidates": args.num_candidates}
                     tags = [] if args.tags is None else [t.strip() for t in args.tags.split(",")]
                     wandb_run = wandb.init(config=config, project=args.wandb_project, name=strategy, reinit=True, tags = tags, entity="lm-informants") 
                 #if strategy == "train":
@@ -694,7 +694,7 @@ if __name__ == "__main__":
 
     parser.add_argument('--profile_name', default='my_profile')
 
-    parser.add_argument('--num_candidates', default=100)
+    parser.add_argument('--num_candidates', default=100, type=int)
 
     strategies = [
             "kl_train_model",
