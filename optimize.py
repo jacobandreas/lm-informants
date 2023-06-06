@@ -2,7 +2,7 @@ import numpy as np
 from util import kl_bern, entropy
 
 # TODO: in order to run with warm start, need to call with orig_probs = prior 
-@profile
+#@profile
 def update(ordered_feats, ordered_judgments,
         converge_type, orig_probs,
         verbose=False,
@@ -136,7 +136,7 @@ def update(ordered_feats, ordered_judgments,
 
     return new_probs, results
     
-@profile
+#@profile
 def update_one_step(probs,
         ordered_feats, ordered_judgments, 
         feats_to_update, 
@@ -204,7 +204,7 @@ def update_one_step(probs,
 ##########################################################
     
 # Helper function to get the information gain from observing seq with label (call in get_eig and computing eig for an unobserved train example)
-@profile
+#@profile
 def get_info_gain(featurized_seq, orig_probs, observed_feats, observed_judgments, observed_feats_unique, converge_type, log_log_alpha_ratio, tolerance, label=True):
     # entropy over features before seeing
 
@@ -231,7 +231,7 @@ def get_kl_pos(c):
 def get_kl_neg(c):
     return get_kl(*c, label=False)
 
-@profile
+#@profile
 def get_kl(featurized_seq, orig_probs, observed_feats, observed_judgments, observed_feats_unique, converge_type, log_log_alpha_ratio, tolerance, label=True):
     
     feats_to_update = {*observed_feats_unique, *featurized_seq}
@@ -241,3 +241,9 @@ def get_kl(featurized_seq, orig_probs, observed_feats, observed_judgments, obser
     kl = kl_bern(p, orig_probs).sum()
 
     return kl
+
+def info_gain_helper(c):
+    return get_info_gain(*c[:-1], label=c[-1]) 
+
+def kl_helper(c):
+    return get_kl(*c[:-1], label=c[-1]) 

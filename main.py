@@ -203,7 +203,7 @@ def main(args):
         broad_test_set_t = read_in_blicks("WordsToBeScored.csv")
         broad_test_set = []
         print("Reading test set...")
-        for item in tqdm(broad_test_set_t):
+        for item in tqdm(broad_test_set_t[0:50]):
             phonemes = [BOUNDARY] + item + [BOUNDARY]
             # print(phonemes,"is phonemes")
             encoded_word = dataset.vocab.encode(phonemes)  # expects a list of arpabet chars

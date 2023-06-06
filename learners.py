@@ -166,6 +166,8 @@ class VBLearner(Learner):
         self.gain_list_from_train = []
         self.gain_list_from_alterative = []
         self.strategy_for_this_candidate = None
+
+        self.pool = multiprocessing.Pool(processes=multiprocessing.cpu_count())
         
     def initialize_hyp(self, log_log_alpha_ratio=1, prior_prob=0.5, converge_type="symmetric", feature_type="atr_harmony", tolerance=0.001, warm_start=False, features=None):
         return scorers.MeanFieldScorer(
@@ -392,7 +394,7 @@ class VBLearner(Learner):
                 feats.append((hyp.probs[i].item(), parts))
         return sorted(feats)
 
-    @profile
+#    @profile
     def get_scores(self, metric, candidates, length_norm):
         if metric == "entropy":
             # TODO: implement multiprocessing; nontrivial bc requires non-local function
@@ -406,12 +408,28 @@ class VBLearner(Learner):
 
             inputs = [(hyp._featurize(seq).nonzero()[0], probs, self.observed_feats, self.observed_judgments, self.observed_feats_unique, hyp.converge_type, hyp.LOG_LOG_ALPHA_RATIO, hyp.tolerance) for seq in candidates]
 
+            inputs_labels = [(*i, True) for i in inputs] + [(*i, False) for i in inputs]
+
             pos_func = get_ig_pos if metric == "eig" else get_kl_pos
             neg_func = get_ig_neg if metric == "eig" else get_kl_neg
+#            func = get_func(pos_func, neg_func)
+#            func = get_func(pos_func, neg_func)
 
-            with multiprocessing.Pool(processes=48) as pool:
-                pos_scores = pool.map(pos_func, inputs)
-                neg_scores = pool.map(neg_func, inputs)
+#            func = get_info_gain if metric == 'eig' else get_kl
+#            with multiprocessing.Pool(processes=48) as pool:
+#                pos_scores = pool.map(pos_func, inputs)
+#                neg_scores = pool.map(neg_func, inputs)
+#            pos_and_neg_scores = self.pool.map(func, inputs)
+#            pos_scores = self.pool.map(pos_func, inputs)
+#            neg_scores = self.pool.map(neg_func, inputs)
+
+            func = info_gain_helper if metric == 'eig' else kl_helper 
+            pos_and_neg_scores = self.pool.map(func, inputs_labels)
+            pos_scores = pos_and_neg_scores[:len(inputs)]
+            neg_scores = pos_and_neg_scores[len(inputs):]
+            assert len(pos_scores) == len(neg_scores)
+
+#            scores = [self.get_expected_metric(seq, pos, neg, features=inp[0]) for (inp, seq, (pos, neg)) in zip(inputs, candidates, pos_and_neg_scores)]
 
             scores = [self.get_expected_metric(seq, pos, neg, features=inp[0]) for (inp, seq, pos, neg) in zip(inputs, candidates, pos_scores, neg_scores)]
             return scores
@@ -438,19 +456,19 @@ class VBLearner(Learner):
 
             func = get_ig_pos if metric == "eig" else get_kl_pos 
 
-            with multiprocessing.Pool(processes=48) as pool:
-                metrics = pool.map(func, inputs)
+#            with multiprocessing.Pool(processes=48) as pool:
+            metrics = self.pool.map(func, inputs)
         else:
             raise ValueError
         p_trains = np.array([np.exp(self.hypotheses[0].logprob(seq, True)) for seq in candidates])
-        print('p trains before normalizing: ', p_trains)
+#        print('p trains before normalizing: ', p_trains)
         p_trains /= p_trains.sum()
         assert np.isclose(p_trains.sum(), 1.0)
 
-        print('p trains: ', p_trains)
+#        print('p trains: ', p_trains)
         expectation = (p_trains * metrics).sum()
-        print(metric, metrics)
-        print('expected metric: ', expectation)
+#        print(metric, metrics)
+#        print('expected metric: ', expectation)
         return expectation 
 
     def get_train_candidate(self, n_candidates, obs_set):
@@ -483,6 +501,10 @@ class VBLearner(Learner):
         #print("candidates: ", candidates)
         #import ipdb; ipdb.set_trace()
         print(f"# candidates: {len(candidates)}")
+#        print(candidates)
+#        num_features = [len(self.hypotheses[0]._featurize(seq).nonzero()[0]) for seq in candidates]
+#        print('# features: ', num_features)
+#        print('mean # features: ', np.mean(num_features))
         if self.strategy_name == "unif" or self.propose_train > 0:
             scores = [0 for c in candidates]
         elif self.strategy_name in ["entropy", "eig", "kl", "entropy_pred"]:
