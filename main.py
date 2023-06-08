@@ -373,12 +373,16 @@ def main(args):
                     total_features_2 = []
                     features2 = mean_field_scorer._featurize(candidate).nonzero()[0]
 
-                    # UNCOMMENT UNTIL ASSERT FALSE TO FIND OUT HOW MANY FEATURES THERE ARE IN THE DATA!!
+                    ## UNCOMMENT UNTIL ASSERT FALSE TO FIND OUT HOW MANY FEATURES THERE ARE IN THE DATA!!
                     # a = open("all_feats_in_data_english.csv","w")
+                    # q = open("words_with_feats_english.csv","w")
+                    # q.write("NumFeatures,Word,LenWord\n")
+                    #
                     # p = []
-                    # s = open("all_words_english.csv","r",encoding="utf8").read().strip().split('\n')
+                    # s = open("english_lexicon.txt","r",encoding="utf8").read().strip().split('\n')
                     # for cand in tqdm(s):
                     #     #if cand != "":
+                    #     num_features_in_this_candidate = 0
                     #     phonemes = [BOUNDARY] + cand.split(" ") + [BOUNDARY]
                     #     # print(phonemes,"is phonemes")
                     #     encoded_word = dataset.vocab.encode(phonemes)
@@ -389,13 +393,18 @@ def main(args):
                     #             # features[mean_field_scorer.ngram_features[ff]] += 1
                     #             parts = " :: ".join(mean_field_scorer.feature_vocab.get_rev(f) for f in ff)
                     #             p.append(parts)
+                    #             num_features_in_this_candidate += 1
                     #                 #
-                    #                 #print("adding",parts)
+                    #             #print("adding",parts)
+                    #             #print("len parts is", len(parts))
+                    #             #print("len cand is", len(encoded_word))
+                    #     q.write(str(num_features_in_this_candidate)+","+str(cand)+","+str(len(encoded_word))+'\n')
+                    # q.flush()
                     #
-                    # for q in list(set(p)):
-                    #     a.write(q+"\n")
-                    #
-                    # assert False
+                    # for s in list(set(p)):
+                    #     a.write(s+"\n")
+
+                    assert False
                     #print("feat specific locally",features2)
                     #features = np.zeros(len(mean_field_scorer.ngram_features))
                     for z in range(len(candidate) - mean_field_scorer.ORDER + 1):
