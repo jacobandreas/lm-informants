@@ -404,7 +404,7 @@ def main(args):
                     # for s in list(set(p)):
                     #     a.write(s+"\n")
 
-                    assert False
+                    #assert False
                     #print("feat specific locally",features2)
                     #features = np.zeros(len(mean_field_scorer.ngram_features))
                     for z in range(len(candidate) - mean_field_scorer.ORDER + 1):
