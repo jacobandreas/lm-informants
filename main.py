@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import datasets
+from scipy import stats
 import wandb
 from sklearn import metrics
 import os
@@ -48,7 +49,11 @@ def eval_corrs(costs, labels, sources): # nb, sources comes in via TIs, and labe
     # Select rows with source 5
     df2 = data.loc[data['sources'] == 5]
 
-    group_corr = df1.groupby('sources').apply(lambda x: np.corrcoef(-x['costs'], x['labels'])[0, 1]).reset_index(        name='spearman_corr')
+#    group_corr = df1.groupby('sources').apply(lambda x: np.corrcoef(-x['costs'], x['labels'])[0, 1]).reset_index(        name='spearman_corr')
+    group_corr = df1.groupby('sources').apply(lambda x: stats.spearmanr(-x['costs'], x['labels'])[0]).reset_index(name='spearman_corr')
+    print("CORR:")
+    print(group_corr)
+
     # Extract 'costs' and 'labels' columns from df2 as lists
     costs = df2['costs'].tolist()
     labels = df2['labels'].tolist()
@@ -203,7 +208,7 @@ def main(args):
         broad_test_set_t = read_in_blicks("WordsToBeScored.csv")
         broad_test_set = []
         print("Reading test set...")
-        for item in tqdm(broad_test_set_t[0:50]):
+        for item in tqdm(broad_test_set_t):
             phonemes = [BOUNDARY] + item + [BOUNDARY]
             # print(phonemes,"is phonemes")
             encoded_word = dataset.vocab.encode(phonemes)  # expects a list of arpabet chars
@@ -480,9 +485,11 @@ def main(args):
                     else:
                         entropy_before_unique = None
                     probs_before = learner.hypotheses[0].probs.copy()
-                    eig = learner.get_eig(candidate).item()
+#                    eig = learner.get_eig(candidate).item()
+                    eig = None
 
-                    expected_kl = learner.get_ekl(candidate).item()
+                    expected_kl = None 
+#                    expected_kl = learner.get_ekl(candidate).item()
 
                     # TODO: set length_norm to be a variable/parameter, but currently it is True in call to propose() below
                     entropy_of_candidate = learner.hypotheses[0].entropy(candidate, length_norm=True, features=featurized_candidate)
