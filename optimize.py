@@ -210,11 +210,13 @@ def get_info_gain(featurized_seq, orig_probs, observed_feats, observed_judgments
 
     entropy_over_features_before_observing_item = -1 * ((orig_probs * np.log(orig_probs) + (1 - orig_probs) * np.log(1 - orig_probs))).sum()
     assert entropy_over_features_before_observing_item > 0, f"Entropy should be positive. Entropy={entropy_over_features_before_observing_item_positive}. Probs={p.round(decimals=3)}"
+#    print("entropy over features before observing item: ", entropy_over_features_before_observing_item)
 
     feats_to_update = {*observed_feats_unique, *featurized_seq}
 
-    p, results = update(observed_feats+[featurized_seq], observed_judgments+[label], converge_type, orig_probs, feats_to_update=feats_to_update, verbose=False)
+    p, results = update(observed_feats+[featurized_seq], observed_judgments+[label], converge_type, orig_probs, feats_to_update=feats_to_update, verbose=False, log_log_alpha_ratio=log_log_alpha_ratio,)
     entropy_over_features_after_observing_item = -1 * ((p * np.log(p) + (1 - p) * np.log(1 - p))).sum()
+#    print("entropy over features after observing item: ", entropy_over_features_after_observing_item)
     assert entropy_over_features_after_observing_item > 0, f"Entropy should be positive. Entropy={entropy_over_features_after_observing_item_positive}. Probs={p.round(decimals=3)}"
         
     return entropy_over_features_before_observing_item - entropy_over_features_after_observing_item
@@ -236,7 +238,7 @@ def get_kl(featurized_seq, orig_probs, observed_feats, observed_judgments, obser
     
     feats_to_update = {*observed_feats_unique, *featurized_seq}
 
-    p, results = update(observed_feats+[featurized_seq], observed_judgments+[label], converge_type, orig_probs, feats_to_update=feats_to_update, verbose=False)
+    p, results = update(observed_feats+[featurized_seq], observed_judgments+[label], converge_type, orig_probs, feats_to_update=feats_to_update, verbose=False, log_log_alpha_ratio=log_log_alpha_ratio)
 
     kl = kl_bern(p, orig_probs).sum()
 

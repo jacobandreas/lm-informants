@@ -462,10 +462,13 @@ class VBLearner(Learner):
             raise ValueError
         p_trains = np.array([np.exp(self.hypotheses[0].logprob(seq, True)) for seq in candidates])
 #        print('p trains before normalizing: ', p_trains)
+#        print('p trains before normalizing: ', p_trains)
         p_trains /= p_trains.sum()
+#        print('p trains: ', p_trains)
         assert np.isclose(p_trains.sum(), 1.0)
 
 #        print('p trains: ', p_trains)
+#        print(metric, metrics)
         expectation = (p_trains * metrics).sum()
 #        print(metric, metrics)
 #        print('expected metric: ', expectation)
