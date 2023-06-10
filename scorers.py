@@ -90,6 +90,7 @@ class MeanFieldScorer: # this is us
         self.prior = self.probs.copy()
 
 #    @profile
+    """
     def update_one_step(self, ordered_feats, ordered_judgments, feats_to_update, 
             batch_feats_by_feat, 
             batch_judgments_by_feat,
@@ -114,10 +115,10 @@ class MeanFieldScorer: # this is us
 
             # TODO: speed up this operation by vectorizing
             log_probs_all_off = np.array([np.log(1-self.probs[o]).sum() for o in other_feats])
-            """
+            ''' 
             probs_off = 1 - self.probs
             log_probs_all_off = np.ma.log(other_feats * probs_off).sum(1)
-            """
+            '''
 
             update_vector = (judgments * np.exp(np.clip(log_probs_all_off + self.LOG_LOG_ALPHA_RATIO, -np.inf, clip_val)))
             update_sum = update_vector.sum()
@@ -127,7 +128,7 @@ class MeanFieldScorer: # this is us
                 np.log(this_prob) - np.log(1-this_prob) - update_sum
             )
             # for debugging
-            """
+            ''' 
             if verbose:
                 print(f"  Feat: {curr_feat}")
                 print(f"\t | feats (batch): {featurized_seqs}")
@@ -139,7 +140,7 @@ class MeanFieldScorer: # this is us
 #                print(f"\t | update_unclipped (batch): {update_unclipped.round(5)}")
 #                print(f"\t | update_check (batch): {update_check.round(5)}")
                 print(f"\t | update_sum (batch): {update_sum}")
-            """
+            ''' 
 
             # TODO: want a one-sided clip?
             log_score = np.clip(log_score, -clip_val, clip_val)
@@ -167,6 +168,7 @@ class MeanFieldScorer: # this is us
 
 
         return results 
+    """
 
 #    @profile
     def update(self, ordered_feats, ordered_judgments, 
