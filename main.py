@@ -175,7 +175,8 @@ def main(args):
         filtered_features = None
 
     random = np.random.RandomState(0)
-    mean_field_scorer = scorers.MeanFieldScorer(dataset, feature_type=args.feature_type, features=filtered_features) 
+    mean_field_scorer = scorers.MeanFieldScorer(dataset, feature_type=args.feature_type, features=filtered_features)
+    print("len(probs):", (mean_field_scorer.probs).shape)
     if get_prior_prob_of_test_set:
         prior_probs_writer = get_csv_writer("prior_probabilities_of_test_set_items.csv", args.exp_dir)
         prior_probs_writer.writerow(["Word", "ProbAcceptable"])
@@ -257,7 +258,7 @@ def main(args):
     for N_INIT in [0]:
         num_runs = args.num_runs 
 
-        for run in range(num_runs):
+        for run in range(args.start_run, args.start_run+num_runs):
             #for strategy in ["train","entropy","unif","max","std","diff"]: # ,"max","unif","interleave","diff","std"
 #            for strategy in ["", "eig", "unif","train"]: # only train, entropy, eig, and unif are well-defined here
 #            for strategy in ["entropy","entropy_pred","train","unif"]:#,"entropy_pred","train","eig","unif","entropy"]:#"entropy_pred", "entropy","train", "unif","eig",]: # only train, entropy, eig, and unif are well-defined here
@@ -703,6 +704,7 @@ if __name__ == "__main__":
     parser.add_argument('--profile_name', default='my_profile')
 
     parser.add_argument('--num_candidates', default=100, type=int)
+    parser.add_argument('--start_run', default=0, type=int, help='What run to start from')
 
     strategies = [
             "kl_train_model",
