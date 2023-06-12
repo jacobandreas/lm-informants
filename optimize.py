@@ -214,7 +214,7 @@ def get_info_gain(featurized_seq, orig_probs, observed_feats, observed_judgments
 
     feats_to_update = {*observed_feats_unique, *featurized_seq}
 
-    p, results = update(observed_feats+[featurized_seq], observed_judgments+[label], converge_type, orig_probs, feats_to_update=feats_to_update, verbose=False, log_log_alpha_ratio=log_log_alpha_ratio,)
+    p, results = update(observed_feats+[featurized_seq], observed_judgments+[label], converge_type, orig_probs, feats_to_update=feats_to_update, verbose=False, log_log_alpha_ratio=log_log_alpha_ratio, tolerance=tolerance)
     entropy_over_features_after_observing_item = -1 * ((p * np.log(p) + (1 - p) * np.log(1 - p))).sum()
 #    print("entropy over features after observing item: ", entropy_over_features_after_observing_item)
     assert entropy_over_features_after_observing_item > 0, f"Entropy should be positive. Entropy={entropy_over_features_after_observing_item_positive}. Probs={p.round(decimals=3)}"
@@ -238,7 +238,7 @@ def get_kl(featurized_seq, orig_probs, observed_feats, observed_judgments, obser
     
     feats_to_update = {*observed_feats_unique, *featurized_seq}
 
-    p, results = update(observed_feats+[featurized_seq], observed_judgments+[label], converge_type, orig_probs, feats_to_update=feats_to_update, verbose=False, log_log_alpha_ratio=log_log_alpha_ratio)
+    p, results = update(observed_feats+[featurized_seq], observed_judgments+[label], converge_type, orig_probs, feats_to_update=feats_to_update, verbose=False, log_log_alpha_ratio=log_log_alpha_ratio, tolerance=tolerance)
 
     kl = kl_bern(p, orig_probs).sum()
 
