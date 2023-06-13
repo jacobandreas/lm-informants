@@ -165,7 +165,7 @@ def main(args):
     else:
         lexicon_file_name = args.lexicon_file
         assert os.path.exists(lexicon_file_name) 
-    dataset = datasets.load_lexicon(lexicon_file_name)
+    dataset = datasets.load_lexicon(lexicon_file_name, min_length=args.min_length, max_length=args.max_length)
 
     if args.feature_type == "english":
         filtered_features = pd.read_csv('all_feats_in_data_english.csv', header=None)[0].values
@@ -705,6 +705,9 @@ if __name__ == "__main__":
 
     parser.add_argument('--num_candidates', default=100, type=int)
     parser.add_argument('--start_run', default=0, type=int, help='What run to start from')
+    
+    parser.add_argument('--min_length', default=2, type=int, help='min length for sampling random sequences')
+    parser.add_argument('--max_length', default=5, type=int, help='max length for sampling random sequences')
 
     strategies = [
             "kl_train_model",

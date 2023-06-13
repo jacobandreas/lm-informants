@@ -49,9 +49,11 @@ class Dataset:
     vocab: Vocab
     onset: bool = False
     random: np.random.RandomState = np.random.RandomState(0)
+    min_length: int = 2 
+    max_length: int = 5
 
     def random_seq(self):
-        length = self.random.randint(2, 5)
+        length = self.random.randint(self.min_length, self.max_length)
         #length = 2
         seq = []
         for i in range(length):
@@ -77,7 +79,7 @@ class Dataset:
         return self.data[self.random.randint(len(self.data))]
 
 
-def load_cmu():
+def load_cmu(min_length, max_length):
     vocab = Vocab()
     data = []
     with open("data/hw/words.txt") as reader:
@@ -91,9 +93,9 @@ def load_cmu():
             #    continue
 
             data.append(vocab.encode(phonemes, add=True))
-    return Dataset(data, vocab)
+    return Dataset(data, vocab, min_length=min_length, max_length=max_length)
 
-def load_lexicon(file_name):
+def load_lexicon(file_name, min_length, max_length):
     vocab = Vocab()
     data = []
     with open(file_name) as reader:
@@ -107,25 +109,26 @@ def load_lexicon(file_name):
             #    continue
 
             data.append(vocab.encode(phonemes, add=True))
-    return Dataset(data, vocab)
+    print(f"Loading lexicon with min_length={min_length}, max_length={max_length}...")
+    return Dataset(data, vocab, min_length=min_length, max_length=max_length)
 
 
 
-def load_cmu_onsets():
+def load_cmu_onsets(min_length, max_length):
     vocab = Vocab()
     data = []
     with open("data/hw/words.txt") as reader:
         for line in reader:
             phonemes = [BOUNDARY] + line.strip().split()[:2]
             data.append(vocab.encode(phonemes, add=True))
-    return Dataset(data, vocab, onset=True)
+    return Dataset(data, vocab, onset=True, min_length=min_length, max_length=max_length)
 
 
-def load_dummy():
+def load_dummy(min_length, max_length):
     vocab = load_cmu().vocab
     data = [
         vocab.encode([BOUNDARY, "P"]),
         vocab.encode([BOUNDARY, "T"]),
         vocab.encode([BOUNDARY, "B"]),
     ]
-    return Dataset(data, vocab, onset=True)
+    return Dataset(data, vocab, onset=True, min_length=min_length, max_length=max_length)
