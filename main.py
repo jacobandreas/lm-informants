@@ -506,6 +506,7 @@ def main(args):
                                 "expected_kl_of_candidate": expected_kl, 
                                 "pred_prob_pos": pred_prob_pos, 
                                 "strategy_used": chosen_strategy,
+                                "strategy_used_is_train": (chosen_strategy == 'train'),
                                 "pred_prob_pos": pred_prob_pos, 
                                 "entropy_over_unique_features": entropy_before_unique, 
                                 "entropy_of_candidate": entropy_of_candidate, 
