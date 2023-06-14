@@ -173,7 +173,8 @@ class MeanFieldScorer: # this is us
 #    @profile
     def update(self, ordered_feats, ordered_judgments, 
             verbose=False, do_plot_wandb=False, 
-            feats_to_update=None):
+            feats_to_update=None,
+            max_updates=None):
 
         if self.warm_start:
             # don't need to copy because probs copied in update()
@@ -195,6 +196,7 @@ class MeanFieldScorer: # this is us
                                 tolerance=self.tolerance,
                                 log_log_alpha_ratio=self.LOG_LOG_ALPHA_RATIO,
                                 feats_to_update=feats_to_update,
+                                max_updates=max_updates,
                             )
         num_updates = len(results)
         step = len(ordered_feats)-1

@@ -89,10 +89,13 @@ class Learner:
             tolerance=0.001,
             warm_start=False,
             features=None,
+            max_updates_propose=None,
+            max_updates_observe=None,
             ):
         self.hypotheses = [
             self.initialize_hyp(
-                log_log_alpha_ratio=log_log_alpha_ratio, prior_prob=prior_prob, converge_type=converge_type, 
+                log_log_alpha_ratio=log_log_alpha_ratio, 
+                prior_prob=prior_prob, converge_type=converge_type, 
                 feature_type=feature_type, tolerance=tolerance,
                 warm_start=warm_start, features=features,
                 ) for _ in range(n_hyps)
@@ -102,6 +105,8 @@ class Learner:
         self.observed_feats = []
         self.observed_judgments = []
         self.observed_feats_unique = set()
+        self.max_updates_propose = max_updates_propose
+        self.max_updates_observe = max_updates_observe
 
         if self.strategy_name in [
                 "eig_train_mixed", 
@@ -246,7 +251,8 @@ class VBLearner(Learner):
         _, results = self.hypotheses[0].update(
                 ordered_feats, ordered_judgments, 
                 verbose=verbose, do_plot_wandb=do_plot_wandb, 
-                feats_to_update=feats_to_update)
+                feats_to_update=feats_to_update,
+                max_updates=self.max_updates_observe)
         self.results_by_observations.append(results)
 
         entropy_before = entropy(probs_before)
@@ -406,7 +412,7 @@ class VBLearner(Learner):
             else:
                 probs = hyp.probs
 
-            inputs = [(hyp._featurize(seq).nonzero()[0], probs, self.observed_feats, self.observed_judgments, self.observed_feats_unique, hyp.converge_type, hyp.LOG_LOG_ALPHA_RATIO, hyp.tolerance) for seq in candidates]
+            inputs = [(hyp._featurize(seq).nonzero()[0], probs, self.observed_feats, self.observed_judgments, self.observed_feats_unique, hyp.converge_type, hyp.LOG_LOG_ALPHA_RATIO, hyp.tolerance, self.max_updates_propose) for seq in candidates]
 
             inputs_labels = [(*i, True) for i in inputs] + [(*i, False) for i in inputs]
 
@@ -452,7 +458,7 @@ class VBLearner(Learner):
             else:
                 probs = hyp.probs
 
-            inputs = [(hyp._featurize(seq).nonzero()[0], probs, self.observed_feats, self.observed_judgments, self.observed_feats_unique, hyp.converge_type, hyp.LOG_LOG_ALPHA_RATIO, hyp.tolerance) for seq in candidates]
+            inputs = [(hyp._featurize(seq).nonzero()[0], probs, self.observed_feats, self.observed_judgments, self.observed_feats_unique, hyp.converge_type, hyp.LOG_LOG_ALPHA_RATIO, hyp.tolerance, self.max_updates_propose) for seq in candidates]
 
             func = get_ig_pos if metric == "eig" else get_kl_pos 
 

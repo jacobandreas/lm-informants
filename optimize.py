@@ -9,6 +9,7 @@ def update(ordered_feats, ordered_judgments,
         tolerance=0.001,
         log_log_alpha_ratio=45,
         feats_to_update=None,
+        max_updates=None,
         ):
     results = []
 
@@ -118,6 +119,9 @@ def update(ordered_feats, ordered_judgments,
         """
         
         num_updates += 1
+            
+        if num_updates == max_updates:
+            break
         
         if error <= best_error:
             best_error = error
@@ -205,7 +209,7 @@ def update_one_step(probs,
     
 # Helper function to get the information gain from observing seq with label (call in get_eig and computing eig for an unobserved train example)
 #@profile
-def get_info_gain(featurized_seq, orig_probs, observed_feats, observed_judgments, observed_feats_unique, converge_type, log_log_alpha_ratio, tolerance, label=True):
+def get_info_gain(featurized_seq, orig_probs, observed_feats, observed_judgments, observed_feats_unique, converge_type, log_log_alpha_ratio, tolerance, max_updates, label=True):
     # entropy over features before seeing
 
     entropy_over_features_before_observing_item = -1 * ((orig_probs * np.log(orig_probs) + (1 - orig_probs) * np.log(1 - orig_probs))).sum()
@@ -214,7 +218,7 @@ def get_info_gain(featurized_seq, orig_probs, observed_feats, observed_judgments
 
     feats_to_update = {*observed_feats_unique, *featurized_seq}
 
-    p, results = update(observed_feats+[featurized_seq], observed_judgments+[label], converge_type, orig_probs, feats_to_update=feats_to_update, verbose=False, log_log_alpha_ratio=log_log_alpha_ratio, tolerance=tolerance)
+    p, results = update(observed_feats+[featurized_seq], observed_judgments+[label], converge_type, orig_probs, feats_to_update=feats_to_update, verbose=False, log_log_alpha_ratio=log_log_alpha_ratio, tolerance=tolerance, max_updates=max_updates)
     entropy_over_features_after_observing_item = -1 * ((p * np.log(p) + (1 - p) * np.log(1 - p))).sum()
 #    print("entropy over features after observing item: ", entropy_over_features_after_observing_item)
     assert entropy_over_features_after_observing_item > 0, f"Entropy should be positive. Entropy={entropy_over_features_after_observing_item_positive}. Probs={p.round(decimals=3)}"
@@ -234,11 +238,11 @@ def get_kl_neg(c):
     return get_kl(*c, label=False)
 
 #@profile
-def get_kl(featurized_seq, orig_probs, observed_feats, observed_judgments, observed_feats_unique, converge_type, log_log_alpha_ratio, tolerance, label=True):
+def get_kl(featurized_seq, orig_probs, observed_feats, observed_judgments, observed_feats_unique, converge_type, log_log_alpha_ratio, tolerance, max_updates, label=True):
     
     feats_to_update = {*observed_feats_unique, *featurized_seq}
 
-    p, results = update(observed_feats+[featurized_seq], observed_judgments+[label], converge_type, orig_probs, feats_to_update=feats_to_update, verbose=False, log_log_alpha_ratio=log_log_alpha_ratio, tolerance=tolerance)
+    p, results = update(observed_feats+[featurized_seq], observed_judgments+[label], converge_type, orig_probs, feats_to_update=feats_to_update, verbose=False, log_log_alpha_ratio=log_log_alpha_ratio, tolerance=tolerance, max_updates=max_updates)
 
     kl = kl_bern(p, orig_probs).sum()
 

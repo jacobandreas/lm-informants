@@ -289,7 +289,7 @@ def main(args):
                     logs[strategy] = []
                 log = []
                 learner = learners.VBLearner(dataset, strategy=strategy, linear_train_dataset = linear_train_dataset, index_of_next_item = index_of_next_item) 
-                learner.initialize(n_hyps=1, log_log_alpha_ratio=args.log_log_alpha_ratio, prior_prob=args.prior_prob, converge_type=args.converge_type, feature_type=args.feature_type, tolerance=args.tolerance, warm_start=args.warm_start, features=filtered_features)
+                learner.initialize(n_hyps=1, log_log_alpha_ratio=args.log_log_alpha_ratio, prior_prob=args.prior_prob, converge_type=args.converge_type, feature_type=args.feature_type, tolerance=args.tolerance, warm_start=args.warm_start, features=filtered_features, max_updates_propose=args.max_updates_propose, max_updates_observe=args.max_updates_observe)
 
                 all_features = learner.all_features(return_indices=True)
                 unique_feature_indices = [f_idx for (_, f, f_idx) in all_features if f in unique_features]
@@ -506,7 +506,7 @@ def main(args):
                                 "expected_kl_of_candidate": expected_kl, 
                                 "pred_prob_pos": pred_prob_pos, 
                                 "strategy_used": chosen_strategy,
-                                "strategy_used_is_train": (chosen_strategy == 'train'),
+                                "strategy_used_is_train": int(chosen_strategy == 'train'),
                                 "pred_prob_pos": pred_prob_pos, 
                                 "entropy_over_unique_features": entropy_before_unique, 
                                 "entropy_of_candidate": entropy_of_candidate, 
@@ -709,6 +709,9 @@ if __name__ == "__main__":
     
     parser.add_argument('--min_length', default=2, type=int, help='min length for sampling random sequences')
     parser.add_argument('--max_length', default=5, type=int, help='max length for sampling random sequences')
+
+    parser.add_argument('--max_updates_propose', default=None, type=int, help='max # updates for proposal (only used for eig/ekl)')
+    parser.add_argument('--max_updates_observe', default=None, type=int, help='max # updates for observing')
 
     strategies = [
             "kl_train_model",
