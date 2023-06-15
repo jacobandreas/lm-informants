@@ -401,7 +401,7 @@ class VBLearner(Learner):
         return sorted(feats)
 
 #    @profile
-    def get_scores(self, metric, candidates, length_norm):
+    def get_scores(self, metric, candidates, length_norm, return_pos_scores=False):
         if metric == "entropy":
             # TODO: implement multiprocessing; nontrivial bc requires non-local function
             return [self.hypotheses[0].entropy(c, length_norm=length_norm) for c in candidates]
@@ -438,6 +438,10 @@ class VBLearner(Learner):
 #            scores = [self.get_expected_metric(seq, pos, neg, features=inp[0]) for (inp, seq, (pos, neg)) in zip(inputs, candidates, pos_and_neg_scores)]
 
             scores = [self.get_expected_metric(seq, pos, neg, features=inp[0]) for (inp, seq, pos, neg) in zip(inputs, candidates, pos_scores, neg_scores)]
+
+            # useful for saving the pos scores for train
+            if return_pos_scores:
+                return scores, pos_scores
             return scores
 
         elif metric == "entropy_pred": 
@@ -448,7 +452,8 @@ class VBLearner(Learner):
         return scores
 
     # expected metrics of a train candidate over randomly sampled sequences (candidates) 
-    def get_train_metric(self, metric, candidates):
+    # if metrics is not None, it is the result of get_ig_pos or get_kl_pos
+    def get_train_metric(self, metric, candidates, metrics=None):
         featurized_candidates = [self.hypotheses[0]._featurize(seq).nonzero()[0] for seq in candidates]
         # TODO: standardize kl/eig names (both are expectations, should be ekl?)
         if metric in ["eig", "kl"]:
@@ -458,12 +463,12 @@ class VBLearner(Learner):
             else:
                 probs = hyp.probs
 
-            inputs = [(hyp._featurize(seq).nonzero()[0], probs, self.observed_feats, self.observed_judgments, self.observed_feats_unique, hyp.converge_type, hyp.LOG_LOG_ALPHA_RATIO, hyp.tolerance, self.max_updates_propose) for seq in candidates]
+            # if metrics is supplied, don't recompute
+            if metrics is None:
+                inputs = [(hyp._featurize(seq).nonzero()[0], probs, self.observed_feats, self.observed_judgments, self.observed_feats_unique, hyp.converge_type, hyp.LOG_LOG_ALPHA_RATIO, hyp.tolerance, self.max_updates_propose) for seq in candidates]
 
-            func = get_ig_pos if metric == "eig" else get_kl_pos 
-
-#            with multiprocessing.Pool(processes=48) as pool:
-            metrics = self.pool.map(func, inputs)
+                func = get_ig_pos if metric == "eig" else get_kl_pos 
+                metrics = self.pool.map(func, inputs)
         else:
             raise ValueError
         p_trains = np.array([np.exp(self.hypotheses[0].logprob(seq, True)) for seq in candidates])
@@ -552,8 +557,9 @@ class VBLearner(Learner):
                     raise ValueError()
                 train_mean = np.mean(metrics_by_strategy["train"])
                 strategy_mean = np.mean(metrics_by_strategy[metric])
-            
-            scores = self.get_scores(metric, candidates, length_norm)
+           
+            # pos scores is metric from observing cand as True, save for use with train
+            scores, pos_scores = self.get_scores(metric, candidates, length_norm, return_pos_scores=True)
             scored_candidates = list(zip(candidates, scores))
             best_cand, expected_score = max(scored_candidates, key=lambda p: p[1])
             
@@ -561,7 +567,7 @@ class VBLearner(Learner):
             if train_is_history:
                 train_score = train_mean
             else:
-                train_score = self.get_train_metric(metric, candidates)
+                train_score = self.get_train_metric(metric, candidates, metrics=pos_scores)
 
             if strategy_is_history:
                 strategy_score = strategy_mean
