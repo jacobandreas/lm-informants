@@ -68,7 +68,7 @@ def get_broad_annotations(feature_type):
         df = pd.read_csv("broad_test_set_annotated.csv")
         return dict(zip(df.Word, df.IsLicit)), dict(zip(df.Word, df.IsTI))
     elif feature_type == "english":
-        df = pd.read_csv("WordsAndScores.csv")
+        df = pd.read_csv("WordsAndScoresFixed.csv")
         return dict(zip(df.Word, df.Score)), dict(zip(df.Word, df.Source))
     else:
         raise NotImplementedError("please select a valid feature type!")
@@ -206,16 +206,24 @@ def main(args):
         #_t = read_in_blicks("TI_test.csv")
         narrow_test_set = []
 
-        broad_test_set_t = read_in_blicks("WordsToBeScored.csv")
+#        broad_test_set_t = read_in_blicks("WordsToBeScored.csv")
+        broad_test_set_t = pd.read_csv('WordsAndScoresFixed.csv')
+        items = [i.strip().split(' ') for i in broad_test_set_t['Word'].values]
+        sources = broad_test_set_t['Source'].values
         broad_test_set = []
         print("Reading test set...")
-        for item in tqdm(broad_test_set_t):
-            phonemes = [BOUNDARY] + item + [BOUNDARY]
+        for item, source in tqdm(zip(items, sources), total=len(items)):
+            if str(source).strip() == '1':
+                phonemes = [BOUNDARY] + item
+            else:
+                phonemes = [BOUNDARY] + item + [BOUNDARY]
             # print(phonemes,"is phonemes")
             encoded_word = dataset.vocab.encode(phonemes)  # expects a list of arpabet chars
             featurized = mean_field_scorer._featurize(encoded_word).nonzero()
             broad_test_set.append((item, encoded_word, featurized))
         print("# test: ", len(broad_test_set))
+        print("breakdown by test type: ")
+        print(broad_test_set_t['Source'].value_counts())
 
         broad_licit_annotations, broad_TI_annotations = get_broad_annotations(args.feature_type)
     elif eval_humans:
@@ -439,6 +447,7 @@ def main(args):
 
                         items, labels, TIs, costs = [], [], [], []
                         for item_idx, (item, encoded_word, featurized) in tqdm(enumerate(broad_test_set)):
+                            print(item, encoded_word)
                             c = learner.cost(encoded_word, features=featurized)
                             costs.append(c)
                             #j = informant.cost(encoded_word)

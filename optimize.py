@@ -44,6 +44,8 @@ def update(ordered_feats, ordered_judgments,
     batch_feats_by_feat = [None] * len(feats_to_update)
     batch_other_feats_by_feat = [None] * len(feats_to_update)
     batch_judgments_by_feat = [None] * len(feats_to_update)
+
+    ordered_feats = [set(feats) for feats in ordered_feats]
    
     for idx, curr_feat in enumerate(feats_to_update):
 #            temp_feats = []

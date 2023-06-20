@@ -15,6 +15,6 @@ STRATEGIES=eig_train_model
 PRIOR=0.004595
 for LLA in 0.970219 
 do
-	python main.py --exp_dir ${EXP_DIR}/warm/batch_prior=${PRIOR}-log_ratio=${LLA} --log_log_alpha_ratio ${LLA} --prior_prob ${PRIOR} --wandb_project $WANDB_PROJECT --num_steps $NUM_STEPS --num_runs 1 --feature_type "english" --eval_humans --strategies $STRATEGIES --feature_type english --num_candidates $NUM_CANDS --tags $TAG,no_recompute_train --tolerance $TOLERANCE --max_updates_propose 1 --max_updates_observe 1
+	python main.py --exp_dir ${EXP_DIR}/warm/batch_prior=${PRIOR}-log_ratio=${LLA} --log_log_alpha_ratio ${LLA} --prior_prob ${PRIOR} --wandb_project $WANDB_PROJECT --num_steps $NUM_STEPS --num_runs 1 --feature_type "english" --eval_humans --strategies $STRATEGIES --feature_type english --num_candidates $NUM_CANDS --tags $TAG,no_recompute_train,set_feats --tolerance $TOLERANCE --max_updates_propose 1 --max_updates_observe 1
 	#--verbose 
 done

@@ -1,9 +1,8 @@
-NUM_STEPS=50
-STRATEGIES='eig train kl eig_train_model kl_train_model'
-# STUB='test'
-# python main.py --feature_type atr_harmony --num_steps ${NUM_STEPS} --num_runs 1 --strategies ${STRATEGIES} --profile_name ${STUB}_${STRATEGIES}_${NUM_STEPS} && python view_profiler.py --name ${STUB}_${STRATEGIES}_${NUM_STEPS}
+NUM_STEPS=10
+STRATEGIES='eig_train_model'
 
-STUB='english_0522'
-kernprof -l main.py --feature_type english --num_steps ${NUM_STEPS} --num_runs 1 --strategies ${STRATEGIES} --profile_name ${STUB}_${NUM_STEPS} --prior_prob 0.1 --wandb_project 0522_english --log_log_alpha_ratio 2 
-#python view_profiler.py --name ${STUB}_${STRATEGIES}_${NUM_STEPS} 
+PRIOR=0.004595
+LLA=0.970219 
 
+kernprof -l main.py --feature_type english --num_steps ${NUM_STEPS} --num_runs 1 --strategies ${STRATEGIES} --profile_name ${STUB}_${NUM_STEPS} --prior_prob $PRIOR --wandb_project TEST --log_log_alpha_ratio $LLA --max_updates_propose 1 --max_updates_observe 1 --num_candidates 50 
+python -m line_profiler main.py.lprof > out.txt

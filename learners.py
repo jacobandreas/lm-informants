@@ -516,9 +516,9 @@ class VBLearner(Learner):
         #import ipdb; ipdb.set_trace()
         print(f"# candidates: {len(candidates)}")
 #        print(candidates)
-        num_features = [len(self.hypotheses[0]._featurize(seq).nonzero()[0]) for seq in candidates]
-        print('# features: ', num_features)
-        print('mean # features: ', np.mean(num_features))
+#        num_features = [len(self.hypotheses[0]._featurize(seq).nonzero()[0]) for seq in candidates]
+#        print('# features: ', num_features)
+#        print('mean # features: ', np.mean(num_features))
         if self.strategy_name == "unif" or self.propose_train > 0:
             scores = [0 for c in candidates]
         elif self.strategy_name in ["entropy", "eig", "kl", "entropy_pred"]:
