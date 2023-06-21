@@ -69,6 +69,7 @@ def get_broad_annotations(feature_type):
         return dict(zip(df.Word, df.IsLicit)), dict(zip(df.Word, df.IsTI))
     elif feature_type == "english":
         df = pd.read_csv("WordsAndScoresFixed.csv")
+        df['Word'] = df.apply(lambda row: row['Word'].strip(), axis=1)
         return dict(zip(df.Word, df.Score)), dict(zip(df.Word, df.Source))
     else:
         raise NotImplementedError("please select a valid feature type!")
@@ -447,7 +448,6 @@ def main(args):
 
                         items, labels, TIs, costs = [], [], [], []
                         for item_idx, (item, encoded_word, featurized) in tqdm(enumerate(broad_test_set)):
-                            print(item, encoded_word)
                             c = learner.cost(encoded_word, features=featurized)
                             costs.append(c)
                             #j = informant.cost(encoded_word)
