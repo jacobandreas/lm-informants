@@ -275,7 +275,16 @@ def main(args):
             for strategy in args.strategies: 
                 print("STRATEGY:", strategy)
                 if args.do_plot_wandb:
-                    config = {"n_init": N_INIT, "run": run, "strategy": strategy, "log_log_alpha_ratio": args.log_log_alpha_ratio, "prior_prob": args.prior_prob, "feature_type": args.feature_type, "converge_type": args.converge_type, "tolerance": args.tolerance, "n_init": N_INIT, "lexicon_file": args.lexicon_file, "warm_start": args.warm_start, "num_candidates": args.num_candidates}
+                    config = {
+                            "n_init": N_INIT, "run": run, "strategy": strategy, 
+                            "log_log_alpha_ratio": args.log_log_alpha_ratio, 
+                            "prior_prob": args.prior_prob, "feature_type": args.feature_type, 
+                            "converge_type": args.converge_type, "tolerance": args.tolerance, 
+                            "n_init": N_INIT, "lexicon_file": args.lexicon_file, "warm_start": args.warm_start, 
+                            "num_candidates": args.num_candidates,
+                            "max_updates_observe": args.max_updates_observe,
+                            "max_updates_propose": args.max_updates_propose,
+                            }
                     tags = [] if args.tags is None else [t.strip() for t in args.tags.split(",")]
                     wandb_run = wandb.init(config=config, project=args.wandb_project, name=strategy, reinit=True, tags = tags, entity="lm-informants") 
                 #if strategy == "train":
