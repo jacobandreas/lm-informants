@@ -60,7 +60,7 @@ def eval_corrs(costs, labels, sources): # nb, sources comes in via TIs, and labe
     roc_auc = eval_auc(costs, labels)
     print(group_corr)
     print("roc_auc is", roc_auc)
-    return group_corr, roc_auc
+    return group_corr, roc_auc, df2
 
 
 def get_broad_annotations(feature_type):
@@ -540,13 +540,15 @@ def main(args):
                                 aucs.append(auc)
                                 
                             elif args.feature_type == "english":
-                                corrs_df, auc = eval_corrs(costs, labels, TIs)
+                                corrs_df, auc, costs_df = eval_corrs(costs, labels, TIs)
                                 log_results["auc"] = auc
                                 aucs.append(auc)
-
+                                c = wandb.Table(dataframe=costs_df)
+    
                                 table = wandb.Table(dataframe=corrs_df)
                             
                                 wandb.log({"corrs": table})
+                                wandb.log({"costs": c})
                                
                                 corrs_df = corrs_df.set_index('sources')['spearman_corr']
                                 log_results.update({f"human_correlation_{k}": v for k, v in corrs_df.to_dict().items()})
