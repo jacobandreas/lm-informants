@@ -52,7 +52,7 @@ def eval_corrs(costs, labels, sources): # nb, sources comes in via TIs, and labe
 #    group_corr = df1.groupby('sources').apply(lambda x: np.corrcoef(-x['costs'], x['labels'])[0, 1]).reset_index(        name='spearman_corr')
     group_corr = df1.groupby('sources').apply(lambda x: stats.spearmanr(-x['costs'], x['labels'])[0]).reset_index(name='spearman_corr')
     print("CORR:")
-    print(group_corr)
+    #print(group_corr)
 
     # Extract 'costs' and 'labels' columns from df2 as lists
     costs = df2['costs'].tolist()
@@ -60,6 +60,7 @@ def eval_corrs(costs, labels, sources): # nb, sources comes in via TIs, and labe
     roc_auc = eval_auc(costs, labels)
     print(group_corr)
     print("roc_auc is", roc_auc)
+    print("number of forms in auc test set is",len(df2))
     return group_corr, roc_auc, df2
 
 
