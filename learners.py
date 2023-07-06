@@ -200,11 +200,12 @@ class VBLearner(Learner):
 
     def observe(self, seq, judgment, update=True, do_plot_wandb=False, verbose=False, batch=True):
         assert len(self.hypotheses) == 1
-        assert update
+#        assert update
         featurized = self.hypotheses[0]._featurize(seq)
         features = featurized.nonzero()[0]
         self.observations.append((seq, features, judgment))
         self.observed_seqs.append(seq)
+#        self.observed_feats.append(set(features))
         self.observed_feats.append(features)
         self.observed_judgments.append(1 if judgment else -1)
         self.observed_feats_unique.update(features)
@@ -246,30 +247,31 @@ class VBLearner(Learner):
             """
 
         # TODO: redundant with some calculations in main.py; remove there?
-        probs_before = self.hypotheses[0].probs.copy()
 
-        _, results = self.hypotheses[0].update(
-                ordered_feats, ordered_judgments, 
-                verbose=verbose, do_plot_wandb=do_plot_wandb, 
-                feats_to_update=feats_to_update,
-                max_updates=self.max_updates_observe)
-        self.results_by_observations.append(results)
+        if update:
+            probs_before = self.hypotheses[0].probs.copy()
+            _, results = self.hypotheses[0].update(
+                    ordered_feats, ordered_judgments, 
+                    verbose=verbose, do_plot_wandb=do_plot_wandb, 
+                    feats_to_update=feats_to_update,
+                    max_updates=self.max_updates_observe)
+            self.results_by_observations.append(results)
 
-        entropy_before = entropy(probs_before)
-        entropy_after = entropy(self.hypotheses[0].probs)
-        entropy_diff = entropy_before - entropy_after
-        kl = kl_bern(self.hypotheses[0].probs.copy(), probs_before).sum()
+            entropy_before = entropy(probs_before)
+            entropy_after = entropy(self.hypotheses[0].probs)
+            entropy_diff = entropy_before - entropy_after
+            kl = kl_bern(self.hypotheses[0].probs.copy(), probs_before).sum()
       
-        # TODO: hacky; this assumes that observe() is always called after propose(), bc self.chosen_strategies is appended to when a candidate is proposed
-        chosen_strategy = self.chosen_strategies[-1]
-        if chosen_strategy in self.kls_by_strategy:
-            self.kls_by_strategy[chosen_strategy].append(kl)
-            self.entropy_diffs_by_strategy[chosen_strategy].append(entropy_diff)
-        else:
-            self.kls_by_strategy[chosen_strategy] = [kl]
-            self.entropy_diffs_by_strategy[chosen_strategy] = [entropy_diff]
+            # TODO: hacky; this assumes that observe() is always called after propose(), bc self.chosen_strategies is appended to when a candidate is proposed
+            chosen_strategy = self.chosen_strategies[-1]
+            if chosen_strategy in self.kls_by_strategy:
+                self.kls_by_strategy[chosen_strategy].append(kl)
+                self.entropy_diffs_by_strategy[chosen_strategy].append(entropy_diff)
+            else:
+                self.kls_by_strategy[chosen_strategy] = [kl]
+                self.entropy_diffs_by_strategy[chosen_strategy] = [entropy_diff]
 
-    # Helper function to get the kl from observing seq with label (call in get_ekl and computing ekl for an unobserved train example)
+        # Helper function to get the kl from observing seq with label (call in get_ekl and computing ekl for an unobserved train example)
     def get_kl(self, featurized_seq, label=True, orig_probs=None):
         # TODOnow: delete these eventually for efficiency
         if orig_probs is None:

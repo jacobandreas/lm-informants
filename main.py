@@ -225,6 +225,9 @@ def main(args):
         print("# test: ", len(broad_test_set))
         print("breakdown by test type: ")
         print(broad_test_set_t['Source'].value_counts())
+        print("first 5: ")
+        for _ in range(5):
+            print(broad_test_set[_])
 
         broad_licit_annotations, broad_TI_annotations = get_broad_annotations(args.feature_type)
     elif eval_humans:
@@ -264,7 +267,7 @@ def main(args):
 
     super_strategies = ["eig_train_model", "kl_train_model", "eig_train_history", "kl_train_history", "kl_train_mixed", "eig_train_mixed"]
 
-    for N_INIT in [0]:
+    for N_INIT in [args.num_init]:
         num_runs = args.num_runs 
 
         for run in range(args.start_run, args.start_run+num_runs):
@@ -371,6 +374,9 @@ def main(args):
                     #learner.cost()
                     if i < N_INIT:
                         candidate = init_examples[i]
+                        judgment = informant.judge(candidate)
+                        learner.observe(candidate, judgment, update=False)
+                        continue
 
                     candidate = learner.propose(n_candidates=args.num_candidates, forbidden_data = forbidden_data_that_cannot_be_queried_about, length_norm=True, verbose=args.verbose)
                     
@@ -475,13 +481,15 @@ def main(args):
 
 
                     #scores["external_wugs"] = corral_of_judged_human_forms
-                    scores["step"] = N_INIT + i
+#                    scores["step"] = N_INIT + i
+                    scores["step"] = i
                     scores["run"] = run
                     #print(t)
                     #assert False
                     log.append(scores)
                     print()
-                    print(f"strategy: {strategy}, run: {run}/{num_runs}, step: {N_INIT + i}")
+#                    print(f"strategy: {strategy}, run: {run}/{num_runs}, step: {N_INIT + i}")
+                    print(f"strategy: {strategy}, run: {run}/{num_runs}, step: {i}")
                     
                     #for feat, cost in learner.top_features():
                     #    print(feat, cost)
@@ -730,6 +738,8 @@ if __name__ == "__main__":
 
     parser.add_argument('--max_updates_propose', default=None, type=int, help='max # updates for proposal (only used for eig/ekl)')
     parser.add_argument('--max_updates_observe', default=None, type=int, help='max # updates for observing')
+    
+    parser.add_argument('--num_init', default=0, type=int) 
 
     strategies = [
             "kl_train_model",
