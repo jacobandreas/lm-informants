@@ -41,8 +41,8 @@ def eval_auc(costs, labels):
     roc_auc = metrics.auc(fpr, tpr)
     return roc_auc
 
-def eval_corrs(costs, labels, sources): # nb, sources comes in via TIs, and labels are human judgments. now, if soucres = 5, these are pulled off, and used for auc calculation
-    data = pd.DataFrame({'costs': costs, 'labels': labels, 'sources': sources})
+def eval_corrs(costs, labels, sources, items): # nb, sources comes in via TIs, and labels are human judgments. now, if soucres = 5, these are pulled off, and used for auc calculation
+    data = pd.DataFrame({'costs': costs, 'labels': labels, 'sources': sources, 'items':items})
     # Select rows with sources 1, 2, 3, or 4
     df1 = data.loc[data['sources'].isin([1, 2, 3, 4])]
 
@@ -228,6 +228,7 @@ def main(args):
         print(broad_test_set_t['Source'].value_counts())
 
         broad_licit_annotations, broad_TI_annotations = get_broad_annotations(args.feature_type)
+        
     elif eval_humans:
         raise NotImplementedError("please choose a supported combination of features and evaluation settings!")
       
@@ -460,8 +461,7 @@ def main(args):
                         for item_idx, (item, encoded_word, featurized) in tqdm(enumerate(broad_test_set)):
                             c = learner.cost(encoded_word, features=featurized)
                             costs.append(c)
-                            #j = informant.cost(encoded_word)
-                            #corral_of_judged_human_forms.append((item,c))
+
                             str_item = " ".join(item)
                             out_human_evals.write(str(step)+','+str(run)+','+str(strategy)+','+str(N_INIT)+","+str_item+","+str(c)+","+str("LEARNER")+",BroadTest"+'\n')
                             isLicit = int(broad_licit_annotations[str_item])
@@ -541,7 +541,7 @@ def main(args):
                                 aucs.append(auc)
                                 
                             elif args.feature_type == "english":
-                                corrs_df, auc, costs_df = eval_corrs(costs, labels, TIs)
+                                corrs_df, auc, costs_df = eval_corrs(costs, labels, TIs, items)
                                 log_results["auc"] = auc
                                 aucs.append(auc)
                                 c = wandb.Table(dataframe=costs_df)
