@@ -520,7 +520,7 @@ def main(args):
                                 "num_features_observed": len(observed_features),
                                 }
                         if eval_humans:
-                            if args.feature_type == "atr_harmony":
+                            if args.featurse_type == "atr_harmony":
                                 auc = eval_auc(costs, labels)
                                 log_results["auc"] = auc 
                                 aucs.append(auc)
