@@ -21,6 +21,7 @@ import time
 import multiprocessing
 
 import cProfile
+import pdb
 
 from util import entropy, plot_feature_probs, kl_bern
 import csv
@@ -43,6 +44,8 @@ def eval_auc(costs, labels):
 
 def eval_corrs(costs, labels, sources, items): # nb, sources comes in via TIs, and labels are human judgments. now, if soucres = 5, these are pulled off, and used for auc calculation
     data = pd.DataFrame({'costs': costs, 'labels': labels, 'sources': sources, 'items':items})
+    print("eval corrs breakdown:")
+    print(data['sources'].value_counts())
     # Select rows with sources 1, 2, 3, or 4
     df1 = data.loc[data['sources'].isin([1, 2, 3, 4])]
 
@@ -61,6 +64,19 @@ def eval_corrs(costs, labels, sources, items): # nb, sources comes in via TIs, a
     print(group_corr)
     print("roc_auc is", roc_auc)
     print("number of forms in auc test set is",len(df2))
+    print("top 10:")
+    print(df2.head(10))
+    print("10 randomly sampled: ")
+    print(df2.sample(10))
+    
+    print("number of forms in human test set is",len(df1))
+    print("top 10:")
+    print(df1.head(10))
+    print("10 randomly sampled: ")
+    print(df1.sample(10))
+    
+    print("number of forms in full test set is",len(data))
+#    pdb.set_trace()
     return group_corr, roc_auc, df2
 
 
@@ -71,6 +87,8 @@ def get_broad_annotations(feature_type):
     elif feature_type == "english":
         df = pd.read_csv("WordsAndScoresFixed.csv")
         df['Word'] = df.apply(lambda row: row['Word'].strip(), axis=1)
+        assert df['Word'].value_counts().max() == 1, (f'Repeats of words found in dataset, '
+                'which will lead to overriding of annotations (which are dicts)')
         return dict(zip(df.Word, df.Score)), dict(zip(df.Word, df.Source))
     else:
         raise NotImplementedError("please select a valid feature type!")
@@ -209,28 +227,35 @@ def main(args):
         narrow_test_set = []
 
 #        broad_test_set_t = read_in_blicks("WordsToBeScored.csv")
-        broad_test_set_t = pd.read_csv('WordsAndScoresFixed.csv')
-        items = [i.strip().split(' ') for i in broad_test_set_t['Word'].values]
-        sources = broad_test_set_t['Source'].values
-        broad_test_set = []
+        raw_eval_dataset = pd.read_csv('WordsAndScoresFixed.csv')
+
+        items = [i.strip().split(' ') for i in raw_eval_dataset['Word'].values]
+        sources = [int(s) for s in raw_eval_dataset['Source'].values]
+        labels = raw_eval_dataset['Score'].values
+        encoded_items = []
+        featurized_items = []
         print("Reading test set...")
+        assert len(items) == len(sources)
         for item, source in tqdm(zip(items, sources), total=len(items)):
             if str(source).strip() == '1':
                 phonemes = [BOUNDARY] + item
             else:
                 phonemes = [BOUNDARY] + item + [BOUNDARY]
-            # print(phonemes,"is phonemes")
-            encoded_word = dataset.vocab.encode(phonemes)  # expects a list of arpabet chars
-            featurized = mean_field_scorer._featurize(encoded_word).nonzero()
-            broad_test_set.append((item, encoded_word, featurized))
-        print("# test: ", len(broad_test_set))
-        print("breakdown by test type: ")
-        print(broad_test_set_t['Source'].value_counts())
-        print("first 5: ")
-        for _ in range(5):
-            print(broad_test_set[_])
+            encoded_item = dataset.vocab.encode(phonemes)  # expects a list of arpabet chars
+            encoded_items.append(encoded_item)
 
-        broad_licit_annotations, broad_TI_annotations = get_broad_annotations(args.feature_type)
+            featurized = mean_field_scorer._featurize(encoded_item).nonzero()
+            featurized_items.append(featurized)
+        
+        eval_dataset = pd.DataFrame({
+            'item': items, 
+            'label': labels, 
+            'source': sources, 
+            'encoded': encoded_items, 
+            'featurized': featurized_items
+            })
+        print("breakdown by test type: ")
+        print(eval_dataset['source'].value_counts())
         
     elif eval_humans:
         raise NotImplementedError("please choose a supported combination of features and evaluation settings!")
@@ -238,7 +263,10 @@ def main(args):
         
 
     if eval_humans:
-        forbidden_data_that_cannot_be_queried_about = [item[1] for item in broad_test_set] + [item[1] for item in narrow_test_set] #broad_test_set+narrow_test_set
+        if args.feature_type == 'english':
+            forbidden_data_that_cannot_be_queried_about = list(eval_dataset['encoded'].values)
+        else:
+            forbidden_data_that_cannot_be_queried_about = [item[1] for item in broad_test_set] + [item[1] for item in narrow_test_set] #broad_test_set+narrow_test_set
     else:
         forbidden_data_that_cannot_be_queried_about = []
     linear_train_dataset = dataset.data
@@ -454,7 +482,7 @@ def main(args):
 
                     #print(len(total_features),total_features)
                     #print("____________")
-                    if eval_humans:
+                    if eval_humans and args.feature_type != "english":
                         for item, encoded_word in narrow_test_set:
                             c = learner.cost(encoded_word)
                             #j = informant.cost(encoded_word)
@@ -464,6 +492,7 @@ def main(args):
                             out_human_evals.flush()
 
                         items, labels, TIs, costs = [], [], [], []
+
                         for item_idx, (item, encoded_word, featurized) in tqdm(enumerate(broad_test_set)):
                             c = learner.cost(encoded_word, features=featurized)
                             costs.append(c)
@@ -477,9 +506,31 @@ def main(args):
                             TIs.append(isTI)
                             
                             out_human_evals.flush()
+
                         broad_human_evals_writer.writerow([step, run, strategy, N_INIT, items, costs, labels, TIs])
                         print(f"avg cost for broad test set: {np.mean(costs)}")
+                    elif eval_humans and args.feature_type == "english":
+                        items, costs = [], []
+                        labels = eval_dataset['label'].values
+                        sources = eval_dataset['source'].values
+                        for item_idx, row in eval_dataset.iterrows():
+                            item = row['item']
+                            str_item = " ".join(item)
+                            items.append(str_item)
+                            encoded_word = row['encoded']
+                            featurized = row['featurized']
+                            label = row['label']
+                            source = row['source']
+                            
+                            c = learner.cost(encoded_word, features=featurized)
+                            costs.append(c)
 
+                            str_item = " ".join(item)
+                            out_human_evals.write(str(step)+','+str(run)+','+str(strategy)+','+str(N_INIT)+","+str_item+","+str(c)+","+str("LEARNER")+",BroadTest"+'\n')
+                            out_human_evals.flush()
+
+                        broad_human_evals_writer.writerow([step, run, strategy, N_INIT, items, costs, labels, sources])
+                        print(f"avg cost for broad test set: {np.mean(costs)}")
 
                     #scores["external_wugs"] = corral_of_judged_human_forms
 #                    scores["step"] = N_INIT + i
@@ -549,7 +600,7 @@ def main(args):
                                 aucs.append(auc)
                                 
                             elif args.feature_type == "english":
-                                corrs_df, auc, costs_df = eval_corrs(costs, labels, TIs, items)
+                                corrs_df, auc, costs_df = eval_corrs(costs, labels, sources, items)
                                 log_results["auc"] = auc
                                 aucs.append(auc)
                                 c = wandb.Table(dataframe=costs_df)
@@ -738,11 +789,17 @@ if __name__ == "__main__":
     
     parser.add_argument('--min_length', default=2, type=int, help='min length for sampling random sequences')
     parser.add_argument('--max_length', default=5, type=int, help='max length for sampling random sequences')
+    
+    def parse_max_updates(value):
+        if value == 'None':
+            return None
+        return int(value)
 
-    parser.add_argument('--max_updates_propose', default=None, type=int, help='max # updates for proposal (only used for eig/ekl)')
-    parser.add_argument('--max_updates_observe', default=None, type=int, help='max # updates for observing')
+    parser.add_argument('--max_updates_propose', default=None, type=parse_max_updates, help='max # updates for proposal (only used for eig/ekl)')
+    parser.add_argument('--max_updates_observe', default=None, type=parse_max_updates, help='max # updates for observing')
     
     parser.add_argument('--num_init', default=0, type=int) 
+
 
     strategies = [
             "kl_train_model",
