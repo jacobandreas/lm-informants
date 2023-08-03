@@ -1,0 +1,56 @@
+---
+title: "Check for held-out test set balance"
+author: "Canaan"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(tidylog)
+library(readxl)
+setwd("G:/My Drive/MIT/Research/lm-informants/data/MakeEnglishTestSets")
+```
+
+```{r}
+dat <- read_csv("WordsAndScoresFixed_newer.csv") %>% 
+  mutate(length = str_count(Word," ")+1)
+l <- c()
+group_five <- dat %>% 
+  filter(Source == 5) 
+
+t <- group_five %>% 
+  group_by(Score,length) %>% 
+  summarise(n=n())
+
+min_in_cat <- t %>% 
+  group_by(length) %>% 
+  summarise(min = min(n))
+
+
+for (i in 1:nrow(min_in_cat)){
+  current_row <- min_in_cat[i,]
+  num_rows_to_sample <- current_row$min
+  current_length <- current_row$length
+  print(current_length)
+  print(num_rows_to_sample)
+  all_at_this_length <- group_five %>% 
+  filter(length == current_length)
+
+bads <- all_at_this_length %>% 
+  filter(Score == 1) %>% 
+  sample_n(num_rows_to_sample, replace = F)
+
+goods <- all_at_this_length %>% 
+  filter(Score == 0) %>% 
+  sample_n(num_rows_to_sample, replace = F)
+
+l <- rbind(l,goods,bads)
+  
+}
+group_five_subsampled <- bind_rows(l)
+
+```
+
