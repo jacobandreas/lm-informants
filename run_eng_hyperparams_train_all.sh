@@ -4,7 +4,7 @@ TAG=0801_hyperparam_sweep,fixed_eval_sets
 NUM_STEPS=200
 NUM_CANDS=50
 
-for MAX_UPDATES in None 1
+for MAX_UPDATES in 1 None
 do
 	### CALIBRATED: i.e. use same # of features as kl_train_model to compute prior_prob
 
