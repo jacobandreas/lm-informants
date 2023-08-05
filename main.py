@@ -44,8 +44,10 @@ def eval_auc(costs, labels):
 
 def eval_corrs(costs, labels, sources, items): # nb, sources comes in via TIs, and labels are human judgments. now, if soucres = 5, these are pulled off, and used for auc calculation
     data = pd.DataFrame({'costs': costs, 'labels': labels, 'sources': sources, 'items':items})
+    '''
     print("eval corrs breakdown:")
     print(data['sources'].value_counts())
+    '''
     # Select rows with sources 1, 2, 3, or 4
     df1 = data.loc[data['sources'].isin([1, 2, 3, 4])]
 
@@ -64,6 +66,7 @@ def eval_corrs(costs, labels, sources, items): # nb, sources comes in via TIs, a
     print(group_corr)
     print("roc_auc is", roc_auc)
     print("number of forms in auc test set is",len(df2))
+    '''
     print("top 10:")
     print(df2.head(10))
     print("10 randomly sampled: ")
@@ -77,6 +80,7 @@ def eval_corrs(costs, labels, sources, items): # nb, sources comes in via TIs, a
     
     print("number of forms in full test set is",len(data))
 #    pdb.set_trace()
+    '''
     return group_corr, roc_auc, df2
 
 
@@ -85,7 +89,7 @@ def get_broad_annotations(feature_type):
         df = pd.read_csv("broad_test_set_annotated.csv")
         return dict(zip(df.Word, df.IsLicit)), dict(zip(df.Word, df.IsTI))
     elif feature_type == "english":
-        df = pd.read_csv("WordsAndScoresFixed.csv")
+        df = pd.read_csv("WordsAndScoresFixed_newest.csv")
         df['Word'] = df.apply(lambda row: row['Word'].strip(), axis=1)
         assert df['Word'].value_counts().max() == 1, (f'Repeats of words found in dataset, '
                 'which will lead to overriding of annotations (which are dicts)')
@@ -227,7 +231,7 @@ def main(args):
         narrow_test_set = []
 
 #        broad_test_set_t = read_in_blicks("WordsToBeScored.csv")
-        raw_eval_dataset = pd.read_csv('WordsAndScoresFixed.csv')
+        raw_eval_dataset = pd.read_csv('WordsAndScoresFixed_newest.csv')
 
         items = [i.strip().split(' ') for i in raw_eval_dataset['Word'].values]
         sources = [int(s) for s in raw_eval_dataset['Source'].values]
@@ -288,8 +292,8 @@ def main(args):
         out_human_evals.write("Step,Run,Strategy,N_INIT,Item,Cost,Source,TestType\n")
         broad_human_evals_writer = get_csv_writer("BroadHoldoutEvals.csv", args.exp_dir) 
         broad_human_evals_writer.writerow(["Step", "Run", "Strategy", "N_INIT", "Items", "Costs", "IsLicit", "IsTI"])
-    eval_metrics = get_out_file("ModelEvalLogs.csv", args.exp_dir)
-    eval_metrics.write("ent,good,bad,diff,acc,rej,Step,Run,Strategy,N_Init,IsTI,judgement,proposed_form,entropy_before,entropy_after,entropy_diff,change_in_probs\n") # including things it queried about
+#    eval_metrics = get_out_file("ModelEvalLogs.csv", args.exp_dir)
+#    eval_metrics.write("ent,good,bad,diff,acc,rej,Step,Run,Strategy,N_Init,IsTI,judgement,proposed_form,entropy_before,entropy_after,entropy_diff,change_in_probs\n") # including things it queried about
 
 
     results_by_observations_writer = get_csv_writer("ResultsByObservations.csv", args.exp_dir)
@@ -348,7 +352,7 @@ def main(args):
                 wandb_table_data = []
 
                 #scores = evaluate_with_external_data(good_dataset,bad_dataset, eval_informant, learner)
-                scores = evaluate(dataset, eval_informant, learner)
+#                scores = evaluate(dataset, eval_informant, learner)
 
                 # if eval_humans:
                 #     for item, encoded_word in dataset_to_judge:
@@ -424,7 +428,7 @@ def main(args):
 
                     #print("ent", (p * np.log(p) + (1-p) * np.log(1-p)).mean())
                     #scores = evaluate_with_external_data(good_dataset,bad_dataset, eval_informant, learner)
-                    scores = evaluate(dataset, eval_informant, learner)
+#                    scores = evaluate(dataset, eval_informant, learner)
                     #print(dataset.vocab.decode(candidate))
 
 
@@ -511,8 +515,8 @@ def main(args):
                         print(f"avg cost for broad test set: {np.mean(costs)}")
                     elif eval_humans and args.feature_type == "english":
                         items, costs = [], []
-                        labels = eval_dataset['label'].values
-                        sources = eval_dataset['source'].values
+                        labels = list(eval_dataset['label'].values)
+                        sources = list(eval_dataset['source'].values)
                         for item_idx, row in eval_dataset.iterrows():
                             item = row['item']
                             str_item = " ".join(item)
@@ -534,11 +538,11 @@ def main(args):
 
                     #scores["external_wugs"] = corral_of_judged_human_forms
 #                    scores["step"] = N_INIT + i
-                    scores["step"] = i
-                    scores["run"] = run
+#                    scores["step"] = i
+#                    scores["run"] = run
                     #print(t)
                     #assert False
-                    log.append(scores)
+#                    log.append(scores)
                     print()
 #                    print(f"strategy: {strategy}, run: {run}/{num_runs}, step: {N_INIT + i}")
                     print(f"strategy: {strategy}, run: {run}/{num_runs}, step: {i}")
@@ -699,12 +703,12 @@ def main(args):
                         entropy_diff_unique = None
                     # TODO: add expected information gain
 
-                    eval_metrics.write(str((p * np.log(p) + (1-p) * np.log(1-p)).mean())+",")
-                    for k, v in scores.items():
-                        #print(f"{k:8s} {v:.4f}")
-                        eval_metrics.write(str(v)+',')
-                    eval_metrics.write(str(step)+','+str(run)+','+str(strategy)+','+str(N_INIT)+","+str(is_ti(str(dataset.vocab.decode(candidate)).replace(",","")))+","+str(judgment)+","+str(dataset.vocab.decode(candidate)).replace(",","")+","+str(entropy_before)+","+str(entropy_after)+","+str(entropy_diff)+","+str(change_in_probs)+'\n')
-                    eval_metrics.flush()
+#                    eval_metrics.write(str((p * np.log(p) + (1-p) * np.log(1-p)).mean())+",")
+#                    for k, v in scores.items():
+#                        #print(f"{k:8s} {v:.4f}")
+#                        eval_metrics.write(str(v)+',')
+#                    eval_metrics.write(str(step)+','+str(run)+','+str(strategy)+','+str(N_INIT)+","+str(is_ti(str(dataset.vocab.decode(candidate)).replace(",","")))+","+str(judgment)+","+str(dataset.vocab.decode(candidate)).replace(",","")+","+str(entropy_before)+","+str(entropy_after)+","+str(entropy_diff)+","+str(change_in_probs)+'\n')
+#                    eval_metrics.flush()
                     wandb_table_data.append([step, strategy, str_candidate, judgment, list(featurized_candidate), eig,  entropy_before, entropy_after, entropy_diff, entropy_before_unique, entropy_after_unique, entropy_diff_unique, change_in_probs, chosen_strategy])
 
 #

@@ -1,12 +1,12 @@
 EXP_DIR=results/0612_eng
-WANDB_PROJECT=0610_english_new_tolerance
+WANDB_PROJECT=0704_english
 #TAG=0612_hyperparams_selected
 TAG=0612_hyperparams_selected_faster
 #TAG=0606_hyperparams_full
 NUM_STEPS=500
 NUM_CANDS=50
 TOLERANCE=0.00000195312
-STRATEGIES=eig_train_model
+STRATEGIES=kl_train_model
 
 # with only 1 update in propose
 

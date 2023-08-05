@@ -31,9 +31,15 @@ class InteractiveInformant:
 class HWInformant:
     def __init__(self, dataset, scorer):
         self.dataset = dataset
+        self.set_dataset = set(dataset.data)
         self.scorer = scorer
 
     def judge(self, seq):
+        # check if in lexicon, return True if so
+        if seq in self.set_dataset:
+            print(f"seq in lexicon, returning True:\t{seq}")
+            return True
+
         return self.scorer.cost(seq) < 2.53 # this is a hack!
         #return self.scorer.cost(seq) == 0
 
