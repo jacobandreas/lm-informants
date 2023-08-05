@@ -578,6 +578,8 @@ def main(args):
                     entropy_of_candidate = learner.hypotheses[0].entropy(candidate, length_norm=True, features=featurized_candidate)
                     pred_prob_pos = np.exp(learner.hypotheses[0].logprob(candidate, True, features=featurized_candidate))
                     chosen_strategy = learner.chosen_strategies[-1] 
+                    if chosen_strategy == 'train':
+                        assert judgment
 
                     if args.do_plot_wandb:
                         log_results = {

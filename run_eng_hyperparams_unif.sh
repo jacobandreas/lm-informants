@@ -1,6 +1,6 @@
-EXP_DIR=results/0801_english
-WANDB_PROJECT=0801_english
-TAG=0801_hyperparam_sweep,fixed_eval_sets
+EXP_DIR=results/0804_english
+WANDB_PROJECT=0804_english
+TAG=0804_hyperparam_sweep,return_true_if_lexicon
 NUM_STEPS=200
 NUM_CANDS=50
 
