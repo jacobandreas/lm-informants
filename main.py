@@ -309,6 +309,13 @@ def main(args):
 #            for strategy in ["", "eig", "unif","train"]: # only train, entropy, eig, and unif are well-defined here
 #            for strategy in ["entropy","entropy_pred","train","unif"]:#,"entropy_pred","train","eig","unif","entropy"]:#"entropy_pred", "entropy","train", "unif","eig",]: # only train, entropy, eig, and unif are well-defined here
 #            for strategy in ["kl", "eig", "train", "unif", "entropy", "entropy_pred","kl_train","eig_train"]:
+
+            dir = "/raid/lingo/alexisro/wandb"
+
+#            while True:
+#                if not os.access(dir, os.W_OK):
+#                    print(f"Lost connection to {dir}")
+            
             for strategy in args.strategies: 
                 print("STRATEGY:", strategy)
                 if args.do_plot_wandb:
