@@ -411,7 +411,12 @@ class VBLearner(Learner):
         return sorted(feats)
 
 #    @profile
-    def get_scores(self, metric, candidates, length_norm, return_pos_scores=False):
+    def get_scores(self, 
+            metric, candidates, length_norm, 
+            return_pos_scores=False, 
+            metric_expect_assume_labels=False, # ignored for non eig/kl 
+            informant=None, # only used when metric_expect_assume_labels = True
+            ):
         if metric == "entropy":
             # TODO: implement multiprocessing; nontrivial bc requires non-local function
             return [self.hypotheses[0].entropy(c, length_norm=length_norm) for c in candidates]
@@ -424,38 +429,44 @@ class VBLearner(Learner):
 
             inputs = [(hyp._featurize(seq).nonzero()[0], probs, self.observed_feats, self.observed_judgments, self.observed_feats_unique, hyp.converge_type, hyp.LOG_LOG_ALPHA_RATIO, hyp.tolerance, self.max_updates_propose) for seq in candidates]
 
-            inputs_labels = [(*i, True) for i in inputs] + [(*i, False) for i in inputs]
+            if metric_expect_assume_labels:
+                print(f"Computing {metric} metric with assuming labels")
+                # informant is used to get the labels
+                assert informant is not None
+                labels = [1 if informant.judge(c) else -1 for c in candidates]
 
-            pos_func = get_ig_pos if metric == "eig" else get_kl_pos
-            neg_func = get_ig_neg if metric == "eig" else get_kl_neg
-#            func = get_func(pos_func, neg_func)
-#            func = get_func(pos_func, neg_func)
+                inputs_labels = [(*i, lab) for i, lab in zip(inputs, labels)]
+                func = info_gain_helper if metric == 'eig' else kl_helper 
+                scores = self.pool.map(func, inputs_labels)
 
-#            func = get_info_gain if metric == 'eig' else get_kl
-#            with multiprocessing.Pool(processes=48) as pool:
-#                pos_scores = pool.map(pos_func, inputs)
-#                neg_scores = pool.map(neg_func, inputs)
-#            pos_and_neg_scores = self.pool.map(func, inputs)
-#            pos_scores = self.pool.map(pos_func, inputs)
-#            neg_scores = self.pool.map(neg_func, inputs)
+                print("kl candidate labels:", [(seq, lab) for (seq, lab) in zip(candidates, labels)])
+                print("kl candidate scores:", scores)
 
+                # TODO: not very robust, but return None for pos_scores (used as input to get_train_metric if train_expect_type == proposal_samples) if None, will recompute
+                if return_pos_scores:
+                    return scores, None 
+                return scores
 
-            func = info_gain_helper if metric == 'eig' else kl_helper 
-            pos_and_neg_scores = self.pool.map(func, inputs_labels)
-            pos_scores = pos_and_neg_scores[:len(inputs)]
-            neg_scores = pos_and_neg_scores[len(inputs):]
-            print("pos scores: ", pos_scores)
-            print("neg scores: ", neg_scores)
-            assert len(pos_scores) == len(neg_scores)
+            else:
 
-#            scores = [self.get_expected_metric(seq, pos, neg, features=inp[0]) for (inp, seq, (pos, neg)) in zip(inputs, candidates, pos_and_neg_scores)]
+                inputs_labels = [(*i, True) for i in inputs] + [(*i, False) for i in inputs]
 
-            scores = [self.get_expected_metric(seq, pos, neg, features=inp[0]) for (inp, seq, pos, neg) in zip(inputs, candidates, pos_scores, neg_scores)]
+                func = info_gain_helper if metric == 'eig' else kl_helper 
+                pos_and_neg_scores = self.pool.map(func, inputs_labels)
+                pos_scores = pos_and_neg_scores[:len(inputs)]
+                neg_scores = pos_and_neg_scores[len(inputs):]
+                print("metric pos scores: ", pos_scores)
+                print("metric neg scores: ", neg_scores)
+                assert len(pos_scores) == len(neg_scores)
 
-            # useful for saving the pos scores for train
-            if return_pos_scores:
-                return scores, pos_scores
-            return scores
+    #            scores = [self.get_expected_metric(seq, pos, neg, features=inp[0]) for (inp, seq, (pos, neg)) in zip(inputs, candidates, pos_and_neg_scores)]
+
+                scores = [self.get_expected_metric(seq, pos, neg, features=inp[0]) for (inp, seq, pos, neg) in zip(inputs, candidates, pos_scores, neg_scores)]
+
+                # useful for saving the pos scores for train
+                if return_pos_scores:
+                    return scores, pos_scores
+                return scores
 
         elif metric == "entropy_pred": 
             # TODO: implement multiprocessing; nontrivial bc requires non-local function
@@ -469,6 +480,7 @@ class VBLearner(Learner):
     def get_train_metric(self, metric, candidates, metrics=None, p_trains=None):
         featurized_candidates = [self.hypotheses[0]._featurize(seq).nonzero()[0] for seq in candidates]
         # TODO: standardize kl/eig names (both are expectations, should be ekl?)
+#        pdb.set_trace()
         if metric in ["eig", "kl"]:
             hyp = self.hypotheses[0]
             if self.hypotheses[0].warm_start:
@@ -478,6 +490,7 @@ class VBLearner(Learner):
 
             # if metrics is supplied, don't recompute
             if metrics is None:
+                # TODO: also using max_updates_propose here--confirm that we want this
                 inputs = [(hyp._featurize(seq).nonzero()[0], probs, self.observed_feats, self.observed_judgments, self.observed_feats_unique, hyp.converge_type, hyp.LOG_LOG_ALPHA_RATIO, hyp.tolerance, self.max_updates_propose) for seq in candidates]
 
                 func = get_ig_pos if metric == "eig" else get_kl_pos 
@@ -514,7 +527,7 @@ class VBLearner(Learner):
             if seq not in obs_set:
                 return seq
 
-    def propose(self, n_candidates, forbidden_data, length_norm, verbose=False, prop_edits=0.0):
+    def propose(self, n_candidates, forbidden_data, length_norm, train_expect_type, metric_expect_assume_labels=False, verbose=False, prop_edits=0.0, informant=None):
         obs_set_a = set(s for s, _, j in self.observations)
         obs_set = set(s for s in (forbidden_data+list(obs_set_a)))
         
@@ -566,6 +579,7 @@ class VBLearner(Learner):
         #print("candidates: ", candidates)
         #import ipdb; ipdb.set_trace()
         print(f"# candidates: {len(candidates)}")
+        print(f"candidates: {(candidates)}")
 #        print(candidates)
 #        num_features = [len(self.hypotheses[0]._featurize(seq).nonzero()[0]) for seq in candidates]
 #        print('# features: ', num_features)
@@ -573,7 +587,7 @@ class VBLearner(Learner):
         if self.strategy_name == "unif" or self.propose_train > 0:
             scores = [0 for c in candidates]
         elif self.strategy_name in ["entropy", "eig", "kl", "entropy_pred"]:
-            scores = self.get_scores(self.strategy_name, candidates, length_norm)
+            scores = self.get_scores(self.strategy_name, candidates, length_norm, metric_expect_assume_labels=metric_expect_assume_labels, informant=informant)
         elif self.strategy_name in [
                 "eig_train_mixed", 
                 "eig_train_history",
@@ -610,7 +624,7 @@ class VBLearner(Learner):
                 strategy_mean = np.mean(metrics_by_strategy[metric])
            
             # pos scores is metric from observing cand as True, save for use with train
-            scores, pos_scores = self.get_scores(metric, candidates, length_norm, return_pos_scores=True)
+            scores, pos_scores = self.get_scores(metric, candidates, length_norm, return_pos_scores=True, metric_expect_assume_labels=metric_expect_assume_labels, informant=informant)
             assert len(candidates) == len(candidate_types)
             scored_candidates = list(zip(candidates, scores, candidate_types))
             best_cand, expected_score, best_cand_type = max(scored_candidates, key=lambda p: p[1])
@@ -619,19 +633,28 @@ class VBLearner(Learner):
             if train_is_history:
                 train_score = train_mean
             else:
+                
+                if train_expect_type == 'lexicon_samples':
+                    ## all this below is for computing expectation over actual train candidates
+                    train_candidates = []
+                    while len(train_candidates) < n_candidates:
+                        c = random.sample(self.linear_train_dataset[self.index_of_next_item:], 1)[0]
+                        if c not in obs_set and c not in train_candidates:
+                            train_candidates.append(c)
 
-                ## all this below is for computing expectation over actual train candidates
-                train_candidates = []
-                while len(train_candidates) < n_candidates:
-                    c = random.sample(self.linear_train_dataset[self.index_of_next_item:], 1)[0]
-                    if c not in obs_set and c not in train_candidates:
-                        train_candidates.append(c)
+                    train_score = self.get_train_metric(metric, train_candidates, metrics=None, p_trains=np.ones(len(train_candidates)))
 
-                train_score = self.get_train_metric(metric, train_candidates, metrics=None, p_trains=np.ones(len(train_candidates)))
-                """
-                # comment out for approximate estimate of expected value of train candidate
-                train_score = self.get_train_metric(metric, candidates, metrics=pos_scores)
-                """
+                elif train_expect_type == 'proposal_samples':
+                    # comment out for approximate estimate of expected value of train candidate
+                    train_score = self.get_train_metric(metric, candidates, metrics=pos_scores)
+                elif train_expect_type == 'true_candidate':
+                    train_candidate = self.linear_train_dataset[self.index_of_next_item]
+                    print("Using true candidate to compute train utility:")
+                    print(f' | {train_candidate}')
+                    train_score = self.get_train_metric(metric, [train_candidate], metrics=None, p_trains=np.ones(1))
+
+                else:
+                    raise ValueError(train_expect_type)
 
             if strategy_is_history:
                 strategy_score = strategy_mean
@@ -664,6 +687,7 @@ class VBLearner(Learner):
             
             print(f"best cand from proposal pool:")
             print(f' | {self.dataset.vocab.decode(best_cand)}')
+            print(f' | {best_cand}')
             print(f' | {strategy_score}')
             print(f' | {metric}')
             print(f' | {best_cand_type}')

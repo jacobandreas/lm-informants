@@ -318,6 +318,12 @@ def main(args):
             
             for strategy in args.strategies: 
                 print("STRATEGY:", strategy)
+
+                if args.metric_expect_assume_labels and strategy not in ["eig", "kl", "eig_train_model", "eig_train_mixed", "eig_train_history", "kl_train_model", "kl_train_history", "kl_train_mixed"]:
+                    print("args.metric_expect_assume_labels is True for a strategy that doesn't use this argument; ignoring")
+                if args.train_expect_type is not None and strategy not in ["eig_train_model", "kl_train_model"]: 
+                    print("args.train_expect_type is not None for a strategy that doesn't use this argument; ignoring")
+
                 if args.do_plot_wandb:
                     config = {
                             "n_init": N_INIT, "run": run, "strategy": strategy, 
@@ -329,6 +335,8 @@ def main(args):
                             "max_updates_observe": args.max_updates_observe,
                             "max_updates_propose": args.max_updates_propose,
                             "pool_prop_edits": args.pool_prop_edits,
+                            "metric_expect_assume_labels": args.metric_expect_assume_labels,
+                            "train_expect_type": args.train_expect_type,
                             }
                     tags = [] if args.tags is None else [t.strip() for t in args.tags.split(",")]
                     wandb_run = wandb.init(config=config, project=args.wandb_project, name=strategy, reinit=True, tags = tags, entity="lm-informants") 
@@ -420,8 +428,17 @@ def main(args):
                         # TODO: not sure if this is up to date, should be update = True, and need to keep track of chosen strategies (which happens in propose?)
                         learner.observe(candidate, judgment, update=False)
                         continue
-
-                    candidate = learner.propose(n_candidates=args.num_candidates, forbidden_data = forbidden_data_that_cannot_be_queried_about, length_norm=True, verbose=args.verbose, prop_edits=args.pool_prop_edits)
+    
+                    # some of these args only used by certain strategies (like train_expect_type, metric_expect_assume_labels, informant)
+                    candidate = learner.propose(
+                            n_candidates=args.num_candidates, 
+                            forbidden_data = forbidden_data_that_cannot_be_queried_about, 
+                            length_norm=True, 
+                            train_expect_type=args.train_expect_type, 
+                            verbose=args.verbose, 
+                            prop_edits=args.pool_prop_edits, 
+                            metric_expect_assume_labels=args.metric_expect_assume_labels, 
+                            informant=informant)
                     
                     end_time = time.time()
                     propose_duration = (end_time-start_time)/60
@@ -726,6 +743,11 @@ def main(args):
 #                    eval_metrics.flush()
                     wandb_table_data.append([step, strategy, str_candidate, judgment, list(featurized_candidate), eig,  entropy_before, entropy_after, entropy_diff, entropy_before_unique, entropy_after_unique, entropy_diff_unique, change_in_probs, chosen_strategy, chosen_cand_type])
 
+                    results_after_observe = {}
+                    results_after_observe['i'] = step
+                    results_after_observe['actual_kl'] = actual_kl
+                    wandb.log({f'results_after_observe/{k}': v for k, v in results_after_observe.items()})
+    
 #
                     #print("Judging human forms...")
                     #corral_of_judged_human_forms = []
@@ -826,7 +848,27 @@ if __name__ == "__main__":
     parser.add_argument('--pool_prop_edits', default=0.0, type=parse_proportion, help='proportion of proposal pool consisting of edited candidates from lexicon')
     
     parser.add_argument('--num_init', default=0, type=int) 
-
+    
+    parser.add_argument('--train_expect_type', 
+            default=None, 
+            choices=[
+                None,
+                'proposal_samples', 
+                'lexicon_samples', 
+                'true_candidate'],
+            help=('how to compute the train expectation in'
+            'kl_train_model/eig_train_model '
+            '(ignored by other strategies); '
+            'proposal_samples = using samples from proposal distr; '
+            'lexicon_samples = using samples from the lexicon;' 
+            'true_candidate = using actual candidate'))
+   
+    # defaults to false
+    parser.add_argument('--metric_expect_assume_labels', action='store_true',
+        help=('whether to assume known labels in computing the'
+            'expectation in kl_train_model/eig_train_model '
+            '(ignored by other strategies)'))
+    parser.set_defaults(metric_expect_assume_labels=False)
 
     strategies = [
             "kl_train_model",
