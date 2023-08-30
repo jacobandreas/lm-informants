@@ -280,7 +280,7 @@ class VBLearner(Learner):
                 self.seqs_by_strategy[chosen_strategy] = [seq]
 
         # Helper function to get the kl from observing seq with label (call in get_ekl and computing ekl for an unobserved train example)
-    def get_kl(self, featurized_seq, label=True, orig_probs=None):
+    def get_kl(self, featurized_seq, label=1, orig_probs=None):
         # TODOnow: delete these eventually for efficiency
         if orig_probs is None:
             orig_probs = deepcopy(self.hypotheses[0].probs)
@@ -293,7 +293,7 @@ class VBLearner(Learner):
         
         return kl
 
-    def get_info_gain(self, features, orig_probs=None, label=True):
+    def get_info_gain(self, features, orig_probs=None, label=1):
         # TODOnow: delete these eventually for efficiency
         if orig_probs is None:
             orig_probs = deepcopy(self.hypotheses[0].probs)
@@ -333,9 +333,9 @@ class VBLearner(Learner):
         assert all_equal.all()
 
         if delta_positive is None:
-            delta_positive = self.get_info_gain(features, label=True, orig_probs=orig_probs)
+            delta_positive = self.get_info_gain(features, label=1, orig_probs=orig_probs)
         if delta_negative is None:
-            delta_negative = self.get_info_gain(features, label=False, orig_probs=orig_probs)
+            delta_negative = self.get_info_gain(features, label=-1, orig_probs=orig_probs)
         
         eig = self.get_expected_metric(seq, delta_positive, delta_negative) 
         return eig
@@ -351,9 +351,9 @@ class VBLearner(Learner):
         assert all_equal.all()
 
         if kl_pos is None:
-            kl_pos = self.get_kl(features, label=True, orig_probs=orig_probs)
+            kl_pos = self.get_kl(features, label=1, orig_probs=orig_probs)
         if kl_neg is None:
-            kl_neg = self.get_kl(features, label=False, orig_probs=orig_probs)
+            kl_neg = self.get_kl(features, label=-1, orig_probs=orig_probs)
         
         ekl = self.get_expected_metric(seq, kl_pos, kl_neg) 
 
@@ -449,7 +449,7 @@ class VBLearner(Learner):
 
             else:
 
-                inputs_labels = [(*i, True) for i in inputs] + [(*i, False) for i in inputs]
+                inputs_labels = [(*i, 1) for i in inputs] + [(*i, -1) for i in inputs]
 
                 func = info_gain_helper if metric == 'eig' else kl_helper 
                 pos_and_neg_scores = self.pool.map(func, inputs_labels)
@@ -650,6 +650,7 @@ class VBLearner(Learner):
                 elif train_expect_type == 'true_candidate':
                     train_candidate = self.linear_train_dataset[self.index_of_next_item]
                     print("Using true candidate to compute train utility:")
+                    print(f' | {self.dataset.vocab.decode(train_candidate)}')
                     print(f' | {train_candidate}')
                     train_score = self.get_train_metric(metric, [train_candidate], metrics=None, p_trains=np.ones(1))
 

@@ -28,7 +28,7 @@ def update(ordered_feats, ordered_judgments,
         do_converge = True
     # In asymmetric case, only converge for positive examples
     elif converge_type == "asymmetric":
-        do_converge = (judgment == True)
+        do_converge = (judgment == 1)
     elif converge_type == "none":
         do_converge = False
 
@@ -211,7 +211,7 @@ def update_one_step(probs,
     
 # Helper function to get the information gain from observing seq with label (call in get_eig and computing eig for an unobserved train example)
 #@profile
-def get_info_gain(featurized_seq, orig_probs, observed_feats, observed_judgments, observed_feats_unique, converge_type, log_log_alpha_ratio, tolerance, max_updates, label=True):
+def get_info_gain(featurized_seq, orig_probs, observed_feats, observed_judgments, observed_feats_unique, converge_type, log_log_alpha_ratio, tolerance, max_updates, label=1):
     # entropy over features before seeing
 
     entropy_over_features_before_observing_item = -1 * ((orig_probs * np.log(orig_probs) + (1 - orig_probs) * np.log(1 - orig_probs))).sum()
@@ -228,19 +228,19 @@ def get_info_gain(featurized_seq, orig_probs, observed_feats, observed_judgments
     return entropy_over_features_before_observing_item - entropy_over_features_after_observing_item
 
 def get_ig_pos(c):
-    return get_info_gain(*c, label=True)
+    return get_info_gain(*c, label=1)
 
 def get_ig_neg(c):
-    return get_info_gain(*c, label=False) 
+    return get_info_gain(*c, label=-1) 
 
 def get_kl_pos(c):
-    return get_kl(*c, label=True)
+    return get_kl(*c, label=1)
 
 def get_kl_neg(c):
-    return get_kl(*c, label=False)
+    return get_kl(*c, label=-1)
 
 #@profile
-def get_kl(featurized_seq, orig_probs, observed_feats, observed_judgments, observed_feats_unique, converge_type, log_log_alpha_ratio, tolerance, max_updates, label=True):
+def get_kl(featurized_seq, orig_probs, observed_feats, observed_judgments, observed_feats_unique, converge_type, log_log_alpha_ratio, tolerance, max_updates, label=1):
     
     feats_to_update = {*observed_feats_unique, *featurized_seq}
 
