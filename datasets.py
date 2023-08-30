@@ -74,42 +74,6 @@ class Dataset:
         else:
             return (0,) + tuple(random.permutation(seq[1:-1])) + (0,)
 
-    def perturb(self, 
-            seq, 
-            ops=['swap', 'add', 'delete'],
-            ):
-        assert seq[0] == 0
-        assert seq[-1] == 0
-        new_seq = list(seq[1:-1])
-        # randomly sample the operation type
-        op_idx = self.random.randint(0, len(ops))
-        op = ops[op_idx]
-        # randomly sample an index between 0 and length (np.random.randint is exclusive)
-        idx = self.random.randint(0, len(new_seq))
-        if op == 'swap':
-            new_phoneme = self.random.randint(1, len(self.vocab))
-            new_seq[idx] = new_phoneme
-        elif op == 'add':
-            new_phoneme = self.random.randint(1, len(self.vocab))
-            new_seq = new_seq[:idx] + [new_phoneme] + new_seq[idx:]
-        elif op == 'delete':
-            new_seq = new_seq[:idx] + new_seq[idx+1:] 
-        else:
-            raise NotImplementedError()
-        
-        new_seq = (0,) + tuple(new_seq) + (0,)
-#        print(f'op:\t{op}')
-#        print(f'orig seq:\t{seq}')
-#        print(f'new seq:\t{new_seq}')
-
-        if op == 'swap':
-            assert len(new_seq) == len(seq)
-        elif op == 'add':
-            assert len(new_seq) == len(seq) + 1
-        elif op == 'delete':
-            assert len(new_seq) == len(seq) - 1
-        return new_seq
-
     def random_example(self):
         #return self.data[np.random.randint(len(self.data))]
         return self.data[self.random.randint(len(self.data))]
@@ -136,9 +100,6 @@ def load_lexicon(file_name, min_length, max_length):
     data = []
     with open(file_name) as reader:
         for line in reader:
-#            # TOOD: this is for only including words with fewerthan 5 phonemes 
-#            if len(line.strip().split()) >= 5:
-#                continue
             phonemes = [BOUNDARY] + line.strip().split() + [BOUNDARY]
 
             #if not all(
