@@ -334,9 +334,12 @@ def main(args):
                             "num_candidates": args.num_candidates,
                             "max_updates_observe": args.max_updates_observe,
                             "max_updates_propose": args.max_updates_propose,
+<<<<<<< HEAD
                             "pool_prop_edits": args.pool_prop_edits,
                             "metric_expect_assume_labels": args.metric_expect_assume_labels,
                             "train_expect_type": args.train_expect_type,
+=======
+>>>>>>> fed9a110866a1d24061e31dbe346bf4ce36d0be7
                             }
                     tags = [] if args.tags is None else [t.strip() for t in args.tags.split(",")]
                     wandb_run = wandb.init(config=config, project=args.wandb_project, name=strategy, reinit=True, tags = tags, entity="lm-informants") 
@@ -425,9 +428,9 @@ def main(args):
                     if i < N_INIT:
                         candidate = init_examples[i]
                         judgment = informant.judge(candidate)
-                        # TODO: not sure if this is up to date, should be update = True, and need to keep track of chosen strategies (which happens in propose?)
                         learner.observe(candidate, judgment, update=False)
                         continue
+<<<<<<< HEAD
     
                     # some of these args only used by certain strategies (like train_expect_type, metric_expect_assume_labels, informant)
                     candidate = learner.propose(
@@ -439,6 +442,10 @@ def main(args):
                             prop_edits=args.pool_prop_edits, 
                             metric_expect_assume_labels=args.metric_expect_assume_labels, 
                             informant=informant)
+=======
+
+                    candidate = learner.propose(n_candidates=args.num_candidates, forbidden_data = forbidden_data_that_cannot_be_queried_about, length_norm=True, verbose=args.verbose)
+>>>>>>> fed9a110866a1d24061e31dbe346bf4ce36d0be7
                     
                     end_time = time.time()
                     propose_duration = (end_time-start_time)/60
@@ -604,7 +611,6 @@ def main(args):
                     entropy_of_candidate = learner.hypotheses[0].entropy(candidate, length_norm=True, features=featurized_candidate)
                     pred_prob_pos = np.exp(learner.hypotheses[0].logprob(candidate, True, features=featurized_candidate))
                     chosen_strategy = learner.chosen_strategies[-1] 
-                    chosen_cand_type = learner.chosen_cand_types[-1] 
                     if chosen_strategy == 'train':
                         assert judgment
 
@@ -617,10 +623,7 @@ def main(args):
                                 "expected_kl_of_candidate": expected_kl, 
                                 "pred_prob_pos": pred_prob_pos, 
                                 "strategy_used": chosen_strategy,
-                                "cand_type": chosen_cand_type,
                                 "strategy_used_is_train": int(chosen_strategy == 'train'),
-                                "cand_type=edited": int(chosen_cand_type == 'edited'),
-                                "cand_type=random": int(chosen_cand_type == 'random'),
                                 "pred_prob_pos": pred_prob_pos, 
                                 "entropy_over_unique_features": entropy_before_unique, 
                                 "entropy_of_candidate": entropy_of_candidate, 
@@ -741,7 +744,7 @@ def main(args):
 #                        eval_metrics.write(str(v)+',')
 #                    eval_metrics.write(str(step)+','+str(run)+','+str(strategy)+','+str(N_INIT)+","+str(is_ti(str(dataset.vocab.decode(candidate)).replace(",","")))+","+str(judgment)+","+str(dataset.vocab.decode(candidate)).replace(",","")+","+str(entropy_before)+","+str(entropy_after)+","+str(entropy_diff)+","+str(change_in_probs)+'\n')
 #                    eval_metrics.flush()
-                    wandb_table_data.append([step, strategy, str_candidate, judgment, list(featurized_candidate), eig,  entropy_before, entropy_after, entropy_diff, entropy_before_unique, entropy_after_unique, entropy_diff_unique, change_in_probs, chosen_strategy, chosen_cand_type])
+                    wandb_table_data.append([step, strategy, str_candidate, judgment, list(featurized_candidate), eig,  entropy_before, entropy_after, entropy_diff, entropy_before_unique, entropy_after_unique, entropy_diff_unique, change_in_probs, chosen_strategy])
 
                     results_after_observe = {}
                     results_after_observe['i'] = step
@@ -769,7 +772,7 @@ def main(args):
 #                with open(f"results_{strategy}.json", "w") as writer:
 #                    json.dump(logs, writer)
                 if args.do_plot_wandb:
-                    wandb_table = wandb.Table(columns=["step", "strategy", "proposed_form", "judgment", "features", "eig", "entropy_before", "entropy_after", "entropy_diff", "entropy_before_unique", "entropy_after_unique", "entropy_diff_unique", "change_in_probs", "strategy_for_this_candidate", "cand_type_for_this_candidate"], data=wandb_table_data) 
+                    wandb_table = wandb.Table(columns=["step", "strategy", "proposed_form", "judgment", "features", "eig", "entropy_before", "entropy_after", "entropy_diff", "entropy_before_unique", "entropy_after_unique", "entropy_diff_unique", "change_in_probs", "strategy_for_this_candidate"], data=wandb_table_data) 
                     wandb.log({"Model Eval Logs": wandb_table})
 
 
@@ -835,17 +838,9 @@ if __name__ == "__main__":
         if value == 'None':
             return None
         return int(value)
-    
-    def parse_proportion(value):
-        value = float(value)
-        assert value <= 1.0
-        assert value >= 0.0
-        return value
-    
+
     parser.add_argument('--max_updates_propose', default=None, type=parse_max_updates, help='max # updates for proposal (only used for eig/ekl)')
     parser.add_argument('--max_updates_observe', default=None, type=parse_max_updates, help='max # updates for observing')
-    
-    parser.add_argument('--pool_prop_edits', default=0.0, type=parse_proportion, help='proportion of proposal pool consisting of edited candidates from lexicon')
     
     parser.add_argument('--num_init', default=0, type=int) 
     
