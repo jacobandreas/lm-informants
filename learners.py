@@ -79,6 +79,7 @@ class Learner:
         self.observations = None
         
         self.chosen_strategies = []
+        self.chosen_cand_types = []
 
     def initialize(
             self, n_hyps,
@@ -125,6 +126,7 @@ class Learner:
         # TODO: one of these is a dummy, eg will only populate train/eig for eig_train
         self.kls_by_strategy = {"train": [], "eig": [], "kl": []}
         self.entropy_diffs_by_strategy = {"train": [], "eig": [], "kl": []}
+        self.seqs_by_strategy = {}
 
         """
         # this slowed things down for eig/kl because required copying large dictionaries; TODO: if don't initialize dictionaries with all features, but just ones seen, is it faster?
@@ -270,6 +272,11 @@ class VBLearner(Learner):
             else:
                 self.kls_by_strategy[chosen_strategy] = [kl]
                 self.entropy_diffs_by_strategy[chosen_strategy] = [entropy_diff]
+
+            if chosen_strategy in self.seqs_by_strategy:
+                self.seqs_by_strategy[chosen_strategy].append(seq)
+            else:
+                self.seqs_by_strategy[chosen_strategy] = [seq]
 
         # Helper function to get the kl from observing seq with label (call in get_ekl and computing ekl for an unobserved train example)
     def get_kl(self, featurized_seq, label=1, orig_probs=None):
@@ -469,7 +476,7 @@ class VBLearner(Learner):
 
     # expected metrics of a train candidate over randomly sampled sequences (candidates) 
     # if metrics is not None, it is the result of get_ig_pos or get_kl_pos
-    def get_train_metric(self, metric, candidates, metrics=None):
+    def get_train_metric(self, metric, candidates, metrics=None, p_trains=None):
         featurized_candidates = [self.hypotheses[0]._featurize(seq).nonzero()[0] for seq in candidates]
         # TODO: standardize kl/eig names (both are expectations, should be ekl?)
 #        pdb.set_trace()
@@ -489,18 +496,14 @@ class VBLearner(Learner):
                 metrics = self.pool.map(func, inputs)
         else:
             raise ValueError
-        p_trains = np.array([np.exp(self.hypotheses[0].logprob(seq, True)) for seq in candidates])
-#        print('p trains before normalizing: ', p_trains)
-#        print('p trains before normalizing: ', p_trains)
+
+        if p_trains is None:
+            p_trains = np.array([np.exp(self.hypotheses[0].logprob(seq, True)) for seq in candidates])
         p_trains /= p_trains.sum()
-#        print('p trains: ', p_trains)
         assert np.isclose(p_trains.sum(), 1.0)
 
 #        print('p trains: ', p_trains)
-#        print(metric, metrics)
         expectation = (p_trains * metrics).sum()
-#        print(metric, metrics)
-#        print('expected metric: ', expectation)
         return expectation 
 
     def get_train_candidate(self, n_candidates, obs_set):
@@ -522,22 +525,51 @@ class VBLearner(Learner):
         # get train
         if np.random.random() < self.propose_train or self.strategy_name == "train":
             self.chosen_strategies.append(chosen_strategy)
+            self.chosen_cand_types.append(chosen_strategy)
             return self.get_train_candidate(n_candidates, obs_set)
 
         candidates = []
+        print('proportion edits:', prop_edits)
+        if "train" not in self.seqs_by_strategy:
+            print("setting num_edits = 0 because there are no train observations")
+            num_edits = 0
+        else:
+            num_edits = int(prop_edits * n_candidates)
+        num_random = n_candidates - num_edits
+        assert num_edits + num_random == n_candidates
+        print('num edit candidates:', num_edits)
+        if self.strategy_name not in [ 
+                "eig_train_mixed", 
+                "eig_train_history",
+                "eig_train_model",
+                "kl_train_mixed", 
+                "kl_train_history",
+                "kl_train_model"]:
+            # only want editec candidates if working with mixed strategies (otherwise, have no train candidates to look back on -- TODO: implement also for any sequences that have been shown with positive label?)
+            assert num_edits == 0
+
         while len(candidates) == 0:
-            candidates = [self.dataset.random_seq() for _ in range(n_candidates)]
+            candidates = [self.dataset.random_seq() for _ in range(num_random)]
             candidates = [c for c in candidates if c not in obs_set]
+            candidate_types = ["random"] * len(candidates)
+            # perturb randomly selected train observations
+            # randomly sample from Train *with* replacement, bc early on, may not have seen num_edits # of observations
+            # TODO: does this mess up the consistency across runs with same random seed?
+            if num_edits > 0:
+                random_train_obs = random.choices(self.seqs_by_strategy['train'], k=num_edits)
+                edited_candidates = [self.dataset.perturb(r) for r in random_train_obs]
+                edited_candidates = [c for c in edited_candidates if c not in obs_set]
+                print("edited candidates")
+                candidates.extend(edited_candidates) 
+                candidate_types.extend(["edited"] * len(edited_candidates))
+
         # TODO: for super strategies, compute based on running averages OR have argument to propose that determines strategy, and if that is not there, default to self.strategy_name
 
         #print("candidates: ", candidates)
         #import ipdb; ipdb.set_trace()
         print(f"# candidates: {len(candidates)}")
         print(f"candidates: {(candidates)}")
-#        print(candidates)
-#        num_features = [len(self.hypotheses[0]._featurize(seq).nonzero()[0]) for seq in candidates]
-#        print('# features: ', num_features)
-#        print('mean # features: ', np.mean(num_features))
+
         if self.strategy_name == "unif" or self.propose_train > 0:
             scores = [0 for c in candidates]
         elif self.strategy_name in ["entropy", "eig", "kl", "entropy_pred"]:
@@ -636,7 +668,7 @@ class VBLearner(Learner):
 
             if choose_train:
                 train_cand = self.get_train_candidate(n_candidates, obs_set)
-                chosen_cand, chosen_strategy = train_cand, "train"
+                chosen_cand, chosen_strategy,chosen_cand_type = train_cand, "train", "train"
             else:
                 chosen_cand, chosen_strategy, chosen_cand_type = best_cand, metric, best_cand_type
             
@@ -667,6 +699,7 @@ class VBLearner(Learner):
             
             # TODO: reorganize so that appending this score happens in the same place for all strategies
             self.chosen_strategies.append(chosen_strategy)
+            self.chosen_cand_types.append(chosen_cand_type)
             return chosen_cand
         else:
             raise NotImplementedError(f"strategy {self.strategy_name} not implemented")
@@ -685,6 +718,7 @@ class VBLearner(Learner):
 
         # keep track of which strategies were chosen
         self.chosen_strategies.append(self.strategy_name)
+        self.chosen_cand_types.append(self.strategy_name)
         return best[0]
 
 class LogisticLearner(Learner):
