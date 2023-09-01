@@ -123,6 +123,7 @@ def update(ordered_feats, ordered_judgments,
         num_updates += 1
             
         if num_updates == max_updates:
+            print(f"breaking because num updates == max updates ({max_updates})")
             break
         
         if error <= best_error:
@@ -174,6 +175,8 @@ def update_one_step(probs,
         probs_off = 1 - probs
         log_probs_all_off = np.ma.log(other_feats * probs_off).sum(1)
         """
+
+        assert all([j in [1, -1] for j in set(judgments)])
 
         update_vector = (judgments * np.exp(np.clip(log_probs_all_off + log_log_alpha_ratio, -np.inf, clip_val)))
         update_sum = update_vector.sum()

@@ -570,7 +570,7 @@ class VBLearner(Learner):
         #print("candidates: ", candidates)
         #import ipdb; ipdb.set_trace()
         print(f"# candidates: {len(candidates)}")
-        print(f"candidates: {(candidates)}")
+        print(f"candidates: {[self.dataset.vocab.decode(c) for c in candidates]}")
 
         if self.strategy_name == "unif" or self.propose_train > 0:
             scores = [0 for c in candidates]
