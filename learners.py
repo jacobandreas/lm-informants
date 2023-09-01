@@ -17,7 +17,7 @@ from util import kl_bern, entropy
 from optimize import * 
 
 class Learner:
-    def __init__(self, dataset, strategy, linear_train_dataset, index_of_next_item):
+    def __init__(self, dataset, strategy, linear_train_dataset, index_of_next_item, ):
         self.dataset = dataset
         self.linear_train_dataset = linear_train_dataset
         self.index_of_next_item = index_of_next_item
@@ -167,8 +167,10 @@ class VBLearner(Learner):
             dataset, 
             strategy, 
             linear_train_dataset,index_of_next_item,
+            seed=42,
             ):
         super().__init__(dataset, strategy, linear_train_dataset, index_of_next_item)
+        self.perturb_random_state = random.Random(seed) # used for selecting edited candidates 
         self.results_by_observations = []
         self.gain_list_from_train = []
         self.gain_list_from_alterative = []
@@ -556,7 +558,7 @@ class VBLearner(Learner):
             # randomly sample from Train *with* replacement, bc early on, may not have seen num_edits # of observations
             # TODO: does this mess up the consistency across runs with same random seed?
             if num_edits > 0:
-                random_train_obs = random.choices(self.seqs_by_strategy['train'], k=num_edits)
+                random_train_obs = self.perturb_random_state.choices(self.seqs_by_strategy['train'], k=num_edits)
                 edited_candidates = [self.dataset.perturb(r) for r in random_train_obs]
                 edited_candidates = [c for c in edited_candidates if c not in obs_set]
                 print("edited candidates")

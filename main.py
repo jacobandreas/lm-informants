@@ -42,8 +42,8 @@ def eval_auc(costs, labels):
     roc_auc = metrics.auc(fpr, tpr)
     return roc_auc
 
-def eval_corrs(costs, labels, sources, items): # nb, sources comes in via TIs, and labels are human judgments. now, if soucres = 5, these are pulled off, and used for auc calculation
-    data = pd.DataFrame({'costs': costs, 'labels': labels, 'sources': sources, 'items':items})
+def eval_corrs(costs, labels, sources, items, num_phonemes, num_features): # nb, sources comes in via TIs, and labels are human judgments. now, if soucres = 5, these are pulled off, and used for auc calculation
+    data = pd.DataFrame({'costs': costs, 'labels': labels, 'sources': sources, 'items':items, 'num_phonemes': num_phonemes, 'num_features': num_features})
     '''
     print("eval corrs breakdown:")
     print(data['sources'].value_counts())
@@ -60,11 +60,23 @@ def eval_corrs(costs, labels, sources, items): # nb, sources comes in via TIs, a
     #print(group_corr)
 
     # Extract 'costs' and 'labels' columns from df2 as lists
+    
     costs = df2['costs'].tolist()
     labels = df2['labels'].tolist()
     roc_auc = eval_auc(costs, labels)
-    print(group_corr)
+    auc_results = {'auc': roc_auc}
     print("roc_auc is", roc_auc)
+
+    for num in df2['num_phonemes'].unique(): 
+        temp = df2[df2['num_phonemes']==num]
+#        print(f'num phonemes = {num} ({len(temp)})')
+#        print(temp.head(3))
+        costs = temp['costs'].tolist()
+        labels = temp['labels'].tolist()
+        roc_auc = eval_auc(costs, labels)
+        auc_results[f'auc_{num}_features']=roc_auc
+
+    print(group_corr)
     print("number of forms in auc test set is",len(df2))
     '''
     print("top 10:")
@@ -81,7 +93,7 @@ def eval_corrs(costs, labels, sources, items): # nb, sources comes in via TIs, a
     print("number of forms in full test set is",len(data))
 #    pdb.set_trace()
     '''
-    return group_corr, roc_auc, df2
+    return group_corr, auc_results, df2
 
 
 def get_broad_annotations(feature_type):
@@ -237,10 +249,13 @@ def main(args):
         sources = [int(s) for s in raw_eval_dataset['Source'].values]
         labels = raw_eval_dataset['Score'].values
         encoded_items = []
+        num_phonemes = []
+        num_features = []
         featurized_items = []
         print("Reading test set...")
         assert len(items) == len(sources)
         for item, source in tqdm(zip(items, sources), total=len(items)):
+            num_phonemes.append(len(item))
             if str(source).strip() == '1':
                 phonemes = [BOUNDARY] + item
             else:
@@ -249,6 +264,7 @@ def main(args):
             encoded_items.append(encoded_item)
 
             featurized = mean_field_scorer._featurize(encoded_item).nonzero()
+            num_features.append(len(featurized))
             featurized_items.append(featurized)
         
         eval_dataset = pd.DataFrame({
@@ -256,8 +272,18 @@ def main(args):
             'label': labels, 
             'source': sources, 
             'encoded': encoded_items, 
-            'featurized': featurized_items
+            'featurized': featurized_items,
+            'num_phonemes': num_phonemes,
+            'num_features': num_features,
             })
+        print("eval dataset:")
+        print(eval_dataset.head(5))
+        
+        print("breakdown of auc test set by num phonemes:")
+        for num in eval_dataset['num_phonemes'].unique():
+            temp = eval_dataset[eval_dataset['source']==5]
+            temp = temp[temp['num_phonemes']==num]
+            print(f'{num}: {len(temp)}')
         print("breakdown by test type: ")
         print(eval_dataset['source'].value_counts())
         
@@ -359,7 +385,7 @@ def main(args):
                 if strategy not in logs:
                     logs[strategy] = []
                 log = []
-                learner = learners.VBLearner(dataset, strategy=strategy, linear_train_dataset = linear_train_dataset, index_of_next_item = index_of_next_item) 
+                learner = learners.VBLearner(dataset, strategy=strategy, linear_train_dataset = linear_train_dataset, index_of_next_item = index_of_next_item, seed=run) 
                 learner.initialize(n_hyps=1, log_log_alpha_ratio=args.log_log_alpha_ratio, prior_prob=args.prior_prob, converge_type=args.converge_type, feature_type=args.feature_type, tolerance=args.tolerance, warm_start=args.warm_start, features=filtered_features, max_updates_propose=args.max_updates_propose, max_updates_observe=args.max_updates_observe)
 
                 all_features = learner.all_features(return_indices=True)
@@ -542,6 +568,9 @@ def main(args):
                         items, costs = [], []
                         labels = list(eval_dataset['label'].values)
                         sources = list(eval_dataset['source'].values)
+                        num_phonemes = list(eval_dataset['num_phonemes'].values)
+                        num_features = list(eval_dataset['num_features'].values)
+
                         for item_idx, row in eval_dataset.iterrows():
                             item = row['item']
                             str_item = " ".join(item)
@@ -635,7 +664,8 @@ def main(args):
                                 aucs.append(auc)
                                 
                             elif args.feature_type == "english":
-                                corrs_df, auc, costs_df = eval_corrs(costs, labels, sources, items)
+                                corrs_df, auc_results, costs_df = eval_corrs(costs, labels, sources, items, num_phonemes, num_features)
+                                auc = auc_results['auc']
                                 log_results["auc"] = auc
                                 aucs.append(auc)
                                 c = wandb.Table(dataframe=costs_df)
@@ -647,6 +677,7 @@ def main(args):
                                
                                 corrs_df = corrs_df.set_index('sources')['spearman_corr']
                                 log_results.update({f"human_correlation_{k}": v for k, v in corrs_df.to_dict().items()})
+                                log_results.update({f"auc_results/{k}": v for k, v in auc_results.items()})
 
                             else:
                                 raise NotImplementedError("Please select a valid feature type!")
