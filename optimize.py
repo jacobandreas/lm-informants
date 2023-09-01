@@ -96,9 +96,9 @@ def update(ordered_feats, ordered_judgments,
             probs = new_probs
 #            error = abs(difference_vector).sum()
             error = abs(difference_vector).mean()
-            if num_updates > 400:
-                if num_updates % 250 == 0:
-                    print(f"  Update {num_updates}, error: {error}")
+#            if num_updates > 400:
+#                if num_updates % 250 == 0:
+#                    print(f"  Update {num_updates}, error: {error}")
 
             step_results["error"] = error
             results.append(step_results)
@@ -129,9 +129,9 @@ def update(ordered_feats, ordered_judgments,
         if error <= best_error:
             best_error = error
         else:
-            if verbose:
-                print(f"error stopped decreasing after {num_updates} updates")
-                print('difference: ', difference_vector.round(3))
+#            if verbose:
+#            print(f"breaking because error stopped decreasing after {num_updates} updates")
+#            print('difference: ', difference_vector.round(3))
 #                assert False
             break
         

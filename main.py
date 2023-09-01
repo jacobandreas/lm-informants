@@ -788,14 +788,13 @@ def main(args):
 
                     # print(learner.hypotheses[0].entropy(candidate, debug=True))
 
-                    if auc_streak >= 5:
-                        break
+#                    if auc_streak >= 5:
+#                        break
 
                     
                 logs[strategy].append(log)
                 # create a scatter plot using wandb.plot()
 
-                #wandb_run.finish()
 #                data = wandb.Api().run.scan_history(keys=['step', 'auc', 'chosen_candidate'])
 #                fig = wandb.plot.scatter(data, x='x', y='y', hover_data=['chosen_candidate'])
 #                wandb.log({'interactive_scatter_plot': fig})
@@ -821,6 +820,25 @@ def main(args):
                     plt.legend(markers, temp_color_map.keys(), numpoints=1)
                     wandb.log({"custom_plots/auc": wandb.Image(fig)})
                     plt.close()
+
+                mean_auc = get_mean_auc(aucs)
+                wandb.log({'end_stats/mean_auauc': mean_auc})
+                wandb_run.finish()
+
+def get_mean_auc(values, length=None):
+    """ if length is not None, extend values to be length long """ 
+
+    if length is not None:
+        assert length >= len(values)
+        num_to_extend = length - len(values)
+        values = values + [values[-1]]*num_to_extend 
+    area = 0
+    for i in range(len(values) - 1):
+        # TODO: is abs() here robust?
+        area += (values[i] + values[i + 1]) / 2.0 * 1
+    mean_area = area / len(values)
+    return mean_area
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--exp_dir", type=str, default="./")
@@ -883,7 +901,7 @@ if __name__ == "__main__":
     parser.add_argument('--num_init', default=0, type=int) 
     
     parser.add_argument('--train_expect_type', 
-            default=None, 
+            default='proposal_samples', 
             choices=[
                 None,
                 'proposal_samples', 
@@ -904,11 +922,12 @@ if __name__ == "__main__":
     parser.set_defaults(metric_expect_assume_labels=False)
 
     strategies = [
+            "entropy", "entropy_pred", "unif", "train",
+            "eig", "kl", 
             "kl_train_model",
             "eig_train_model",
             "eig_train_history", "eig_train_mixed",
             "kl_train_mixed", "kl_train_history",
-            "eig", "kl", "entropy", "entropy_pred", "unif", "train"
             ]
     parser.add_argument('--strategies', nargs='+', required=False, default=strategies)
     parser.add_argument('--pool_prop_edits', default=0.0, type=parse_proportion, help='proportion of proposal pool consisting of edited candidates from lexicon')
