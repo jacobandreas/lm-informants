@@ -13,7 +13,8 @@ do
 		--num_steps 150 --num_runs 3 --tags "0901_test_atr" \
 		--feature_type "atr_harmony" --eval_humans \
 		--max_updates_observe $MAX_UPDATES \
-		--max_updates_propose $MAX_UPDATES 
+		--max_updates_propose $MAX_UPDATES \
+	        --start_run 3	
 #		--strategies eig 
 		done
 	done
