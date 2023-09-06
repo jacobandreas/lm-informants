@@ -10,11 +10,11 @@ do
 		--log_log_alpha_ratio ${LOG} \
 		--prior_prob ${PRIOR} \
 		--wandb_project $WANDB_PROJECT \
-		--num_steps 150 --num_runs 3 --tags "0901_test_atr" \
+		--num_steps 150 --num_runs 1 --tags "0906_aws" \
 		--feature_type "atr_harmony" --eval_humans \
 		--max_updates_observe $MAX_UPDATES \
 		--max_updates_propose $MAX_UPDATES \
-	        --start_run 3	
+	        --start_run 9	
 #		--strategies eig 
 		done
 	done
