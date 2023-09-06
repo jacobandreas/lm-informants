@@ -1,3 +1,4 @@
+import warnings
 import numpy as np
 from util import kl_bern, entropy
 
@@ -188,7 +189,8 @@ def update_one_step(probs,
         # TODO: want a one-sided clip?
         log_score = np.clip(log_score, -clip_val, clip_val)
 
-        np.warnings.filterwarnings('ignore', 'overflow')
+#        np.warnings.filterwarnings('ignore', 'overflow')
+        warnings.filterwarnings('ignore', 'overflow')
 
         posterior = 1 / (1 + np.exp(-log_score))
         posterior = np.clip(posterior, 1e-5, 1-1e-5)
