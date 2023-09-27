@@ -451,6 +451,10 @@ def main(args):
                     if i < N_INIT:
                         candidate = init_examples[i]
                         judgment = informant.judge(candidate)
+                        if args.reverse_judgments:
+                            assert isinstance(judgment, bool)
+                            judgment = not judgment
+                            assert isinstance(judgment, bool)
                         learner.observe(candidate, judgment, update=False)
                         continue
     
@@ -474,6 +478,10 @@ def main(args):
                     featurized_candidate = mean_field_scorer._featurize(candidate).nonzero()[0]
                     encountered_features.update(set(featurized_candidate))
                     judgment = informant.judge(candidate)
+                    if args.reverse_judgments:
+                        assert isinstance(judgment, bool)
+                        judgment = not judgment
+                        assert isinstance(judgment, bool)
                     #prior_probability_of_accept = learner.cost(candidate)
 
 
@@ -875,6 +883,9 @@ if __name__ == "__main__":
     parser.add_argument('--shuffle_train', action='store_true')
     parser.add_argument('--no-shuffle_train', dest='shuffle_train', action='store_false')
     parser.set_defaults(shuffle_train=True)
+    
+    parser.add_argument('--reverse_judgments', action='store_true')
+    parser.set_defaults(reverse_judgments=False)
 
     parser.add_argument('--profile_name', default='my_profile')
 
@@ -934,6 +945,9 @@ if __name__ == "__main__":
 
 
     args = parser.parse_args()
+
+    if args.reverse_judgments and args.metric_expect_assume_labels:
+        raise NotImplementedError("Not yet implemented to reverse judgments when assuming labels for metric expectation in forward-looking strategies; need to reverse labels there too")
 
     if args.wandb_project is not None:
         args.do_plot_wandb = True
