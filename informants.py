@@ -39,7 +39,10 @@ class HWInformant:
         if seq in self.set_dataset:
             print(f"seq in lexicon, returning True:\t{seq}")
             return True
-
+        
+#        print('seq:', seq)
+#        print('cost:',self.scorer.cost(seq))
+        # Hacky, but atr_harmony feature weights for bad features are 10.0 (/data/hw/atr_harmony_feature_weights.txt), so will always be False for any sequence that has one bad feature and 0 otherwise
         return self.scorer.cost(seq) < 2.53 # this is a hack!
         #return self.scorer.cost(seq) == 0
 

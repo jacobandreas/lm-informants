@@ -1,4 +1,5 @@
-WANDB_PROJECT=0901_atr
+#WANDB_PROJECT=0901_atr
+WANDB_PROJECT=0926_test
 
 for RUN in 7 
 do
@@ -19,7 +20,9 @@ do
 			--feature_type "atr_harmony" --eval_humans \
 			--max_updates_observe $MAX_UPDATES \
 			--max_updates_propose $MAX_UPDATES \
-			--start_run ${RUN}	
+			--start_run ${RUN} \
+            --strategies unif \
+            --reverse_judgments
 	#		--strategies eig 
 			done
 		done

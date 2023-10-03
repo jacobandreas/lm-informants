@@ -537,6 +537,8 @@ class HWScorer:
     def cost(self, seq, debug=False):
         seq_cost = 0
         for ngram_feature, feature_cost in self.applicable_features(seq):
+#            print("ngram_feature:", ngram_feature)
+#            print("feature_cost:", feature_cost)
             if debug:
                 print(self.pp_feature(ngram_feature))
             seq_cost += feature_cost

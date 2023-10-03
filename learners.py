@@ -178,7 +178,15 @@ class VBLearner(Learner):
 
         self.pool = multiprocessing.Pool(processes=multiprocessing.cpu_count())
         
-    def initialize_hyp(self, log_log_alpha_ratio=1, prior_prob=0.5, converge_type="symmetric", feature_type="atr_harmony", tolerance=0.001, warm_start=False, features=None):
+    def initialize_hyp(self, 
+            log_log_alpha_ratio=1, 
+            prior_prob=0.5, 
+            converge_type="symmetric", 
+            feature_type="atr_harmony", 
+            tolerance=0.001, 
+            warm_start=False, 
+            features=None,
+            ):
         return scorers.MeanFieldScorer(
                 self.dataset, 
                 log_log_alpha_ratio=log_log_alpha_ratio, 
