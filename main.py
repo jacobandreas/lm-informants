@@ -234,7 +234,10 @@ def main(args):
             phonemes = [BOUNDARY] + item + [BOUNDARY]
             # print(phonemes,"is phonemes")
             encoded_word = dataset.vocab.encode(phonemes)  # expects a list of arpabet chars
-            featurized = mean_field_scorer._featurize(encoded_word).nonzero()
+            # TODO: added [0] here, but not necessary?
+            featurized = mean_field_scorer._featurize(encoded_word).nonzero()[0]
+#            print("reading test set featurized: ", featurized)
+#            print("reading test set featurized [0]: ", featurized[0])
             broad_test_set.append((item, encoded_word, featurized))
 
         broad_licit_annotations, broad_TI_annotations = get_broad_annotations(args.feature_type)
@@ -363,6 +366,7 @@ def main(args):
                             "pool_prop_edits": args.pool_prop_edits,
                             "metric_expect_assume_labels": args.metric_expect_assume_labels,
                             "train_expect_type": args.train_expect_type,
+                            "reverse_judgments": args.reverse_judgments,
                             }
                     tags = [] if args.tags is None else [t.strip() for t in args.tags.split(",")]
                     wandb_run = wandb.init(config=config, project=args.wandb_project, name=strategy, reinit=True, tags = tags, entity="lm-informants") 
@@ -557,7 +561,10 @@ def main(args):
                         items, labels, TIs, costs = [], [], [], []
 
                         for item_idx, (item, encoded_word, featurized) in tqdm(enumerate(broad_test_set)):
+                            #print("featurized in evaluating: ", featurized)
                             c = learner.cost(encoded_word, features=featurized)
+#                            print('cost with featurized:', c)
+#                            print('cost with featurized[0]:', learner.cost(encoded_word, features=featurized[0]))
                             costs.append(c)
 
                             str_item = " ".join(item)

@@ -579,7 +579,13 @@ class VBLearner(Learner):
         #import ipdb; ipdb.set_trace()
         print(f"# candidates: {len(candidates)}")
 #        print(f"candidates: {[self.dataset.vocab.decode(c) for c in candidates]}")
+        num_features = [len(self.hypotheses[0]._featurize(seq).nonzero()[0]) for seq in candidates]
+        print('# features: ', num_features)
+        print('mean # features: ', np.mean(num_features))
         print("candidates: ", candidates)
+        labels = [informant.judge(c) for c in candidates]
+        print("labels: ", labels)
+        print("prop pos: ", sum(labels)/len(labels))
 
         if self.strategy_name == "unif" or self.propose_train > 0:
             scores = [0 for c in candidates]
