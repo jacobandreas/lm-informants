@@ -1,0 +1,8 @@
+*[+I][-I]	(tier=default)	10.0
+*[-I][+I]	(tier=default)	10.0
+*[+G][-G]	(tier=default)	10.0
+*[-G][+G]	(tier=default)	10.0
+*[+H][-H]	(tier=default)	10.0
+*[-H][+H]	(tier=default)	10.0
+*[+F][-F]	(tier=default)	10.0
+*[-F][+F]	(tier=default)	10.0
