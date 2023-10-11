@@ -562,9 +562,12 @@ def main(args):
 
                             str_item = " ".join(item)
                             out_human_evals.write(str(step)+','+str(run)+','+str(strategy)+','+str(N_INIT)+","+str_item+","+str(c)+","+str("LEARNER")+",BroadTest"+'\n')
-                            isLicit = int(broad_licit_annotations[str_item])
+                            isLicit = (broad_licit_annotations[str_item])
+                            assert isinstance(isLicit, bool)
+                            if args.reverse_judgments:
+                                isLicit = not isLicit
                             isTI = int(broad_TI_annotations[str_item])
-                            labels.append(isLicit)
+                            labels.append(int(isLicit))
                             items.append(str_item)
                             TIs.append(isTI)
                             
