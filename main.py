@@ -263,6 +263,7 @@ def main(args):
             })
         print("eval dataset:")
         print(eval_dataset.head(5))
+        print('encoded:', eval_dataset['encoded'])
         
     elif eval_humans and args.feature_type == "english":
         #_t = read_in_blicks("TI_test.csv")
