@@ -17,6 +17,9 @@ setwd("G:/My Drive/MIT/Research/lm-informants/data/MakeEnglishTestSets")
 ```{r}
 dat <- read_csv("WordsAndScoresFixed_newer.csv") %>% 
   mutate(length = str_count(Word," ")+1)
+
+the_rest <- dat %>% 
+  filter(Source != 5)
 l <- c()
 group_five <- dat %>% 
   filter(Source == 5) 
@@ -51,6 +54,11 @@ l <- rbind(l,goods,bads)
   
 }
 group_five_subsampled <- bind_rows(l)
+
+full_df_subsampled <- rbind(the_rest,group_five_subsampled) %>% 
+  select(-length)
+
+write_csv(full_df_subsampled,"WordsAndScoresFixed_newest.csv")
 
 ```
 

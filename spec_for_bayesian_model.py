@@ -20,7 +20,7 @@ def logistic_regression(data, labels):
     logits = torch.matmul(data, weights)
 
     # Define the likelihood
-    likelihood = dist.Bernoulli(logits=logits)
+    likelihood = dist.Bernoulli(logits=logits) # likelihood of heads
 
     # Sample the labels from the likelihood
     with pyro.plate("data_plate", num_samples):
