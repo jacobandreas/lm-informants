@@ -203,6 +203,7 @@ def main(args):
         assert os.path.exists(lexicon_file_name) 
     dataset = datasets.load_lexicon(lexicon_file_name, min_length=args.min_length, max_length=args.max_length)
     linear_train_dataset = dataset.data
+    print("len of train data:", len(linear_train_dataset))
     random = np.random.RandomState(0)
     if args.shuffle_train:
         random.shuffle(linear_train_dataset)
@@ -254,6 +255,19 @@ def main(args):
 #        pdb.set_trace()
         encoded_items = [dataset.vocab.encode(phon) for phon in phonemes]
         labels = [informant.judge(encod) for encod in encoded_items]
+       
+        """
+        # sanity check oracle judgments
+        for item, label in zip(items, labels):
+            temp_item = "".join(item) 
+            bad_structures = ["FG", "GF", "FH", "HF", "FI", "IF", "GH", "HG", "GI", "IG", "HI", "IH"]
+            # if judgment is True, should have none of the bad items
+            if label:
+                assert all([struct not in temp_item for struct in bad_structures]), f"item should not have any bad structures but does\nITEM:{temp_item}"
+            # if judgment is False, should have one of the bad items
+            else:
+                assert any([struct in temp_item for struct in bad_structures]), f"item should have a bad structure but doesn't\nITEM:{temp_item}"
+        """
         featurized_items = [mean_field_scorer._featurize(encod).nonzero()[0] for encod in encoded_items]
         eval_dataset = pd.DataFrame({
             'item': items, 
@@ -263,6 +277,7 @@ def main(args):
             })
         print("eval dataset:")
         print(eval_dataset.head(5))
+        print("eval breakdown:", eval_dataset['label'].value_counts())
         
     elif eval_humans and args.feature_type == "english":
         #_t = read_in_blicks("TI_test.csv")
@@ -458,6 +473,11 @@ def main(args):
                 # z.close()
                 auc_streak = 0
                 steps, aucs = [], []
+                
+                if args.feature_type in ["atr_four", "english"]:
+                    print("eval dataset:")
+                    print(eval_dataset.head(5))
+                    print("eval breakdown:", eval_dataset['label'].value_counts())
 
                 for i in range(args.num_steps):
                     print("\n\n\n")
@@ -627,11 +647,12 @@ def main(args):
 
                     # TODO: implement broad_human_evals_writer
                     elif eval_humans and args.feature_type == "atr_four":
-                        items, costs, labels = [], [], []
+                        items, costs, labels, featurized_items = [], [], [], []
                         for item_idx, row in eval_dataset.iterrows():
                             item = row['item']
                             c = learner.cost(row['encoded'])
                             costs.append(c)
+                            featurized_items.append(row['featurized'])
                             items.append(item)
                             labels.append(row['label'])
                     
@@ -702,6 +723,17 @@ def main(args):
                                 log_results["auc"] = auc 
                                 aucs.append(auc)
                             elif args.feature_type == "atr_four":
+                                print("items[:5]:", items[:5])
+                                print("costs[:5]:", costs[:5])
+                                print("labels[:5]:", labels[:5])
+                                print("num featurized[:5]:", [len(f) for f in featurized_items[:5]])
+
+                                print("items[-5:]:", items[-5:])
+                                print("costs[-5:]:", costs[-5:])
+                                print("labels[-5:]:", labels[-5:])
+                                print("num featurized[-5:]:", [len(f) for f in featurized_items[-5:]])
+
+                                print("len eval: ", len(costs))
                                 auc = eval_auc(costs, labels)
                                 log_results["auc"] = auc
                                 aucs.append(auc)
@@ -988,6 +1020,10 @@ if __name__ == "__main__":
 
     if args.reverse_judgments and args.metric_expect_assume_labels:
         raise NotImplementedError("Not yet implemented to reverse judgments when assuming labels for metric expectation in forward-looking strategies; need to reverse labels there too")
+    
+    # Think reverse judgments should also work for english, but not for atr_four (because use oracle to judge test set labels, need to reverse those too)
+    if args.reverse_judgments and args.feature_type not in ["atr_harmony"]:
+        raise NotImplementedError()
 
     if args.wandb_project is not None:
         args.do_plot_wandb = True

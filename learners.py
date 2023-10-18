@@ -518,9 +518,10 @@ class VBLearner(Learner):
 
     def get_train_candidate(self, n_candidates, obs_set):
         #print(self.linear_train_dataset)
+        print("len of train data:", len(self.linear_train_dataset))
         while True:
             seq = self.linear_train_dataset[self.index_of_next_item]
-            #print("proposing item",seq,"with index",self.index_of_next_item)
+            print("proposing item",seq,"with index",self.index_of_next_item)
             self.index_of_next_item += 1
             #seq = self.dataset.random_example()
             if seq not in obs_set:
@@ -529,7 +530,8 @@ class VBLearner(Learner):
     def propose(self, n_candidates, forbidden_data, length_norm, train_expect_type, metric_expect_assume_labels=False, verbose=False, prop_edits=0.0, informant=None):
         obs_set_a = set(s for s, _, j in self.observations)
         obs_set = set(s for s in (forbidden_data+list(obs_set_a)))
-        
+       
+        print("num obs: ", len(obs_set))
         chosen_strategy = self.strategy_name
         
         # get train
