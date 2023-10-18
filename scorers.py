@@ -55,6 +55,7 @@ class MeanFieldScorer: # this is us
             prior_prob=0.5, 
             converge_type="symmetric",
             feature_type="atr_harmony",
+            phoneme_feature_file=None,
             tolerance=0.001,
             warm_start=False,
             features=None,
@@ -77,7 +78,7 @@ class MeanFieldScorer: # this is us
         self.converge_type = converge_type
         
         self.dataset = dataset
-        self.phoneme_features, self.feature_vocab = _load_phoneme_features(dataset, self.feature_type)
+        self.phoneme_features, self.feature_vocab = _load_phoneme_features(dataset, self.feature_type, phoneme_feature_file=phoneme_feature_file)
         self.ngram_features = {}
         for ff in it.product(range(len(self.feature_vocab)), repeat=self.ORDER):
             # if features is not None, filter enumerated features to make sure they are in given features
@@ -511,15 +512,21 @@ class VotingScorer:
 
 
 class HWScorer:
-    def __init__(self, dataset, feature_type="atr_harmony", ngram_features=None):
+    def __init__(self, dataset, 
+            feature_type="atr_harmony", 
+            phoneme_feature_file=None,
+            ngram_feature_file=None,
+            ngram_features=None):
         self.dataset = dataset
         self.feature_type = feature_type
         print("feature type: ", feature_type)
 
-        self.phoneme_features, self.feature_vocab = _load_phoneme_features(dataset, self.feature_type)
+        self.phoneme_features, self.feature_vocab = _load_phoneme_features(dataset, self.feature_type, phoneme_feature_file=phoneme_feature_file)
+
         if ngram_features is None:
-            self.ngram_features = _load_ngram_features(self.feature_vocab, self.feature_type)
+            self.ngram_features = _load_ngram_features(self.feature_vocab, self.feature_type, ngram_feature_file=ngram_feature_file)
         else:
+            assert ngram_feature_file is None, f'ngram_features is supplied, but ngram_feature_file is also supplied'
             self.ngram_features = ngram_features
 
 
@@ -635,11 +642,16 @@ class HWScorer:
         #    print(self.penalty(), new.penalty())
         return new
 
-def _load_phoneme_features(dataset, feature_type):
+def _load_phoneme_features(dataset, feature_type, phoneme_feature_file=None):
     phoneme_features = {}
     feature_vocab = Vocab()
     
-    file_name = os.path.join("data/hw", f"{feature_type}_features.txt") 
+    if phoneme_feature_file is None:
+        file_name = os.path.join("data/hw", f"{feature_type}_features.txt") 
+    else:
+        file_name = phoneme_feature_file
+
+    print(f"Reading phoneme features from: {file_name}")
 
     with open(file_name) as reader:
         header = next(reader)
@@ -668,9 +680,15 @@ def _load_phoneme_features(dataset, feature_type):
     return phoneme_features, feature_vocab
 
 
-def _load_ngram_features(feature_vocab, feature_type):
+def _load_ngram_features(feature_vocab, feature_type, ngram_feature_file=None):
     ngram_features = {2: [], 3: []}
-    file_name = os.path.join("data/hw", f"{feature_type}_feature_weights.txt") 
+
+    if ngram_feature_file is None:
+        file_name = os.path.join("data/hw", f"{feature_type}_feature_weights.txt") 
+    else:
+        file_name = ngram_feature_file
+
+    print(f'Loading ngram features from: {file_name}')
 
     with open(file_name) as reader:
         for line in reader:

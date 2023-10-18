@@ -1,11 +1,11 @@
 import os
+import re
 import numpy as np
 import random
 random.seed(3)
 
 def make_a_syllable(plus_atr_vowels,minus_atr_vowels, a, consonants, atr_status_of_preceding_syllable):
     onset = np.random.choice(consonants,1,replace=True)
-    atr_status_of_this_syllable = None
     if atr_status_of_preceding_syllable == None:
         vowel = np.random.choice(plus_atr_vowels + minus_atr_vowels + a, 1, replace=True)
         if vowel in plus_atr_vowels:
@@ -35,15 +35,9 @@ def make_a_syllable(plus_atr_vowels,minus_atr_vowels, a, consonants, atr_status_
     else:
         print("yikes, something is wrong!")
         assert False
-    #print(onset,vowel)
-    #t = (onset.tolist()+vowel.tolist())
-    #print(t)
+
     syllable = "".join(onset.tolist()+vowel.tolist())
-    #word = onset+vowel
-    #word = word.tolist()
-    #print(word)
-    #word = "".join((onset+vowel).tolist())
-    #print(onset,vowel,type(onset),type(vowel),word,type(word))
+
     print("my incoming atr status was",atr_status_of_preceding_syllable,"and i made a syllable",syllable,"and I'm returing an atr status of",atr_status_of_this_syllable)
     return syllable, atr_status_of_this_syllable
 
@@ -53,16 +47,21 @@ def make_a_word(plus_atr_vowels,minus_atr_vowels,a, consonants, length_in_sylls,
     print("starting a new word!")
     for _ in range(length_in_sylls):
         syll, atr_status_of_current_syllable = make_a_syllable(plus_atr_vowels,minus_atr_vowels, a, consonants, atr_status_of_preceding_syllable)
-        if follow_atr_rules:
+        if follow_atr_rules == "agree":
             atr_status_of_preceding_syllable = atr_status_of_current_syllable
+        elif follow_atr_rules == "disagree":
+            raise NotImplementedError("disagree implemented in different function")
+        else:
+            atr_status_of_preceding_syllable = None
         print(atr_status_of_preceding_syllable,syll,atr_status_of_current_syllable)
         word += " "+syll
-    #syll, atr_status_of_current_syllable = make_a_syllable(plus_atr_vowels,minus_atr_vowels,a,consonants,atr_status_of_preceding_syllable)
-    ##    atr_status_of_preceding_syllable = atr_status_of_current_syllable
-    #    word += " " + syll
+
     return word.strip()
 
+
 def main(vocab_size, plus_atr_vowels,minus_atr_vowels, a,consonants, λ):
+
+    # make a training set with ATR agreement
     training_lexicon = []
     for _ in range(int(round(vocab_size/10))):
         length_in_sylls = 0
@@ -71,9 +70,9 @@ def main(vocab_size, plus_atr_vowels,minus_atr_vowels, a,consonants, λ):
             length_in_sylls = possible_length
 
         print(length_in_sylls, type(length_in_sylls))
-        follow_atr_rules = True
+        follow_atr_rules = "agree" # "agree" gets harmony except across a, "disagree" gets disagreement except across a, None gets no harmony enforced
         word = make_a_word(plus_atr_vowels,minus_atr_vowels,a,consonants,length_in_sylls,follow_atr_rules)
-        if word not in training_lexicon:
+        if word not in training_lexicon and word != None:
             training_lexicon.append(word)
 
     out_lexicon = open("./data/hw/atr_harmony_lexicon.txt", "w", encoding='utf8')
@@ -84,6 +83,7 @@ def main(vocab_size, plus_atr_vowels,minus_atr_vowels, a,consonants, λ):
         out_lexicon.write(item + '\n')
     out_lexicon.close()
 
+    # make a test set with no ATR agreement
     test_set = []
     for _ in range(vocab_size):
         length_in_sylls = 0
@@ -92,7 +92,7 @@ def main(vocab_size, plus_atr_vowels,minus_atr_vowels, a,consonants, λ):
             length_in_sylls = possible_length
 
         print(length_in_sylls, type(length_in_sylls))
-        follow_atr_rules = False
+        follow_atr_rules = None
         word = make_a_word(plus_atr_vowels, minus_atr_vowels, a, consonants, length_in_sylls, follow_atr_rules)
         if word not in test_set and word not in training_lexicon:
             test_set.append(word)
@@ -100,7 +100,8 @@ def main(vocab_size, plus_atr_vowels,minus_atr_vowels, a,consonants, λ):
     for item in test_set:
         out_test.write(item + '\n')
 
-    #return lexicon
+   
+    out_test.close()
 
 
 
@@ -120,7 +121,7 @@ vocab_size = 1000
 
 
 
-# main(vocab_size,plus_atr_vowels,minus_atr_vowels,a,consonants,λ)
+main(vocab_size,plus_atr_vowels,minus_atr_vowels,a,consonants,λ)
 
 o = open("all_sylls.csv",'w',encoding='utf8')
 
