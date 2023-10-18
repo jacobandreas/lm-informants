@@ -1,3 +1,4 @@
+import random
 from util import ngrams
 
 class NGramCountInformant:
@@ -46,6 +47,38 @@ class HWInformant:
         return self.scorer.cost(seq) < 2.53 # this is a hack!
         #return self.scorer.cost(seq) == 0
 
+    def cost(self, seq):
+        #return self.scorer.cost(seq) < 3
+        return self.scorer.cost(seq)
+
+class TrigramInformant:
+    def __init__(self, dataset, scorer, seed, num_bad_features,
+    ):
+        self.dataset = dataset
+        self.set_dataset = set(dataset.data)
+        self.scorer = scorer
+
+        # sample bad features once according to seed
+        random.seed(seed)
+
+        print("Sampling bad features...")
+        self.bad_features = random.choices(range(len(scorer.ngram_features)), k=num_bad_features)
+        print(self.bad_features)
+
+    def judge(self, seq):
+        # check if in lexicon, return True if so
+        if seq in self.set_dataset:
+            print(f"seq in lexicon, returning True:\t{seq}")
+            return True
+
+        featurized = self.scorer._featurize(seq).nonzero()[0]
+
+        # check if any of the features are in the sampled bad features
+        if any([f in self.bad_features for f in featurized]):
+            return False
+        else:
+            return True
+        
     def cost(self, seq):
         #return self.scorer.cost(seq) < 3
         return self.scorer.cost(seq)

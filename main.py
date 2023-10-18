@@ -208,9 +208,6 @@ def main(args):
         random.shuffle(linear_train_dataset)
 
     hw_scorer = scorers.HWScorer(dataset, feature_type=args.feature_type)
-    eval_informant = informants.HWInformant(dataset, hw_scorer)
-    informant = eval_informant
-
     if args.feature_type == "english":
         filtered_features = pd.read_csv('all_feats_in_data_english.csv', header=None)[0].values
         print(filtered_features)
@@ -219,6 +216,18 @@ def main(args):
         filtered_features = None
 
     mean_field_scorer = scorers.MeanFieldScorer(dataset, feature_type=args.feature_type, features=filtered_features)
+
+    if args.use_trigram_oracle:
+        if args.feature_type != "atr_harmony":
+            raise NotImplementedError("Not yet implemented for feature_type != atr_harmony")
+        print("hardcoding # bad features = 16, but do this automatically based on the phoneme features...")
+        num_bad_features = 16
+        informant = informants.TrigramInformant(dataset, mean_field_scorer, args.trigram_oracle_seed, num_bad_features) 
+    else:
+        eval_informant = informants.HWInformant(dataset, hw_scorer)
+        informant = eval_informant
+
+
     print("len(probs):", (mean_field_scorer.probs).shape)
     if get_prior_prob_of_test_set:
         prior_probs_writer = get_csv_writer("prior_probabilities_of_test_set_items.csv", args.exp_dir)
@@ -384,6 +393,8 @@ def main(args):
                             "metric_expect_assume_labels": args.metric_expect_assume_labels,
                             "train_expect_type": args.train_expect_type,
                             "reverse_judgments": args.reverse_judgments,
+                            "use_trigram_oracle": args.use_trigram_oracle,
+                            "trigram_oracle_seed": args.trigram_oracle_seed,
                             }
                     tags = [] if args.tags is None else [t.strip() for t in args.tags.split(",")]
                     wandb_run = wandb.init(config=config, project=args.wandb_project, name=strategy, reinit=True, tags = tags, entity="lm-informants") 
@@ -927,6 +938,11 @@ if __name__ == "__main__":
     
     parser.add_argument('--reverse_judgments', action='store_true')
     parser.set_defaults(reverse_judgments=False)
+   
+    parser.add_argument('--use_trigram_oracle', action='store_true', help='whether or not to use trigram oracle')
+    parser.set_defaults(use_trigram_oracle=False)
+
+    parser.add_argument('--trigram_oracle_seed', default=None, type=int, help='Seed to use for sampling bad features *if* use_trigram_oracle; otherwise ignored')
 
     parser.add_argument('--profile_name', default='my_profile')
 
@@ -986,6 +1002,9 @@ if __name__ == "__main__":
 
 
     args = parser.parse_args()
+
+    if args.trigram_oracle_seed is not None and not args.use_trigram_oracle:
+        print(f"Warning: not using trigram oracle (args.use_trigram_oracle={args.use_trigram_oracle}) but got trigram_oracle_seed != None (args.trigram_oracle_seed={args.trigram_oracle_seed}); ignoring the seed")
 
     if args.reverse_judgments and args.metric_expect_assume_labels:
         raise NotImplementedError("Not yet implemented to reverse judgments when assuming labels for metric expectation in forward-looking strategies; need to reverse labels there too")
