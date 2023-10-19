@@ -539,7 +539,7 @@ class VBLearner(Learner):
             return self.get_train_candidate(n_candidates, obs_set)
 
         candidates = []
-        print('proportion edits:', prop_edits)
+#        print('proportion edits:', prop_edits)
         if "train" not in self.seqs_by_strategy:
             print("setting num_edits = 0 because there are no train observations")
             num_edits = 0
@@ -580,12 +580,12 @@ class VBLearner(Learner):
         print(f"# candidates: {len(candidates)}")
 #        print(f"candidates: {[self.dataset.vocab.decode(c) for c in candidates]}")
         num_features = [len(self.hypotheses[0]._featurize(seq).nonzero()[0]) for seq in candidates]
-        print('# features: ', num_features)
-        print('mean # features: ', np.mean(num_features))
-        print("candidates: ", candidates)
+#        print('# features: ', num_features)
+#        print('mean # features: ', np.mean(num_features))
+#        print("candidates: ", candidates)
         labels = [informant.judge(c) for c in candidates]
-        print("labels: ", labels)
-        print("prop pos: ", sum(labels)/len(labels))
+#        print("labels: ", labels)
+#        print("prop pos: ", sum(labels)/len(labels))
 
         if self.strategy_name == "unif" or self.propose_train > 0:
             scores = [0 for c in candidates]
@@ -728,10 +728,12 @@ class VBLearner(Learner):
         #assert False
         #print(best[1])
         # Print sorted scores
-        print("# sorted: ", len(scored_candidates))
+#        print("# sorted: ", len(scored_candidates))
+        print("sorted candidates (candidate, score):")
         sorted_scores = sorted([x for x in scored_candidates], key=lambda tup: tup[1], reverse=True)
         for c, s in sorted_scores[:5]:
-            print(c, s)
+            decoded = self.dataset.vocab.decode(c)
+            print(s, decoded)
 
         # keep track of which strategies were chosen
         self.chosen_strategies.append(self.strategy_name)
