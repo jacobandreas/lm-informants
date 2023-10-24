@@ -92,6 +92,7 @@ class Learner:
             features=None,
             max_updates_propose=None,
             max_updates_observe=None,
+            **kwargs,
             ):
         self.hypotheses = [
             self.initialize_hyp(
@@ -99,6 +100,7 @@ class Learner:
                 prior_prob=prior_prob, converge_type=converge_type, 
                 feature_type=feature_type, tolerance=tolerance,
                 warm_start=warm_start, features=features,
+                **kwargs,
                 ) for _ in range(n_hyps)
         ]
         self.observations = []
@@ -186,6 +188,7 @@ class VBLearner(Learner):
             tolerance=0.001, 
             warm_start=False, 
             features=None,
+            **kwargs,
             ):
         return scorers.MeanFieldScorer(
                 self.dataset, 
@@ -196,6 +199,7 @@ class VBLearner(Learner):
                 tolerance=tolerance,
                 warm_start=warm_start,
                 features=features,
+                **kwargs,
                 )
 
     # this is for using multiprocessing: 
