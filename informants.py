@@ -52,23 +52,19 @@ class HWInformant:
         return self.scorer.cost(seq)
 
 class TrigramInformant:
-    def __init__(self, dataset, scorer, seed, num_bad_features,
+    def __init__(self, dataset, scorer, bad_features, 
     ):
         self.dataset = dataset
         self.set_dataset = set(dataset.data)
         self.scorer = scorer
-
-        # sample bad features once according to seed
-        random.seed(seed)
-
-        print("Sampling bad features...")
-        self.bad_features = random.choices(range(len(scorer.ngram_features)), k=num_bad_features)
-        print(self.bad_features)
+        
+        self.bad_features = bad_features
+        print("Bad features: ", self.bad_features)
 
     def judge(self, seq):
         # check if in lexicon, return True if so
         if seq in self.set_dataset:
-#            print(f"seq in lexicon, returning True:\t{seq}")
+            print(f"seq in lexicon, returning True:\t{seq}")
             return True
 
         featurized = self.scorer._featurize(seq).nonzero()[0]
