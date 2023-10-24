@@ -296,9 +296,6 @@ def main(args):
             })
         print("eval dataset:")
         print(eval_dataset.head(5))
-<<<<<<< HEAD
-        print("eval breakdown:", eval_dataset['label'].value_counts())
-=======
         print('encoded:', eval_dataset['encoded'])
 
     elif eval_humans and args.feature_type.startswith('atr_lg_'):
@@ -312,7 +309,6 @@ def main(args):
         # make sure that all the pre computed labels are the same as informant judged (if not, may be due to overlap between train and test sets, unaccounted for when creating test set) 
         for _, row in eval_dataset.iterrows():
             assert row['label'] == informant.judge(row['encoded']), f"label: {row['label']}; informant label: {informant.judge(row['encoded'])}"
->>>>>>> acf1df72f90921d5d594d6d0532e7b7f65750485
         
     elif eval_humans and args.feature_type == "english":
         #_t = read_in_blicks("TI_test.csv")
@@ -698,13 +694,8 @@ def main(args):
                         print(f"avg cost for broad test set: {np.mean(costs)}")
 
                     # TODO: implement broad_human_evals_writer
-<<<<<<< HEAD
-                    elif eval_humans and args.feature_type == "atr_four":
-                        items, costs, labels, featurized_items = [], [], [], []
-=======
                     elif eval_humans and (args.feature_type == "atr_four" or args.feature_type.startswith('atr_lg_')):
                         items, costs, labels = [], [], []
->>>>>>> acf1df72f90921d5d594d6d0532e7b7f65750485
                         for item_idx, row in eval_dataset.iterrows():
                             item = row['item']
                             c = learner.cost(row['encoded'])
@@ -792,9 +783,7 @@ def main(args):
                                 print("num featurized[-5:]:", [len(f) for f in featurized_items[-5:]])
 
                                 print("len eval: ", len(costs))
-=======
                             elif args.feature_type == "atr_four" or args.feature_type.startswith('atr_lg_'):
->>>>>>> acf1df72f90921d5d594d6d0532e7b7f65750485
                                 auc = eval_auc(costs, labels)
                                 log_results["auc"] = auc
                                 aucs.append(auc)
