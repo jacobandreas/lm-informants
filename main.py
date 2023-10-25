@@ -700,7 +700,6 @@ def main(args):
                             item = row['item']
                             c = learner.cost(row['encoded'])
                             costs.append(c)
-                            featurized_items.append(row['featurized'])
                             items.append(item)
                             labels.append(row['label'])
                     
@@ -770,19 +769,7 @@ def main(args):
                                 auc = eval_auc(costs, labels)
                                 log_results["auc"] = auc 
                                 aucs.append(auc)
-<<<<<<< HEAD
-                            elif args.feature_type == "atr_four":
-                                print("items[:5]:", items[:5])
-                                print("costs[:5]:", costs[:5])
-                                print("labels[:5]:", labels[:5])
-                                print("num featurized[:5]:", [len(f) for f in featurized_items[:5]])
-
-                                print("items[-5:]:", items[-5:])
-                                print("costs[-5:]:", costs[-5:])
-                                print("labels[-5:]:", labels[-5:])
-                                print("num featurized[-5:]:", [len(f) for f in featurized_items[-5:]])
-
-                                print("len eval: ", len(costs))
+                            
                             elif args.feature_type == "atr_four" or args.feature_type.startswith('atr_lg_'):
                                 auc = eval_auc(costs, labels)
                                 log_results["auc"] = auc
