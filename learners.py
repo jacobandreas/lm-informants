@@ -173,6 +173,7 @@ class VBLearner(Learner):
             ):
         super().__init__(dataset, strategy, linear_train_dataset, index_of_next_item)
         self.perturb_random_state = random.Random(seed) # used for selecting edited candidates 
+        self.strategy_random_state = random.Random(seed) # used for selecting strategies for, eg, history strategies
         self.results_by_observations = []
         self.gain_list_from_train = []
         self.gain_list_from_alterative = []
@@ -645,7 +646,7 @@ class VBLearner(Learner):
                     ## all this below is for computing expectation over actual train candidates
                     train_candidates = []
                     while len(train_candidates) < n_candidates:
-                        c = random.sample(self.linear_train_dataset[self.index_of_next_item:], 1)[0]
+                        c = self.strategy_random_state.sample(self.linear_train_dataset[self.index_of_next_item:], 1)[0]
                         if c not in obs_set and c not in train_candidates:
                             train_candidates.append(c)
 
@@ -672,7 +673,7 @@ class VBLearner(Learner):
             num_observations = len(self.observations)
             # if both are history, randomly sample one to be first
             if (train_is_history and strategy_is_history and num_observations == 0):
-                choose_train = random.sample([True, False], 1)[0]
+                choose_train = self.strategy_random_state.sample([True, False], 1)[0]
                 print("choosing train for step=0? ", choose_train)
             # this is the mixed strategy, with history for train; choose train on 0th step to get an estimate
             elif (train_is_history and (not strategy_is_history)) and (num_observations == 0):
