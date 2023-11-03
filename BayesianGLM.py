@@ -15,7 +15,8 @@ class BayesianScorer:
         self,
         n_features = 512,
         alpha_prior_mu = 3.0,
-        alpha_prior_sigma = 0.0001, # to "constrain" alpha a bit
+        # to "constrain" alpha optimization (might be worth making alpha fixed)
+        alpha_prior_sigma = 0.0001,
         beta_prior_mu = -1.0,
         beta_prior_sigma = 10.0,
         step_size = 0.01,
@@ -198,14 +199,19 @@ class BayesianScorer:
     
     @staticmethod
     def truncated_normal_entropy(mu, sigma, low=-jnp.inf, high=jnp.inf):
-        phi = lambda x: (1/jnp.sqrt(2*jnp.pi)) * jnp.exp(-0.5*jnp.square(x))
-        big_phi = lambda x: 0.5*(1 + jax.scipy.special.erf(x/jnp.sqrt(2)))
-        mult = lambda x, y: jnp.nan_to_num(x*y, nan=0, posinf=jnp.inf, neginf=-jnp.inf) # makes 0 * inf = 0 instead of nan
+    # https://en.wikipedia.org/wiki/Truncated_normal_distribution#:~:text=The%20truncated%20normal%20is%20one,support%20form%20an%20exponential%20family.
+        phi = lambda x: (1 / jnp.sqrt(2 * jnp.pi)) * jnp.exp(-0.5 * jnp.square(x))
+        big_phi = lambda x: 0.5 * (1 + jax.scipy.special.erf(x / jnp.sqrt(2)))
+        mult = lambda x, y: jnp.nan_to_num(
+            x * y, nan=0, posinf=jnp.inf, neginf=-jnp.inf
+        )  # makes 0 * inf = 0 instead of nan
 
-        alpha = (low - mu)/sigma
-        beta = (high - mu)/sigma
+        alpha = (low - mu) / sigma
+        beta = (high - mu) / sigma
         Z = big_phi(beta) - big_phi(alpha)
-        entropy = jnp.log(jnp.sqrt(2*jnp.pi*jnp.e)*sigma*Z) + (mult(alpha,phi(alpha))-mult(beta,phi(beta)))/(2*Z)
+        entropy = jnp.log(jnp.sqrt(2 * jnp.pi * jnp.e) * sigma * Z) + (
+            mult(alpha, phi(alpha)) - mult(beta, phi(beta))
+        ) / (2 * Z)
         return entropy
 
     @staticmethod
@@ -231,15 +237,78 @@ class BayesianScorer:
         return info_gain
     
     @staticmethod
+    def truncated_normal_kl(mu1, sigma1, low1, high1, mu2, sigma2, low2, high2):
+        # https://doi.org/10.3390%2Fe24030421 (eq. 111)
+        phi = lambda x: (1 / jnp.sqrt(2 * jnp.pi)) * jnp.exp(-0.5 * jnp.square(x))
+        big_phi = lambda x: 0.5 * (1 + jax.scipy.special.erf(x / jnp.sqrt(2)))
+        big_phi_m_s = lambda x, m, s: 0.5 * (
+            1 + jax.scipy.special.erf((x - m) / (jnp.sqrt(2) * s))
+        )
+        mult = lambda x, y: jnp.nan_to_num(x * y, nan=0, posinf=jnp.inf, neginf=-jnp.inf)
+
+        alpha_f = lambda m, s, a, b: (a - m) / s
+        beta_f = lambda m, s, a, b: (b - m) / s
+
+        mu_f = lambda m, s, a, b: m - s * (
+            (phi(beta_f(m, s, a, b)) - phi(alpha_f(m, s, a, b)))
+            / (big_phi(beta_f(m, s, a, b)) - big_phi(alpha_f(m, s, a, b)))
+        )
+        var_f = lambda m, s, a, b: jnp.square(s) * (
+            1
+            - (
+                (
+                    mult(beta_f(m, s, a, b), phi(beta_f(m, s, a, b)))
+                    - mult(alpha_f(m, s, a, b), phi(alpha_f(m, s, a, b)))
+                )
+                / (big_phi(beta_f(m, s, a, b)) - big_phi(alpha_f(m, s, a, b)))
+            )
+            - jnp.square(
+                (phi(beta_f(m, s, a, b)) - phi(alpha_f(m, s, a, b)))
+                / (big_phi(beta_f(m, s, a, b)) - big_phi(alpha_f(m, s, a, b)))
+            )
+        )
+        eta_1 = lambda m, s, a, b: mu_f(m, s, a, b)
+        eta_2 = lambda m, s, a, b: var_f(m, s, a, b) + jnp.square(mu_f(m, s, a, b))
+        z_a_b = (
+            lambda m, s, a, b: jnp.sqrt(2 * jnp.pi)
+            * s
+            * (big_phi_m_s(b, m, s) - big_phi_m_s(a, m, s))
+        )
+        kl = (
+            (mu2 / 2 * jnp.square(sigma2))
+            - (mu1 / 2 * jnp.square(sigma1))
+            + jnp.log(z_a_b(mu2, sigma2, low2, high2) / z_a_b(mu1, sigma1, low1, high1))
+            - (mu2 / jnp.square(sigma2) - mu1 / jnp.square(sigma1))
+            * eta_1(mu1, sigma1, low1, high1)
+            - (1 / (2 * jnp.square(sigma1)) - 1 / (2 * jnp.square(sigma2)))
+            * eta_2(mu1, sigma1, low1, high1)
+        )
+        return kl
+    
+    @staticmethod
     def kl_divergence(new_params, old_params):
-        raise Exception("KL not implemented")
-        # FIXME: implement closed-form KL divergence (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8947456/)
-        old_beta, old_alpha = BayesianScorer.make_posterior(old_params)
-        new_beta, new_alpha = BayesianScorer.make_posterior(new_params)
-        beta_kl = jnp.sum(dist.kl.kl_divergence(new_beta, old_beta)).item()
-        alpha_kl = dist.kl.kl_divergence(new_alpha, old_alpha).item()
-        kl_divergence = beta_kl + alpha_kl
-        return kl_divergence
+        beta_kl = jnp.sum(BayesianScorer.truncated_normal_kl(
+            new_params["beta_posterior_mu"],
+            new_params["beta_posterior_sigma"],
+            -jnp.inf,
+            0,
+            old_params["beta_posterior_mu"],
+            old_params["beta_posterior_sigma"],
+            -jnp.inf,
+            0,
+        )).item()
+        alpha_kl = BayesianScorer.truncated_normal_kl(
+            new_params["alpha_posterior_mu"],
+            new_params["alpha_posterior_sigma"],
+            0,
+            jnp.inf,
+            old_params["alpha_posterior_mu"],
+            old_params["alpha_posterior_sigma"],
+            0,
+            jnp.inf,
+        ).item()
+        kl = beta_kl + alpha_kl
+        return kl
 
 
 class BayesianLearner:
@@ -302,6 +371,7 @@ class BayesianLearner:
         if self.track_params:
             self.observed_feat_idxs = set()
             self.n_seen_feats = []
+            self.pct_good_examples = []
             self.alpha_mu = []
             self.alpha_sigma = []
             self.avg_beta_mu = []
@@ -421,6 +491,7 @@ class BayesianLearner:
         unseen_feats = np.array([i for i in range(self.n_features) if i not in self.observed_feat_idxs])
 
         self.n_seen_feats.append(len(seen_feats))
+        self.pct_good_examples.append(sum(self.observed_judgments)/len(self.observed_judgments))
         self.alpha_mu.append(p["alpha_posterior_mu"])
         self.alpha_sigma.append(p["alpha_posterior_sigma"])
         self.avg_beta_mu.append(p["beta_posterior_mu"].mean())
@@ -433,6 +504,7 @@ class BayesianLearner:
     def get_param_trackers(self):
         return {
             "n_seen_feats": self.n_seen_feats,
+            "pct_good_examples": self.pct_good_examples,
             "alpha_mu": self.alpha_mu,
             "alpha_sigma": self.alpha_sigma,
             "avg_beta_mu": self.avg_beta_mu,
