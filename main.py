@@ -197,19 +197,19 @@ def main(args):
     alL_features_log = get_out_file("all_features_log.csv", args.exp_dir) 
 
     if args.lexicon_file is None:
-        lexicon_file_name = f"data/hw/{args.feature_type}_lexicon.txt"
+        if args.feature_type.startswith('atr_lg_'):
+            lexicon_file_name = f'data/generated_langs/{args.feature_type}_lexicon.txt'
+        else:
+            lexicon_file_name = f"data/hw/{args.feature_type}_lexicon.txt"
     else:
         lexicon_file_name = args.lexicon_file
         assert os.path.exists(lexicon_file_name) 
     dataset = datasets.load_lexicon(lexicon_file_name, min_length=args.min_length, max_length=args.max_length)
     linear_train_dataset = dataset.data
+    print("len of train data:", len(linear_train_dataset))
     random = np.random.RandomState(0)
     if args.shuffle_train:
         random.shuffle(linear_train_dataset)
-
-    hw_scorer = scorers.HWScorer(dataset, feature_type=args.feature_type)
-    eval_informant = informants.HWInformant(dataset, hw_scorer)
-    informant = eval_informant
 
     if args.feature_type == "english":
         filtered_features = pd.read_csv('all_feats_in_data_english.csv', header=None)[0].values
@@ -217,8 +217,28 @@ def main(args):
         print(len(filtered_features))
     else:
         filtered_features = None
+    
+    if args.feature_type.startswith('atr_lg_'):
+        # TODO: make sure robust, using feature specification for atr_harmony for atr_lg
+        phoneme_feature_file = f'data/hw/atr_harmony_features.txt'
+    else:
+        phoneme_feature_file = None
+    mean_field_scorer = scorers.MeanFieldScorer(
+            dataset, feature_type=args.feature_type, 
+            features=filtered_features, phoneme_feature_file=phoneme_feature_file)
 
-    mean_field_scorer = scorers.MeanFieldScorer(dataset, feature_type=args.feature_type, features=filtered_features)
+    if args.feature_type.startswith('atr_lg_'):
+        with open(f'data/generated_langs/{args.feature_type}_trigram_features.txt', 'r') as f:
+            bad_features = f.readlines()
+        bad_features = [int(f) for f in bad_features]
+        print('bad features:', bad_features)
+        informant = informants.TrigramInformant(dataset, mean_field_scorer, bad_features) 
+    else:
+        hw_scorer = scorers.HWScorer(dataset, feature_type=args.feature_type)
+        eval_informant = informants.HWInformant(dataset, hw_scorer)
+        informant = eval_informant
+
+
     print("len(probs):", (mean_field_scorer.probs).shape)
     if get_prior_prob_of_test_set:
         prior_probs_writer = get_csv_writer("prior_probabilities_of_test_set_items.csv", args.exp_dir)
@@ -254,6 +274,19 @@ def main(args):
 #        pdb.set_trace()
         encoded_items = [dataset.vocab.encode(phon) for phon in phonemes]
         labels = [informant.judge(encod) for encod in encoded_items]
+       
+        """
+        # sanity check oracle judgments
+        for item, label in zip(items, labels):
+            temp_item = "".join(item) 
+            bad_structures = ["FG", "GF", "FH", "HF", "FI", "IF", "GH", "HG", "GI", "IG", "HI", "IH"]
+            # if judgment is True, should have none of the bad items
+            if label:
+                assert all([struct not in temp_item for struct in bad_structures]), f"item should not have any bad structures but does\nITEM:{temp_item}"
+            # if judgment is False, should have one of the bad items
+            else:
+                assert any([struct in temp_item for struct in bad_structures]), f"item should have a bad structure but doesn't\nITEM:{temp_item}"
+        """
         featurized_items = [mean_field_scorer._featurize(encod).nonzero()[0] for encod in encoded_items]
         eval_dataset = pd.DataFrame({
             'item': items, 
@@ -264,6 +297,18 @@ def main(args):
         print("eval dataset:")
         print(eval_dataset.head(5))
         print('encoded:', eval_dataset['encoded'])
+
+    elif eval_humans and args.feature_type.startswith('atr_lg_'):
+        eval_dataset = pd.read_csv(f'data/generated_langs/{args.feature_type}_test_set.csv')
+        eval_dataset['phonemes'] = eval_dataset.apply(lambda row: [BOUNDARY] + row['item'].split(' ') + [BOUNDARY], axis=1)
+        eval_dataset['encoded'] = eval_dataset.apply(lambda row: dataset.vocab.encode(row['phonemes']), axis=1)
+        eval_dataset['featurized'] = eval_dataset.apply(lambda row: mean_field_scorer._featurize(row['encoded']).nonzero()[0], axis=1)
+        print("eval dataset:")
+        print(eval_dataset.head(5))
+        print('encoded:', eval_dataset['encoded'])
+        # make sure that all the pre computed labels are the same as informant judged (if not, may be due to overlap between train and test sets, unaccounted for when creating test set) 
+        for _, row in eval_dataset.iterrows():
+            assert row['label'] == informant.judge(row['encoded']), f"label: {row['label']}; informant label: {informant.judge(row['encoded'])}"
         
     elif eval_humans and args.feature_type == "english":
         #_t = read_in_blicks("TI_test.csv")
@@ -320,7 +365,7 @@ def main(args):
         
 
     if eval_humans:
-        if args.feature_type in ['english', "atr_four"]:
+        if args.feature_type in ['english', "atr_four"] or args.feature_type.startswith('atr_lg_'):
             forbidden_data_that_cannot_be_queried_about = list(eval_dataset['encoded'].values)
         else:
             forbidden_data_that_cannot_be_queried_about = [item[1] for item in broad_test_set] + [item[1] for item in narrow_test_set] #broad_test_set+narrow_test_set
@@ -387,6 +432,8 @@ def main(args):
                             }
                     tags = [] if args.tags is None else [t.strip() for t in args.tags.split(",")]
                     wandb_run = wandb.init(config=config, project=args.wandb_project, name=strategy, reinit=True, tags = tags, entity="lm-informants") 
+                    if args.feature_type.startswith('atr_lg_'):
+                        print('bad features:', informant.bad_features)
                 #if strategy == "train":
                 #    run = 19
                 index_of_next_item = 0
@@ -407,7 +454,22 @@ def main(args):
                     logs[strategy] = []
                 log = []
                 learner = learners.VBLearner(dataset, strategy=strategy, linear_train_dataset = linear_train_dataset, index_of_next_item = index_of_next_item, seed=run) 
-                learner.initialize(n_hyps=1, log_log_alpha_ratio=args.log_log_alpha_ratio, prior_prob=args.prior_prob, converge_type=args.converge_type, feature_type=args.feature_type, tolerance=args.tolerance, warm_start=args.warm_start, features=filtered_features, max_updates_propose=args.max_updates_propose, max_updates_observe=args.max_updates_observe)
+                # TODO: make more robust; learner needs to create mean field scorer with appropriate phoneme features, using atr_harmony, but would be nice to specify appropriate phoneme features somehow in the commandline
+                if args.feature_type.startswith('atr_lg_'):
+                    phoneme_feature_file = 'data/hw/atr_harmony_features.txt'
+                else:
+                    phoneme_feature_file = None
+                learner.initialize(
+                        n_hyps=1, log_log_alpha_ratio=args.log_log_alpha_ratio, 
+                        prior_prob=args.prior_prob, 
+                        converge_type=args.converge_type, 
+                        feature_type=args.feature_type, 
+                        tolerance=args.tolerance, 
+                        warm_start=args.warm_start, 
+                        features=filtered_features, 
+                        max_updates_propose=args.max_updates_propose, 
+                        max_updates_observe=args.max_updates_observe,
+                        phoneme_feature_file=phoneme_feature_file)
 
                 all_features = learner.all_features(return_indices=True)
                 unique_feature_indices = [f_idx for (_, f, f_idx) in all_features if f in unique_features]
@@ -459,6 +521,11 @@ def main(args):
                 # z.close()
                 auc_streak = 0
                 steps, aucs = [], []
+                
+                if args.feature_type in ["atr_four", "english"]:
+                    print("eval dataset:")
+                    print(eval_dataset.head(5))
+                    print("eval breakdown:", eval_dataset['label'].value_counts())
 
                 for i in range(args.num_steps):
                     print("\n\n\n")
@@ -627,7 +694,7 @@ def main(args):
                         print(f"avg cost for broad test set: {np.mean(costs)}")
 
                     # TODO: implement broad_human_evals_writer
-                    elif eval_humans and args.feature_type == "atr_four":
+                    elif eval_humans and (args.feature_type == "atr_four" or args.feature_type.startswith('atr_lg_')):
                         items, costs, labels = [], [], []
                         for item_idx, row in eval_dataset.iterrows():
                             item = row['item']
@@ -653,7 +720,7 @@ def main(args):
                     entropy_before = entropy(learner.hypotheses[0].probs)
                     # TODO: Unique features only available for atr_harmony
                     # TODO: make sure robust for atr_four
-                    if args.feature_type in ["atr_harmony", "atr_four"]:
+                    if args.feature_type in ["atr_harmony", "atr_four"] or args.feature_type.startswith('atr_lg_'):
                         entropy_before_unique = entropy(learner.hypotheses[0].probs[unique_feature_indices])
                     # TODO: for english, compute entropy over seen features (where "seen features" includes features in current candidate, before observing) 
                     elif args.feature_type in ["english"]:
@@ -702,7 +769,8 @@ def main(args):
                                 auc = eval_auc(costs, labels)
                                 log_results["auc"] = auc 
                                 aucs.append(auc)
-                            elif args.feature_type == "atr_four":
+                            
+                            elif args.feature_type == "atr_four" or args.feature_type.startswith('atr_lg_'):
                                 auc = eval_auc(costs, labels)
                                 log_results["auc"] = auc
                                 aucs.append(auc)
@@ -758,7 +826,7 @@ def main(args):
                         if args.feature_type in ["atr_harmony"]:
                             all_features = [(c, f, f_idx) for (c, f, f_idx) in all_features if f in unique_features]
                         
-                        elif args.feature_type in ["atr_four"]:
+                        elif args.feature_type in ["atr_four"] or args.feature_type.startswith('atr_lg_'):
                             raise NotImplementedError
                         
                         # for english, only look at features that have been seen so far (including in candidate being proposed)
@@ -794,7 +862,7 @@ def main(args):
                     probs_after = learner.hypotheses[0].probs.copy()
 
                     entropy_after = entropy(learner.hypotheses[0].probs)
-                    if args.feature_type in ["atr_harmony","atr_four"]:
+                    if args.feature_type in ["atr_harmony","atr_four"] or args.feature_type.startswith('atr_lg_'):
                         entropy_after_unique = entropy(learner.hypotheses[0].probs[unique_feature_indices])
                     elif args.feature_type in ["english"]:
                         entropy_after_unique = entropy(learner.hypotheses[0].probs[list(encountered_features)])
@@ -810,7 +878,7 @@ def main(args):
                     print("entropy diff: ", entropy_diff)
                     actual_kl = kl_bern(probs_after, probs_before).sum()
                     print("actual kl: ", actual_kl)
-                    if args.feature_type in ["atr_harmony", "english", "atr_four"]:
+                    if args.feature_type in ["atr_harmony", "english", "atr_four"] or args.feature_type.startswith('atr_lg_'):
                         entropy_diff_unique = entropy_before_unique-entropy_after_unique
                     else:
                         entropy_diff_unique = None
@@ -927,7 +995,7 @@ if __name__ == "__main__":
     
     parser.add_argument('--reverse_judgments', action='store_true')
     parser.set_defaults(reverse_judgments=False)
-
+   
     parser.add_argument('--profile_name', default='my_profile')
 
     parser.add_argument('--num_candidates', default=100, type=int)
@@ -987,8 +1055,13 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+
     if args.reverse_judgments and args.metric_expect_assume_labels:
         raise NotImplementedError("Not yet implemented to reverse judgments when assuming labels for metric expectation in forward-looking strategies; need to reverse labels there too")
+    
+    # Think reverse judgments should also work for english, but not for atr_four (because use oracle to judge test set labels, need to reverse those too)
+    if args.reverse_judgments and args.feature_type not in ["atr_harmony"]:
+        raise NotImplementedError()
 
     if args.wandb_project is not None:
         args.do_plot_wandb = True

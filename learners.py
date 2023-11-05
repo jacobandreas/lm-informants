@@ -92,6 +92,7 @@ class Learner:
             features=None,
             max_updates_propose=None,
             max_updates_observe=None,
+            **kwargs,
             ):
         self.hypotheses = [
             self.initialize_hyp(
@@ -99,6 +100,7 @@ class Learner:
                 prior_prob=prior_prob, converge_type=converge_type, 
                 feature_type=feature_type, tolerance=tolerance,
                 warm_start=warm_start, features=features,
+                **kwargs,
                 ) for _ in range(n_hyps)
         ]
         self.observations = []
@@ -171,6 +173,7 @@ class VBLearner(Learner):
             ):
         super().__init__(dataset, strategy, linear_train_dataset, index_of_next_item)
         self.perturb_random_state = random.Random(seed) # used for selecting edited candidates 
+        self.strategy_random_state = random.Random(seed) # used for selecting strategies for, eg, history strategies
         self.results_by_observations = []
         self.gain_list_from_train = []
         self.gain_list_from_alterative = []
@@ -186,6 +189,7 @@ class VBLearner(Learner):
             tolerance=0.001, 
             warm_start=False, 
             features=None,
+            **kwargs,
             ):
         return scorers.MeanFieldScorer(
                 self.dataset, 
@@ -196,6 +200,7 @@ class VBLearner(Learner):
                 tolerance=tolerance,
                 warm_start=warm_start,
                 features=features,
+                **kwargs,
                 )
 
     # this is for using multiprocessing: 
@@ -518,9 +523,10 @@ class VBLearner(Learner):
 
     def get_train_candidate(self, n_candidates, obs_set):
         #print(self.linear_train_dataset)
+        print("len of train data:", len(self.linear_train_dataset))
         while True:
             seq = self.linear_train_dataset[self.index_of_next_item]
-            #print("proposing item",seq,"with index",self.index_of_next_item)
+            print("proposing item",seq,"with index",self.index_of_next_item)
             self.index_of_next_item += 1
             #seq = self.dataset.random_example()
             if seq not in obs_set:
@@ -529,7 +535,8 @@ class VBLearner(Learner):
     def propose(self, n_candidates, forbidden_data, length_norm, train_expect_type, metric_expect_assume_labels=False, verbose=False, prop_edits=0.0, informant=None):
         obs_set_a = set(s for s, _, j in self.observations)
         obs_set = set(s for s in (forbidden_data+list(obs_set_a)))
-        
+       
+        print("num obs: ", len(obs_set))
         chosen_strategy = self.strategy_name
         
         # get train
@@ -539,7 +546,7 @@ class VBLearner(Learner):
             return self.get_train_candidate(n_candidates, obs_set)
 
         candidates = []
-        print('proportion edits:', prop_edits)
+#        print('proportion edits:', prop_edits)
         if "train" not in self.seqs_by_strategy:
             print("setting num_edits = 0 because there are no train observations")
             num_edits = 0
@@ -580,12 +587,12 @@ class VBLearner(Learner):
         print(f"# candidates: {len(candidates)}")
 #        print(f"candidates: {[self.dataset.vocab.decode(c) for c in candidates]}")
         num_features = [len(self.hypotheses[0]._featurize(seq).nonzero()[0]) for seq in candidates]
-        print('# features: ', num_features)
-        print('mean # features: ', np.mean(num_features))
-        print("candidates: ", candidates)
+#        print('# features: ', num_features)
+#        print('mean # features: ', np.mean(num_features))
+#        print("candidates: ", candidates)
         labels = [informant.judge(c) for c in candidates]
-        print("labels: ", labels)
-        print("prop pos: ", sum(labels)/len(labels))
+#        print("labels: ", labels)
+#        print("prop pos: ", sum(labels)/len(labels))
 
         if self.strategy_name == "unif" or self.propose_train > 0:
             scores = [0 for c in candidates]
@@ -641,7 +648,7 @@ class VBLearner(Learner):
                     ## all this below is for computing expectation over actual train candidates
                     train_candidates = []
                     while len(train_candidates) < n_candidates:
-                        c = random.sample(self.linear_train_dataset[self.index_of_next_item:], 1)[0]
+                        c = self.strategy_random_state.sample(self.linear_train_dataset[self.index_of_next_item:], 1)[0]
                         if c not in obs_set and c not in train_candidates:
                             train_candidates.append(c)
 
@@ -668,7 +675,7 @@ class VBLearner(Learner):
             num_observations = len(self.observations)
             # if both are history, randomly sample one to be first
             if (train_is_history and strategy_is_history and num_observations == 0):
-                choose_train = random.sample([True, False], 1)[0]
+                choose_train = self.strategy_random_state.sample([True, False], 1)[0]
                 print("choosing train for step=0? ", choose_train)
             # this is the mixed strategy, with history for train; choose train on 0th step to get an estimate
             elif (train_is_history and (not strategy_is_history)) and (num_observations == 0):
@@ -728,10 +735,12 @@ class VBLearner(Learner):
         #assert False
         #print(best[1])
         # Print sorted scores
-        print("# sorted: ", len(scored_candidates))
+#        print("# sorted: ", len(scored_candidates))
+        print("sorted candidates (candidate, score):")
         sorted_scores = sorted([x for x in scored_candidates], key=lambda tup: tup[1], reverse=True)
         for c, s in sorted_scores[:5]:
-            print(c, s)
+            decoded = self.dataset.vocab.decode(c)
+            print(s, decoded)
 
         # keep track of which strategies were chosen
         self.chosen_strategies.append(self.strategy_name)

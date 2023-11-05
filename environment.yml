@@ -4,14 +4,31 @@ channels:
 dependencies:
   - _libgcc_mutex=0.1=main
   - _openmp_mutex=5.1=1_gnu
-  - ca-certificates=2023.05.30=h06a4308_0
+  - bzip2=1.0.8=h7b6447c_0
+  - c-ares=1.19.1=h5eee18b_0
+  - ca-certificates=2023.08.22=h06a4308_0
+  - curl=8.2.1=h37d81fd_0
+  - expat=2.5.0=h6a678d5_0
+  - gdbm=1.18=hd4cb3f1_4
+  - gettext=0.21.0=h39681ba_1
+  - git=2.40.1=pl5340h4fa2fa2_1
+  - icu=73.1=h6a678d5_0
+  - krb5=1.20.1=h568e23c_1
   - ld_impl_linux-64=2.38=h1181459_1
+  - libcurl=8.2.1=h91b91d3_0
+  - libedit=3.1.20221030=h5eee18b_0
+  - libev=4.33=h7f8727e_1
   - libffi=3.3=he6710b0_2
   - libgcc-ng=11.2.0=h1234567_1
   - libgomp=11.2.0=h1234567_1
+  - libnghttp2=1.52.0=ha637b67_1
+  - libssh2=1.10.0=h37d81fd_2
   - libstdcxx-ng=11.2.0=h1234567_1
+  - libxml2=2.10.4=hf1b16e4_1
   - ncurses=6.4=h6a678d5_0
-  - openssl=1.1.1v=h7f8727e_0
+  - openssl=1.1.1w=h7f8727e_0
+  - pcre2=10.42=hebb0a14_0
+  - perl=5.34.0=h5eee18b_2
   - pip=23.2.1=py39h06a4308_0
   - python=3.9.13=haa1d7c7_2
   - readline=8.2=h5eee18b_0
