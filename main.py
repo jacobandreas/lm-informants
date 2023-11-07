@@ -540,7 +540,7 @@ def main(args):
                     probs_file = os.path.join(probs_dir, f'{i}.npy')
                     print(f"Saving current probs to: {probs_file}")
                     np.save(probs_file, p)
-                    wandb.save(probs_file)
+                    wandb.save(probs_file, )
 
                    
                     start_time = time.time()
@@ -954,7 +954,7 @@ def main(args):
                 probs_file = os.path.join(probs_dir, f'{args.num_steps}.npy')
                 print(f"Saving current probs to: {probs_file}")
                 np.save(probs_file, p)
-                wandb.save(probs_file)
+                wandb.save(probs_file,) 
 
                 wandb_run.finish()
 
