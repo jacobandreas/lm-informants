@@ -8,19 +8,18 @@ from numpyro.optim import Adam
 import multiprocessing
 from scorers import _load_phoneme_features
 import itertools as it
-
+from truncated_normal import tn_kl, tn_entropy
 
 class BayesianScorer:
     def __init__(
         self,
         n_features = 512,
-        alpha_prior_mu = 3.0,
-        # to "constrain" alpha optimization (might be worth making alpha fixed)
-        alpha_prior_sigma = 0.0001,
-        beta_prior_mu = -1.0,
-        beta_prior_sigma = 10.0,
+        alpha_prior_mu = 5.0,
+        alpha_prior_sigma = 1.0,
+        beta_prior_mu = -10.0,
+        beta_prior_sigma = 20.0,
         step_size = 0.01,
-        n_updates = 1000,
+        n_updates = 2000,
         seed = 0,
     ) -> None:
         assert alpha_prior_mu > 0
@@ -37,8 +36,8 @@ class BayesianScorer:
         self.params = {
             "beta_posterior_mu": jnp.full(n_features, self.beta_prior_mu),
             "beta_posterior_sigma": jnp.full(n_features, self.beta_prior_sigma),
-            "alpha_posterior_mu": self.alpha_prior_mu,
-            "alpha_posterior_sigma": self.alpha_prior_sigma,
+            "alpha_posterior_mu": jnp.array(self.alpha_prior_mu),
+            "alpha_posterior_sigma": jnp.array(self.alpha_prior_sigma),
         }
 
     @staticmethod
@@ -137,7 +136,6 @@ class BayesianScorer:
             optim=Adam(step_size=step_size),
             loss=Trace_ELBO()
         )
-        # has some weird startup time but then is fast (almost) regardless of n_updates
         new_params = svi.run(
             rng_key,
             n_updates,
@@ -196,98 +194,34 @@ class BayesianScorer:
             self.params["beta_posterior_mu"]
         ) + self.params["alpha_posterior_mu"]
         return logits
-    
-    @staticmethod
-    def truncated_normal_entropy(mu, sigma, low=-jnp.inf, high=jnp.inf):
-    # https://en.wikipedia.org/wiki/Truncated_normal_distribution#:~:text=The%20truncated%20normal%20is%20one,support%20form%20an%20exponential%20family.
-        phi = lambda x: (1 / jnp.sqrt(2 * jnp.pi)) * jnp.exp(-0.5 * jnp.square(x))
-        big_phi = lambda x: 0.5 * (1 + jax.scipy.special.erf(x / jnp.sqrt(2)))
-        mult = lambda x, y: jnp.nan_to_num(
-            x * y, nan=0, posinf=jnp.inf, neginf=-jnp.inf
-        )  # makes 0 * inf = 0 instead of nan
-
-        alpha = (low - mu) / sigma
-        beta = (high - mu) / sigma
-        Z = big_phi(beta) - big_phi(alpha)
-        entropy = jnp.log(jnp.sqrt(2 * jnp.pi * jnp.e) * sigma * Z) + (
-            mult(alpha, phi(alpha)) - mult(beta, phi(beta))
-        ) / (2 * Z)
-        return entropy
 
     @staticmethod
-    def entropy(params):
-        beta_entropy = jnp.sum(BayesianScorer.truncated_normal_entropy(
-            params["beta_posterior_mu"],
-            params["beta_posterior_sigma"],
-            high=0
+    def entropy(params, ind=None):
+        if ind is None:
+            ind = jnp.arange(len(params["beta_posterior_mu"]))
+        beta_entropy = jnp.sum(tn_entropy(
+            params["beta_posterior_mu"][ind],
+            params["beta_posterior_sigma"][ind],
+            b=0
         )).item() 
-        alpha_entropy = BayesianScorer.truncated_normal_entropy(
+        alpha_entropy = tn_entropy(
             params["alpha_posterior_mu"],
             params["alpha_posterior_sigma"],
-            low=0
+            a=0
         ).item()
         entropy = beta_entropy + alpha_entropy
         return entropy
-    
+        
     @staticmethod
     def info_gain(new_params, old_params):
         old_entropy = BayesianScorer.entropy(old_params)
         new_entropy = BayesianScorer.entropy(new_params)
         info_gain = old_entropy - new_entropy
         return info_gain
-    
-    @staticmethod
-    def truncated_normal_kl(mu1, sigma1, low1, high1, mu2, sigma2, low2, high2):
-        # https://doi.org/10.3390%2Fe24030421 (eq. 111)
-        phi = lambda x: (1 / jnp.sqrt(2 * jnp.pi)) * jnp.exp(-0.5 * jnp.square(x))
-        big_phi = lambda x: 0.5 * (1 + jax.scipy.special.erf(x / jnp.sqrt(2)))
-        big_phi_m_s = lambda x, m, s: 0.5 * (
-            1 + jax.scipy.special.erf((x - m) / (jnp.sqrt(2) * s))
-        )
-        mult = lambda x, y: jnp.nan_to_num(x * y, nan=0, posinf=jnp.inf, neginf=-jnp.inf)
 
-        alpha_f = lambda m, s, a, b: (a - m) / s
-        beta_f = lambda m, s, a, b: (b - m) / s
-
-        mu_f = lambda m, s, a, b: m - s * (
-            (phi(beta_f(m, s, a, b)) - phi(alpha_f(m, s, a, b)))
-            / (big_phi(beta_f(m, s, a, b)) - big_phi(alpha_f(m, s, a, b)))
-        )
-        var_f = lambda m, s, a, b: jnp.square(s) * (
-            1
-            - (
-                (
-                    mult(beta_f(m, s, a, b), phi(beta_f(m, s, a, b)))
-                    - mult(alpha_f(m, s, a, b), phi(alpha_f(m, s, a, b)))
-                )
-                / (big_phi(beta_f(m, s, a, b)) - big_phi(alpha_f(m, s, a, b)))
-            )
-            - jnp.square(
-                (phi(beta_f(m, s, a, b)) - phi(alpha_f(m, s, a, b)))
-                / (big_phi(beta_f(m, s, a, b)) - big_phi(alpha_f(m, s, a, b)))
-            )
-        )
-        eta_1 = lambda m, s, a, b: mu_f(m, s, a, b)
-        eta_2 = lambda m, s, a, b: var_f(m, s, a, b) + jnp.square(mu_f(m, s, a, b))
-        z_a_b = (
-            lambda m, s, a, b: jnp.sqrt(2 * jnp.pi)
-            * s
-            * (big_phi_m_s(b, m, s) - big_phi_m_s(a, m, s))
-        )
-        kl = (
-            (mu2 / 2 * jnp.square(sigma2))
-            - (mu1 / 2 * jnp.square(sigma1))
-            + jnp.log(z_a_b(mu2, sigma2, low2, high2) / z_a_b(mu1, sigma1, low1, high1))
-            - (mu2 / jnp.square(sigma2) - mu1 / jnp.square(sigma1))
-            * eta_1(mu1, sigma1, low1, high1)
-            - (1 / (2 * jnp.square(sigma1)) - 1 / (2 * jnp.square(sigma2)))
-            * eta_2(mu1, sigma1, low1, high1)
-        )
-        return kl
-    
     @staticmethod
     def kl_divergence(new_params, old_params):
-        beta_kl = jnp.sum(BayesianScorer.truncated_normal_kl(
+        beta_kl = jnp.sum(tn_kl(
             new_params["beta_posterior_mu"],
             new_params["beta_posterior_sigma"],
             -jnp.inf,
@@ -297,7 +231,7 @@ class BayesianScorer:
             -jnp.inf,
             0,
         )).item()
-        alpha_kl = BayesianScorer.truncated_normal_kl(
+        alpha_kl = tn_kl(
             new_params["alpha_posterior_mu"],
             new_params["alpha_posterior_sigma"],
             0,
@@ -323,6 +257,21 @@ class BayesianLearner:
         track_params = False,
         seed = 0
     ):
+        assert strategy in {
+            "train",
+            "unif",
+            "entropy",
+            "entropy_pred",
+            "eig",
+            "eig_train_mixed",
+            "eig_train_model",
+            "eig_train_history",
+            "kl",
+            "kl_train_mixed",
+            "kl_train_model",
+            "kl_train_history",
+        }
+
         self.dataset = dataset
         self.strategy = strategy
         self.linear_train_dataset = linear_train_dataset
@@ -343,6 +292,30 @@ class BayesianLearner:
         for ff in it.product(range(len(self.feature_vocab)), repeat=self.ORDER):
             self.ngram_features[ff] = len(self.ngram_features)
         self.n_features = len(self.ngram_features)
+
+        self.history_based = self.strategy.endswith("history")
+        self.model_based = self.strategy.endswith("model")
+        self.mixed = self.strategy.endswith("mixed")
+        self.metric = self.strategy.split("_")[0]
+        self.first_strategies = []
+        self.last_proposed = None
+        self.n_observed_train = 0
+        self.n_observed_metric = 0
+        self.train_avg = 0
+        self.metric_avg = 0
+
+        if self.model_based or self.history_based:
+            self.first_strategies.append(self.metric)
+        if self.mixed or self.history_based:
+            self.first_strategies.append("train")
+        np.random.shuffle(self.first_strategies)
+
+        self.metric_func = None
+        if self.metric == "eig":
+            self.metric_func = BayesianScorer.info_gain
+        if self.metric == "kl":
+            self.metric_func = BayesianScorer.kl_divergence
+        
       
     def featurize(self, seq):
         if seq in self._featurized_cache:
@@ -380,6 +353,9 @@ class BayesianLearner:
             self.avg_seen_beta_sigma = []
             self.avg_unseen_beta_mu = []
             self.avg_unseen_beta_sigma = [] 
+            self.proposed_from = []
+            self.train_avgs = []
+            self.metric_avgs = []
 
     def observe(
         self,
@@ -394,22 +370,41 @@ class BayesianLearner:
 
         data = jnp.stack(self.observed_features)
         judgments = jnp.array(self.observed_judgments)
+        old_params = self.hypothesis.params
         new_params = self.hypothesis.update_posterior(data, judgments, update)
 
         if not update:
             self.observed_judgments.pop()
             self.observed_features.pop()
             self.observed_seqs.pop()
+        if update and (self.history_based or self.mixed):
+            metric_val = self.metric_func(new_params, old_params)
+            self.update_history(metric_val)
         if update and self.track_params:
-            self.observed_feat_idxs.update(seq)
+            self.observed_feat_idxs.update(jnp.where(featurized)[0].tolist())
             self.update_param_trackers()
         return new_params
     
+    def update_history(self, metric_val):
+        assert self.history_based or self.mixed
+        assert self.last_proposed is not None
+        if self.last_proposed == "train":
+            self.n_observed_train += 1
+            self.train_avg += (1 / self.n_observed_train)*(metric_val - self.train_avg)
+        else:
+            self.n_observed_metric += 1
+            self.metric_avg += (1 / self.n_observed_metric)*(metric_val - self.metric_avg)
+    
     def propose(self, n_candidates=100, forbidden_seqs=[]):
         exclude = set(self.observed_seqs + forbidden_seqs)
-        # TODO: add other strategies (to score_candidates too)
-        if self.strategy == "train":
-            return self.get_train_candidate(exclude)
+        
+        if len(self.observed_seqs) < len(self.first_strategies):
+            if self.first_strategies[len(self.observed_seqs)] == "train":
+                self.last_proposed = "train"
+                return self.get_train_candidate(exclude) 
+        elif self.strategy == "train" or  (self.history_based and self.train_avg >= self.metric_avg):
+            self.last_proposed = "train"
+            return self.get_train_candidate(exclude) 
 
         # TODO: candidates can come from edits too (not using actually)
         candidates = []
@@ -417,9 +412,19 @@ class BayesianLearner:
             candidates = [self.dataset.random_seq() for _ in range(n_candidates)]
             candidates = [c for c in candidates if c not in exclude]
 
-        scored_candidates = zip(candidates, self.score_candidates(candidates))
-        return max(scored_candidates, key=lambda c: c[1])[0]
-    
+        scores, expected_train = self.score_candidates(candidates)
+        scored_candidates = zip(candidates, scores)
+        best_cand = max(scored_candidates, key=lambda c: c[1])
+        
+        if len(self.observed_seqs) >= len(self.first_strategies):
+            if ((self.model_based and expected_train >= best_cand[1]) or 
+                (self.mixed and self.train_avg >= best_cand[1])):
+                self.last_proposed = "train"
+                return self.get_train_candidate(exclude)
+        
+        self.last_proposed = "metric"
+        return best_cand[0]
+
     def get_train_candidate(self, exclude):
         while True:
             seq = self.linear_train_dataset[self.index_of_next_item]
@@ -429,12 +434,15 @@ class BayesianLearner:
             
     def score_candidates(self, seqs):
         if self.strategy == "unif":
-            return [0]*len(seqs)
-        if self.strategy == "eig":
-            return self.get_batch_expected_metric(seqs, BayesianScorer.info_gain)
-        if self.strategy == "kl":
-            return self.get_batch_expected_metric(seqs, BayesianScorer.kl_divergence)
-        raise ValueError(f"No score method implemented for strategy '{self.strategy}'")
+            return [0]*len(seqs), "NA"
+        if self.strategy == "entropy_pred":
+            return [self.entropy_pred(seq) for seq in seqs], "NA"
+        if self.strategy == "entropy":
+            params = self.hypothesis.params
+            get_ind = lambda seq: jnp.where(self.binary_featurize(seq))[0]
+            return [self.hypothesis.entropy(params, get_ind(seq)) for seq in seqs], "NA"
+        assert self.metric_func is not None
+        return self.get_batch_expected_metric(seqs, self.metric_func)
     
     def get_batch_expected_metric(self, seqs, metric):
         featurized_seqs = [self.binary_featurize(seq) for seq in seqs]
@@ -463,7 +471,8 @@ class BayesianLearner:
         neg_deltas = self.pool.starmap(metric, zip(neg_params, current_params))
 
         expected = [prob_pos[i] * pos_deltas[i] + (1-prob_pos[i]) * neg_deltas[i] for i in range(len(seqs))]
-        return expected
+        expected_train = sum([prob_pos[i] * pos_deltas[i] for i in range(len(seqs))])/sum(prob_pos)
+        return expected, expected_train
 
     def logits(self, seq):
         featurized_seq = self.binary_featurize(seq)
@@ -485,6 +494,11 @@ class BayesianLearner:
         cost = -logprobs
         return cost
     
+    def entropy_pred(self, seq):
+        p = self.probs(seq)
+        entropy = -p*jnp.log(p)-((1-p) * jnp.log(1-p))
+        return entropy
+    
     def update_param_trackers(self):
         p = self.hypothesis.params
         seen_feats = np.array(list(self.observed_feat_idxs))
@@ -500,6 +514,9 @@ class BayesianLearner:
         self.avg_seen_beta_sigma.append(p["beta_posterior_sigma"][seen_feats].mean())
         self.avg_unseen_beta_mu.append(p["beta_posterior_mu"][unseen_feats].mean())
         self.avg_unseen_beta_sigma.append(p["beta_posterior_sigma"][unseen_feats].mean())
+        self.proposed_from.append(self.last_proposed)
+        self.train_avgs.append(self.train_avg)
+        self.metric_avgs.append(self.metric_avg)
 
     def get_param_trackers(self):
         return {
@@ -512,5 +529,8 @@ class BayesianLearner:
             "avg_seen_beta_mu": self.avg_seen_beta_mu,
             "avg_seen_beta_sigma": self.avg_seen_beta_sigma,
             "avg_unseen_beta_mu": self.avg_unseen_beta_mu,
-            "avg_unseen_beta_sigma": self.avg_unseen_beta_sigma
+            "avg_unseen_beta_sigma": self.avg_unseen_beta_sigma,
+            "proposed_from": self.proposed_from,
+            "train_avgs": self.train_avgs,
+            "metric_avgs": self.metric_avgs
         }
