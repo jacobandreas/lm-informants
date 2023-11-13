@@ -41,7 +41,8 @@ def tn_kl(m1, s1, a1, b1, m2, s2, a2, b2):
     return (
         jnp.square(m2) / (2*jnp.square(s2))
       - jnp.square(m1) / (2*jnp.square(s1))
-      + jnp.log(z(m2, s2, a2, b2) / z(m1, s1, a1, b1))
+      + jnp.log(z(m2, s2, a2, b2))
+      - jnp.log(z(m1, s1, a1, b1))
       - (m2 / jnp.square(s2) - m1 / jnp.square(s1))*(eta_1(m1, s1, a1, b1))
       - (1 / (2*jnp.square(s1)) - 1 / (2*jnp.square(s2)))*eta_2(m1, s1, a1, b1)
     )

@@ -464,7 +464,6 @@ class BayesianLearner:
         neg_inputs = [make_input(f, 0.0) for f in featurized_seqs]
 
         current_params = [self.hypothesis.params for _ in range(len(seqs))]
-        # TODO: investigate using chunksize for increasing speed
         pos_params = self.pool.starmap(BayesianScorer.compute_posterior, pos_inputs)
         neg_params = self.pool.starmap(BayesianScorer.compute_posterior, neg_inputs)
         pos_deltas = self.pool.starmap(metric, zip(pos_params, current_params))
