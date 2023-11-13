@@ -304,9 +304,9 @@ class BayesianLearner:
         self.train_avg = 0
         self.metric_avg = 0
 
-        if self.model_based or self.history_based:
+        if self.history_based:
             self.first_strategies.append(self.metric)
-        if self.mixed or self.history_based:
+        if self.history_based or self.mixed:
             self.first_strategies.append("train")
         np.random.shuffle(self.first_strategies)
 
@@ -315,8 +315,7 @@ class BayesianLearner:
             self.metric_func = BayesianScorer.info_gain
         if self.metric == "kl":
             self.metric_func = BayesianScorer.kl_divergence
-        
-      
+
     def featurize(self, seq):
         if seq in self._featurized_cache:
             return self._featurized_cache[seq]
@@ -442,9 +441,9 @@ class BayesianLearner:
             get_ind = lambda seq: jnp.where(self.binary_featurize(seq))[0]
             return [self.hypothesis.entropy(params, get_ind(seq)) for seq in seqs], "NA"
         assert self.metric_func is not None
-        return self.get_batch_expected_metric(seqs, self.metric_func)
+        return self.get_batch_expected_metric(seqs)
     
-    def get_batch_expected_metric(self, seqs, metric):
+    def get_batch_expected_metric(self, seqs):
         featurized_seqs = [self.binary_featurize(seq) for seq in seqs]
 
         make_input = lambda f, l: (
@@ -466,8 +465,8 @@ class BayesianLearner:
         current_params = [self.hypothesis.params for _ in range(len(seqs))]
         pos_params = self.pool.starmap(BayesianScorer.compute_posterior, pos_inputs)
         neg_params = self.pool.starmap(BayesianScorer.compute_posterior, neg_inputs)
-        pos_deltas = self.pool.starmap(metric, zip(pos_params, current_params))
-        neg_deltas = self.pool.starmap(metric, zip(neg_params, current_params))
+        pos_deltas = self.pool.starmap(self.metric_func, zip(pos_params, current_params))
+        neg_deltas = self.pool.starmap(self.metric_func, zip(neg_params, current_params))
 
         expected = [prob_pos[i] * pos_deltas[i] + (1-prob_pos[i]) * neg_deltas[i] for i in range(len(seqs))]
         expected_train = sum([prob_pos[i] * pos_deltas[i] for i in range(len(seqs))])/sum(prob_pos)
