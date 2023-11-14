@@ -46,9 +46,14 @@ combined_data %>%
 dat <- read.delim("blickTestResults.txt") %>%
   select(word,score) %>% 
   filter(score != "score") %>% 
-  mutate(length = str_count(word," ")) %>% 
+  mutate(length = str_count(word," "),
+         score = as.numeric(score)) %>% 
   mutate(score_binarized = if_else(score > 2.53, F, T)) %>% 
-  filter(length > 1)
+  filter(length > 1) %>% 
+  distinct()
+
+dat %>% 
+  write_csv("raw_test_english_pre_balancing.csv")
 
 t <- dat %>% 
   group_by(score_binarized,length) %>% 
@@ -79,11 +84,18 @@ goods <- all_at_this_length %>%
 l <- rbind(l,goods,bads)
   
 }
-group_five_subsampled <- bind_rows(l) %>% 
-  select(word,score_binarized)
+group_five_subsampled <- bind_rows(l) 
 
 
 write_csv(group_five_subsampled,"EnglishOverTrainingData.csv")
 
+group_five_subsampled %>% 
+  ggplot(aes(x=as.numeric(score)))+
+  geom_vline(xintercept = 2.53, color = "red", linetype = "dashed")+
+  geom_histogram()+
+  facet_wrap(~length)+
+  theme_bw()
+
+ggsave("distribution of scores.png")
 ```
 

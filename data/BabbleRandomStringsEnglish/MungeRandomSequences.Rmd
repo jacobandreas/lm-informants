@@ -1,0 +1,187 @@
+---
+title: "Check for held-out test set balance"
+author: "Canaan"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(tidylog)
+library(readxl)
+setwd("G:/My Drive/MIT/Research/lm-informants/data/BabbleRandomStringsEnglish/")
+```
+
+# random strings first
+
+```{r}
+
+
+
+
+dat <- read.delim("10k_random_strings_scored.txt") %>%
+  select(word,score) %>% 
+  filter(score != "score") %>% 
+  mutate(length = str_count(word," "),
+         score = as.numeric(score)) %>% 
+  mutate(score_binarized = if_else(score > 2.53, F, T)) %>% 
+  filter(length > 1) %>% 
+  distinct()
+
+dat %>% 
+  write_csv("random_strings_pre_balancing.csv")
+
+
+max_length <- dat %>% 
+  group_by(score_binarized) %>% 
+  summarise(m = max(length)) %>% 
+  ungroup() %>% 
+  filter(m == min(m))
+
+dat_length_chopped <- dat %>% 
+  filter(length<= max_length$m)
+
+t <- dat_length_chopped %>% 
+  group_by(score_binarized,length) %>% 
+  summarise(n=n())
+
+
+
+min_in_cat <- t %>% 
+  group_by(length) %>% 
+  summarise(min = min(n))
+
+
+
+l <- c()
+for (i in 1:nrow(min_in_cat)){
+  current_row <- min_in_cat[i,]
+  num_rows_to_sample <- current_row$min
+  current_length <- current_row$length
+  
+  all_at_this_length <- dat_length_chopped %>% 
+  filter(length == current_length)
+
+bads <- all_at_this_length %>% 
+  filter(score_binarized == FALSE)
+
+goods <- all_at_this_length %>% 
+  filter(score_binarized == T)
+
+
+  if ((nrow(bads) > 0) && (nrow(goods > 0))) {
+    print(current_length)
+  print(num_rows_to_sample)
+    goods_sampled <- goods %>% 
+      sample_n(num_rows_to_sample, replace = F)
+    bads_sampled <- bads %>% 
+      sample_n(num_rows_to_sample, replace = F)
+    l <- rbind(l,goods,bads)
+  } 
+
+
+}
+random_strings_subsampled <- bind_rows(l) 
+
+
+write_csv(random_strings_subsampled,"RandomStringsSubsampledBalanced.csv")
+
+random_strings_subsampled %>% 
+  ggplot(aes(x=as.numeric(score)))+
+  geom_vline(xintercept = 2.53, color = "red", linetype = "dashed")+
+  geom_histogram()+
+  facet_wrap(~length)+
+  theme_bw()
+
+ggsave("distribution of scores random_strings.png")
+```
+
+# then the random syllables
+
+
+```{r}
+
+
+
+
+dat <- read.delim("10k_well_formed_syllables_scored.txt") %>%
+  select(word,score) %>% 
+  filter(score != "score") %>% 
+  mutate(length = str_count(word," "),
+         score = as.numeric(score)) %>% 
+  mutate(score_binarized = if_else(score > 2.53, F, T)) %>% 
+  filter(length > 1) %>% 
+  distinct()
+
+dat %>% 
+  write_csv("random_well_formed_syllables_pre_balancing.csv")
+
+
+max_length <- dat %>% 
+  group_by(score_binarized) %>% 
+  summarise(m = max(length)) %>% 
+  ungroup() %>% 
+  filter(m == min(m))
+
+dat_length_chopped <- dat %>% 
+  filter(length<= max_length$m)
+
+t <- dat_length_chopped %>% 
+  group_by(score_binarized,length) %>% 
+  summarise(n=n())
+
+
+
+min_in_cat <- t %>% 
+  group_by(length) %>% 
+  summarise(min = min(n))
+
+
+
+l <- c()
+for (i in 1:nrow(min_in_cat)){
+  current_row <- min_in_cat[i,]
+  num_rows_to_sample <- current_row$min
+  current_length <- current_row$length
+  
+  all_at_this_length <- dat_length_chopped %>% 
+  filter(length == current_length)
+
+bads <- all_at_this_length %>% 
+  filter(score_binarized == FALSE)
+
+goods <- all_at_this_length %>% 
+  filter(score_binarized == T)
+
+
+  if ((nrow(bads) > 0) && (nrow(goods > 0))) {
+    print(current_length)
+  print(num_rows_to_sample)
+    goods_sampled <- goods %>% 
+      sample_n(num_rows_to_sample, replace = F)
+    bads_sampled <- bads %>% 
+      sample_n(num_rows_to_sample, replace = F)
+    l <- rbind(l,goods,bads)
+  } 
+
+
+}
+
+random_well_formed_syllables_subsampled <- bind_rows(l) 
+
+
+write_csv(random_well_formed_syllables_subsampled,"RandomWellFormedSyllablesSubsampledBalanced.csv")
+
+random_well_formed_syllables_subsampled %>% 
+  ggplot(aes(x=as.numeric(score)))+
+  geom_vline(xintercept = 2.53, color = "red", linetype = "dashed")+
+  geom_histogram()+
+  facet_wrap(~length)+
+  theme_bw()
+
+ggsave("distribution of scores random_well_formed_syllables.png")
+```
+
+
