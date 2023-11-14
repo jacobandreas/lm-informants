@@ -527,12 +527,21 @@ def main(args):
                     print(eval_dataset.head(5))
                     print("eval breakdown:", eval_dataset['label'].value_counts())
 
+                probs_dir = os.path.join(args.exp_dir, 'probs')
+                if not os.path.exists(probs_dir):
+                    os.mkdir(probs_dir)
+
                 for i in range(args.num_steps):
                     print("\n\n\n")
                     print(f"i: {i}")
                     step = i
 #                    step=N_INIT+i
                     p = learner.hypotheses[0].probs
+                    probs_file = os.path.join(probs_dir, f'{i}.npy')
+                    print(f"Saving current probs to: {probs_file}")
+                    np.save(probs_file, p)
+                    wandb.save(probs_file, )
+
                    
                     start_time = time.time()
                     #learner.cost()
@@ -940,6 +949,13 @@ def main(args):
 
                 mean_auc = get_mean_auc(aucs)
                 wandb.log({'end_stats/mean_auauc': mean_auc})
+               
+                # Save last probs
+                probs_file = os.path.join(probs_dir, f'{args.num_steps}.npy')
+                print(f"Saving current probs to: {probs_file}")
+                np.save(probs_file, p)
+                wandb.save(probs_file,) 
+
                 wandb_run.finish()
 
 def get_mean_auc(values, length=None):

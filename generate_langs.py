@@ -5,6 +5,7 @@ import informants
 import random
 
 import pandas as pd
+import argparse
 import os
 import numpy as np
 
@@ -86,19 +87,24 @@ def write_out_a_language(train, test, bad_features, seed):
 
 
 
-def main(num_words, num_bad_features,numerical_features,syllables,num_languages):
+def main(num_words, num_bad_features,numerical_features,syllables,seed):
     feature_type = 'atr_harmony'
 
-    for i in range(num_languages):
-        seed = i
-        print("working on language number", str(i+1))
-        random.seed(seed)
-        train, test, bad_features = make_a_language(numerical_features,syllables, num_words, num_bad_features)
-        #print(train)
-        write_out_a_language(train, test, bad_features, seed)
+    print("working on language seed", seed)
+    random.seed(seed)
+    train, test, bad_features = make_a_language(numerical_features,syllables, num_words, num_bad_features)
+    #print(train)
+    write_out_a_language(train, test, bad_features, seed)
         
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--seed', type=int, default=0)
+    
+    args = parser.parse_args()
+
+    print('args:', args)
+
     syllables = [
     'pa',
     'ta',
@@ -125,7 +131,6 @@ if __name__ == "__main__":
 
     num_words = 1000
     num_bad_features = 16
-    num_languages = 2 
     
     feature_type = 'atr_harmony'
     # Change these paths if you want to specify a different set of features
@@ -146,4 +151,4 @@ if __name__ == "__main__":
                                        )
     
     numerical_features = [i for i in mf_scorer.ngram_features.values()]
-    main(num_words, num_bad_features, numerical_features, syllables, num_languages)
+    main(num_words, num_bad_features, numerical_features, syllables, args.seed)
