@@ -21,7 +21,7 @@ class BayesianScorer:
         step_size = 0.01,
         n_updates = 2000,
         seed = 0,
-    ) -> None:
+    ):
         assert alpha_prior_mu > 0
         assert alpha_prior_sigma > 0
         assert beta_prior_mu < 0
@@ -196,20 +196,22 @@ class BayesianScorer:
         return logits
 
     @staticmethod
-    def entropy(params, ind=None):
+    def entropy(params, ind=None, length_norm=False):
         if ind is None:
             ind = jnp.arange(len(params["beta_posterior_mu"]))
         beta_entropy = jnp.sum(tn_entropy(
             params["beta_posterior_mu"][ind],
             params["beta_posterior_sigma"][ind],
             b=0
-        )).item() 
+        )).item()
         alpha_entropy = tn_entropy(
             params["alpha_posterior_mu"],
             params["alpha_posterior_sigma"],
             a=0
         ).item()
         entropy = beta_entropy + alpha_entropy
+        if length_norm:
+            entropy /= len(ind) + 1 # (1 for alpha)
         return entropy
         
     @staticmethod
@@ -330,6 +332,18 @@ class BayesianLearner:
         
     def binary_featurize(self, seq):
         return jnp.array(self.featurize(seq) > 0, float)
+    
+    # for compatibility
+    def all_features(self, return_indices=False):
+        feats = []
+        hyp = self.hypothesis
+        for i, ngram_feat in enumerate(hyp.ngram_features.keys()):
+            parts = " :: ".join(hyp.feature_vocab.get_rev(f) for f in ngram_feat)
+            if return_indices:
+                feats.append((hyp.params["beta_posterior_mu"][i].item(), parts, i))
+            else:
+                feats.append((hyp.params["beta_posterior_mu"][i].item(), parts))
+        return sorted(feats)
         
     def initialize(self):
         self.observed_judgments = []
@@ -339,6 +353,7 @@ class BayesianLearner:
             n_features=self.n_features,
             seed=self.seed
         )
+        self.hypotheses = [self.hypothesis] # for compatibility
 
         if self.track_params:
             self.observed_feat_idxs = set()
