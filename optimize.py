@@ -1,5 +1,6 @@
 import warnings
 import numpy as np
+from tqdm import tqdm
 from util import kl_bern, entropy
 
 # TODO: in order to run with warm start, need to call with orig_probs = prior 
@@ -48,7 +49,7 @@ def update(ordered_feats, ordered_judgments,
 
     ordered_feats = [set(feats) for feats in ordered_feats]
    
-    for idx, curr_feat in enumerate(feats_to_update):
+    for idx, curr_feat in tqdm(enumerate(feats_to_update), total=len(feats_to_update)):
 #            temp_feats = []
 #            temp_judgments = []
 #            for (j, feats) in zip(ordered_judgments, ordered_feats):
@@ -105,6 +106,8 @@ def update(ordered_feats, ordered_judgments,
             results.append(step_results)
         else:
             raise NotImplementedError()
+        print("Update:", num_updates)
+        print("Error:", error)
         
         """
         if do_plot_wandb:
@@ -162,7 +165,7 @@ def update_one_step(probs,
     # curr_feat is feat to update
     if verbose:
         print(f"Features to update: {feats_to_update}")
-    for idx, curr_feat in enumerate(feats_to_update):
+    for idx, curr_feat in tqdm(enumerate(feats_to_update), total=len(feats_to_update)):
         this_prob = probs[curr_feat]
  
         featurized_seqs = batch_feats_by_feat[idx]
