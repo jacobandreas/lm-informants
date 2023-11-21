@@ -21,6 +21,7 @@ class BayesianScorer:
         step_size = 0.01,
         n_updates = 2000,
         seed = 0,
+        use_mean = False,
     ):
         assert alpha_prior_mu > 0
         assert alpha_prior_sigma > 0
@@ -33,6 +34,7 @@ class BayesianScorer:
         self.step_size = step_size
         self.n_updates = n_updates
         self.rng_key = jax.random.PRNGKey(seed)
+        self.use_mean = use_mean
         self.params = {
             "beta_posterior_mu": jnp.full(n_features, self.beta_prior_mu),
             "beta_posterior_sigma": jnp.full(n_features, self.beta_prior_sigma),
@@ -188,11 +190,17 @@ class BayesianScorer:
         return self.make_posterior(self.params)
     
     def logits(self, featurized_seq):
+        if self.use_mean:
+            beta, alpha = BayesianScorer.make_posterior(self.params)
+            beta_estimate, alpha_estimate = beta.mean(), alpha.mean()
+        else:
+            beta_estimate = self.params["beta_posterior_mu"]
+            alpha_estimate = self.params["alpha_posterior_mu"]
+
         logits = jnp.matmul(
             featurized_seq,
-            # QUESTION: should these be mu (effectively mode) or true mean of truncated dist?
-            self.params["beta_posterior_mu"]
-        ) + self.params["alpha_posterior_mu"]
+            beta_estimate
+        ) + alpha_estimate
         return logits
 
     @staticmethod
@@ -213,6 +221,9 @@ class BayesianScorer:
         if length_norm:
             entropy /= len(ind) + 1 # (1 for alpha)
         return entropy
+    
+    def get_entropy(self, ind=None, length_norm=False):
+        return self.entropy(self.params, ind, length_norm)
         
     @staticmethod
     def info_gain(new_params, old_params):
@@ -353,7 +364,6 @@ class BayesianLearner:
             n_features=self.n_features,
             seed=self.seed
         )
-        self.hypotheses = [self.hypothesis] # for compatibility
 
         if self.track_params:
             self.observed_feat_idxs = set()
@@ -370,6 +380,7 @@ class BayesianLearner:
             self.proposed_from = []
             self.train_avgs = []
             self.metric_avgs = []
+            self.update_param_trackers()
 
     def observe(
         self,
@@ -449,12 +460,10 @@ class BayesianLearner:
     def score_candidates(self, seqs):
         if self.strategy == "unif":
             return [0]*len(seqs), "NA"
+        if self.strategy == "entropy":
+            return [self.entropy_param(seq, length_norm=True) for seq in seqs], "NA"
         if self.strategy == "entropy_pred":
             return [self.entropy_pred(seq) for seq in seqs], "NA"
-        if self.strategy == "entropy":
-            params = self.hypothesis.params
-            get_ind = lambda seq: jnp.where(self.binary_featurize(seq))[0]
-            return [self.hypothesis.entropy(params, get_ind(seq)) for seq in seqs], "NA"
         assert self.metric_func is not None
         return self.get_batch_expected_metric(seqs)
     
@@ -511,6 +520,10 @@ class BayesianLearner:
         p = self.probs(seq)
         entropy = -p*jnp.log(p)-((1-p) * jnp.log(1-p))
         return entropy
+    
+    def entropy_param(self, seq, length_norm=False):
+        ind = jnp.where(self.binary_featurize(seq))[0]
+        return self.hypothesis.get_entropy(ind, length_norm)
     
     def update_param_trackers(self):
         p = self.hypothesis.params
