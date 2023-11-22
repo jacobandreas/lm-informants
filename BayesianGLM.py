@@ -531,15 +531,35 @@ class BayesianLearner:
         unseen_feats = np.array([i for i in range(self.n_features) if i not in self.observed_feat_idxs])
 
         self.n_seen_feats.append(len(seen_feats))
-        self.pct_good_examples.append(sum(self.observed_judgments)/len(self.observed_judgments))
+        self.pct_good_examples.append(
+            sum(self.observed_judgments)/len(self.observed_judgments)
+            if len(self.observed_judgments)
+            else 0
+        )
         self.alpha_mu.append(p["alpha_posterior_mu"])
         self.alpha_sigma.append(p["alpha_posterior_sigma"])
         self.avg_beta_mu.append(p["beta_posterior_mu"].mean())
         self.avg_beta_sigma.append(p["beta_posterior_sigma"].mean())
-        self.avg_seen_beta_mu.append(p["beta_posterior_mu"][seen_feats].mean())
-        self.avg_seen_beta_sigma.append(p["beta_posterior_sigma"][seen_feats].mean())
-        self.avg_unseen_beta_mu.append(p["beta_posterior_mu"][unseen_feats].mean())
-        self.avg_unseen_beta_sigma.append(p["beta_posterior_sigma"][unseen_feats].mean())
+        self.avg_seen_beta_mu.append(
+            p["beta_posterior_mu"][seen_feats].mean()
+            if len(seen_feats)
+            else np.nan
+        )
+        self.avg_seen_beta_sigma.append(
+            p["beta_posterior_sigma"][seen_feats].mean()
+            if len(seen_feats)
+            else np.nan
+        )
+        self.avg_unseen_beta_mu.append(
+            p["beta_posterior_mu"][unseen_feats].mean()
+            if len(unseen_feats)
+            else np.nan
+        )
+        self.avg_unseen_beta_sigma.append(
+            p["beta_posterior_sigma"][unseen_feats].mean()
+            if len(unseen_feats)
+            else np.nan
+        )
         self.proposed_from.append(self.last_proposed)
         self.train_avgs.append(self.train_avg)
         self.metric_avgs.append(self.metric_avg)
