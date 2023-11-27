@@ -1,8 +1,8 @@
 ipdb==0.13.13
 matplotlib==3.5.2
 numpy==1.21.5
+numpyro==0.13.2
 pandas==1.4.4
-pyro==3.16
 scikit_learn==1.0.2
 scipy==1.9.1
 torch==2.0.0

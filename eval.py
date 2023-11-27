@@ -38,12 +38,12 @@ def get_test_data(args, train_dataset):
             phonemes = [BOUNDARY] + items[i]
             if sources[i] != 1:
                 phonemes += [BOUNDARY]
-            encoded.append(train_dataset.vocab.encode(phonemes)) 
+            encoded.append(train_dataset.vocab.encode(phonemes))
         return pd.DataFrame({"encoded": encoded, "label": labels})
 
     if args.feature_type.startswith('atr_lg_'):
         data = pd.read_csv(f'data/generated_langs/{args.feature_type}_test_set.csv')
-        encoded = [train_dataset.vocab.encode([BOUNDARY] + item + [BOUNDARY]) for item in data["item"]]
+        encoded = [train_dataset.vocab.encode([BOUNDARY] + item.split(' ') + [BOUNDARY]) for item in data["item"]]
         return pd.DataFrame({"encoded": encoded, "label": data["label"].tolist()})
 
     if args.feature_type == "atr_harmony":
@@ -67,7 +67,7 @@ def eval_corrs():
 
 def get_auc(learner, dataset):
     probs = [learner.probs(encoded) for encoded in dataset["encoded"]]
-    labels = dataset['label'].values.astype(int)
+    labels = dataset['label'].values.astype(int) # TODO: figure out what's up with english (should i clip?)
     return auc(labels, probs)
 
 def auc(labels, probs):
@@ -85,13 +85,14 @@ def init_learner(args, dataset, strategy, seed):
         linear_train_dataset=linear_train_dataset,
         index_of_next_item=0,
         feature_type=args.feature_type, 
-        track_params=True
+        track_params=True,
+        use_mean=args.use_mean,
+        phoneme_feature_file='data/hw/atr_harmony_features.txt' if args.feature_type.startswith('atr_lg_') else None
     )
     learner.initialize()
     return learner
 
 def get_informant(args, train_dataset):
-    # english? (only changed features which is not a used argument)
     if args.feature_type.startswith('atr_lg_'):
         with open(f'data/generated_langs/{args.feature_type}_trigram_features.txt', 'r') as f: 
             bad_features = [int(l) for l in f.readlines()]
@@ -103,18 +104,44 @@ def get_informant(args, train_dataset):
 
 def train_and_eval_learner(args, learner, informant):
     test_data = get_test_data(args, learner.dataset)
-    aucs = [get_auc(learner, test_data)]
-    for _ in range(args.n_steps):
-        candidate = learner.propose(args.n_candidates)
+    forbidden_seqs = test_data["encoded"].values
+    init_auc = get_auc(learner, test_data)
+    aucs = [init_auc]
+    log_step(0, init_auc, learner)
+    for step in tqdm(range(1, args.n_steps+1), unit="step", desc=f"{learner.strategy}-{learner.seed}"):
+        candidate = learner.propose(args.n_candidates, forbidden_seqs)
         judgment = informant.judge(candidate)
         learner.observe(candidate, judgment)
-        aucs.append(get_auc(learner, test_data))
+        auc = get_auc(learner, test_data)
+        aucs.append(auc)
+        log_step(step, auc, learner)
     trackers = learner.get_param_trackers()
     trackers["seed"] = learner.seed
     trackers["strategy"] = learner.strategy
     trackers["auc"] = aucs
     trackers["step"] = np.arange(args.n_steps+1)
     return trackers
+
+def log_step(step, auc, learner):
+    strategy = learner.strategy
+    wandb.log({
+        f"{strategy}/last_proposed_is_train": int(learner.last_proposed=="train"),
+        f"{strategy}/n_observed_train": learner.n_observed_train,
+        f"{strategy}/n_observed_metric": learner.n_observed_metric,
+        f"{strategy}/train_avg": learner.train_avg,
+        f"{strategy}/metric_avg": learner.metric_avg,
+        f"{strategy}/alpha_mu": learner.alpha_mu[-1],
+        f"{strategy}/alpha_sigma": learner.alpha_sigma[-1],
+        f"{strategy}/avg_beta_mu": learner.avg_beta_mu[-1],
+        f"{strategy}/avg_beta_sigma": learner.avg_beta_sigma[-1],
+        f"{strategy}/avg_seen_beta_mu": learner.avg_seen_beta_mu[-1],
+        f"{strategy}/avg_seen_beta_sigma": learner.avg_seen_beta_sigma[-1],
+        f"{strategy}/avg_unseen_beta_mu": learner.avg_unseen_beta_mu[-1],
+        f"{strategy}/avg_unseen_beta_sigma": learner.avg_unseen_beta_sigma[-1],
+        f"{strategy}/pct_good_examples": learner.pct_good_examples[-1],
+        f"{strategy}/auc": auc,
+        f"step": step,
+    })
 
 def write_trackers(csv_name, trackers):
     if exists(csv_name):
@@ -127,17 +154,21 @@ def write_trackers(csv_name, trackers):
 def evaluate(args):
     train_data = get_train_data(args)
     informant = get_informant(args, train_data)
-    for seed, strategy in tqdm(
-        product(range(args.n_seeds), args.strategies),
-        total=args.n_seeds * len(args.strategies)
-    ):
-        random.seed(seed)
-        np.random.seed(seed)
-        train_data.random.seed(seed)
-
-        learner = init_learner(args, train_data, strategy, seed)
-        trackers = train_and_eval_learner(args, learner, informant)
-        write_trackers(args.csv_name, trackers)
+    for seed in range(args.n_seeds):
+        wandb.init(
+            project=args.run_name,
+            name=f"seed={seed}",
+            config=vars(args),
+            reinit=True,
+            force=True,
+        )
+        for strategy in args.strategies:
+            random.seed(seed)
+            np.random.seed(seed)
+            train_data.random.seed(seed)
+            learner = init_learner(args, train_data, strategy, seed)
+            trackers = train_and_eval_learner(args, learner, informant)
+            write_trackers(args.csv_name, trackers)
     plot(args.csv_name)
 
 def plot(csv_name, cmap="tab20"):
@@ -163,9 +194,9 @@ def plot(csv_name, cmap="tab20"):
     plt.legend(bbox_to_anchor=(1.05, 1.0), loc='upper left')
     plt.savefig(csv_name.replace(".csv", ".pdf"), bbox_inches="tight")
 
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
+    parser.add_argument("--run_name", type=str, default="lm-informants")
     parser.add_argument("--lexicon_file", type=str, default=None)
     parser.add_argument("--feature_type", type=str, default="atr_harmony")
     parser.add_argument("--min_length", type=int, default=2)
@@ -174,6 +205,7 @@ if __name__ == "__main__":
     parser.add_argument("--n_steps", type=int, default=150)
     parser.add_argument("--n_candidates", type=int, default=100)
     parser.add_argument("--n_seeds", type=int, default=5)
+    parser.add_argument("--use_mean", type=bool, default=False)
     parser.add_argument("--csv_name", type=str, default="output.csv")
     strategies = [
         "train",
@@ -196,40 +228,7 @@ if __name__ == "__main__":
 
 
 
-
 # TODO
-# -wandb
 # -param saving
 # -corrs for english
 # -proper testing
-
-
-
-
-# NOTES
-"""
--include length norm!! ()
-
--lexicon file is train
-
--tags and wandb
-
--don't worry abt n_init
--no reverse judgments etc
-
--don't use narrow test set
--ignore TI
-
-feature types are ["atr_harmony", "atr_lg_", "english"]
-
--include trigram informant
-
--don't need total_features etc
-
-logging:
--mean auc
--strategy used / is train
--params at every step !!! (np.save)
--DO NOT NEED all features log
--maybe track entropy at each step (for seen features vs all?)
-"""

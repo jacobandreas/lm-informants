@@ -147,7 +147,8 @@ class BayesianScorer:
             alpha_prior_sigma,
             beta_prior_mu,
             beta_prior_sigma,
-            progress_bar=False
+            progress_bar=False,
+            stable_update=True,
         ).params
         return new_params
     
@@ -191,7 +192,7 @@ class BayesianScorer:
     
     def logits(self, featurized_seq):
         if self.use_mean:
-            beta, alpha = BayesianScorer.make_posterior(self.params)
+            beta, alpha = self.get_posterior()
             beta_estimate, alpha_estimate = beta.mean(), alpha.mean()
         else:
             beta_estimate = self.params["beta_posterior_mu"]
@@ -268,7 +269,8 @@ class BayesianLearner:
         feature_type = "atr_harmony",
         phoneme_feature_file = None,
         track_params = False,
-        seed = 0
+        seed = 0,
+        use_mean = False # TODO: remove later
     ):
         assert strategy in {
             "train",
@@ -285,6 +287,7 @@ class BayesianLearner:
             "kl_train_history",
         }
 
+        self.use_mean = use_mean # TODO: remove later
         self.dataset = dataset
         self.strategy = strategy
         self.linear_train_dataset = linear_train_dataset
@@ -343,18 +346,6 @@ class BayesianLearner:
         
     def binary_featurize(self, seq):
         return jnp.array(self.featurize(seq) > 0, float)
-    
-    # for compatibility
-    def all_features(self, return_indices=False):
-        feats = []
-        hyp = self.hypothesis
-        for i, ngram_feat in enumerate(hyp.ngram_features.keys()):
-            parts = " :: ".join(hyp.feature_vocab.get_rev(f) for f in ngram_feat)
-            if return_indices:
-                feats.append((hyp.params["beta_posterior_mu"][i].item(), parts, i))
-            else:
-                feats.append((hyp.params["beta_posterior_mu"][i].item(), parts))
-        return sorted(feats)
         
     def initialize(self):
         self.observed_judgments = []
@@ -362,7 +353,8 @@ class BayesianLearner:
         self.observed_seqs = []
         self.hypothesis = BayesianScorer(
             n_features=self.n_features,
-            seed=self.seed
+            seed=self.seed,
+            use_mean=self.use_mean  # TODO: after testing, set true or false accordingly and remove param
         )
 
         if self.track_params:
