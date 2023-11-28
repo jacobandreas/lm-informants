@@ -243,8 +243,8 @@ class MeanFieldScorer: # this is us
             self._featurized_cache[seq] = features
             return features
 
-    def cost(self, seq, features=None):
-        return -self.logprob(seq, True, features=features)
+    def cost(self, seq, features=None, length_norm = False):
+        return -self.logprob(seq, True, features=features, length_norm = length_norm)
 
     def logprob(self, seq, judgment, length_norm = False, features=None):
         if features is None:
