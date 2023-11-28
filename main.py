@@ -110,63 +110,6 @@ def get_broad_annotations(feature_type):
         raise NotImplementedError("please select a valid feature type!")
 
 
-def evaluate(dataset, informant, learner):
-    random = np.random.RandomState(0)
-    good_data = []
-    bad_data = []
-    for i in random.permutation(len(dataset.data)):
-        datum = dataset.data[i]
-        shuf_datum = dataset.permute(random, datum)
-        if (datum, True) in good_data:
-            continue
-        if informant.judge(datum) and not informant.judge(shuf_datum):
-            good_data.append((datum, True))
-            bad_data.append((shuf_datum, True))
-            #print(dataset.vocab.decode(datum), dataset.vocab.decode(shuf_datum))
-            #print(" ".join(dataset.vocab.decode(datum)), learner.cost(datum))
-            #print(" ".join(dataset.vocab.decode(shuf_datum)), learner.cost(shuf_datum))
-        if len(good_data) == N_EVAL:
-            break
-
-    accepted_data = [(s, True) for s, _, j in learner.observations if j]
-    rejected_data = [(s, True) for s, _, j in learner.observations if not j]
-
-    accepted_data = accepted_data[:N_EVAL]
-    rejected_data = rejected_data[:N_EVAL]
-
-    return {
-        "good": learner.full_nll(good_data),
-        "bad": learner.full_nll(bad_data),
-        "diff": learner.discriminate(good_data, bad_data),
-        "acc": learner.full_nll(accepted_data),
-        "rej": learner.full_nll(rejected_data),
-    }
-def evaluate_with_external_data(good_data, bad_data, informant, learner):
-    random = np.random.RandomState(0)
-    #
-    # good_data = []
-    # for item in g:
-    #     good_data.append((item,True))
-    # bad_data = []
-    # for item in b:
-    #     bad_data.append((item,True))
-    #
-
-
-    accepted_data = [(s, True) for s, _, j in learner.observations if j]
-    rejected_data = [(s, True) for s, _, j in learner.observations if not j]
-
-    accepted_data = accepted_data[:N_EVAL]
-    rejected_data = rejected_data[:N_EVAL]
-
-    return {
-        "good": learner.full_nll(good_data),
-        "bad": learner.full_nll(bad_data),
-        "diff": learner.discriminate(good_data, bad_data),
-        "acc": learner.full_nll(accepted_data),
-        "rej": learner.full_nll(rejected_data),
-    }
-
 def read_in_blicks(path_to_wugs):
     intext = open(path_to_wugs,"r",encoding='utf8').read().strip().split('\n')
     #print("returning blicks", intext,"from path",path_to_wugs)
@@ -383,8 +326,6 @@ def main(args):
         out_human_evals.write("Step,Run,Strategy,N_INIT,Item,Cost,Source,TestType\n")
         broad_human_evals_writer = get_csv_writer("BroadHoldoutEvals.csv", args.exp_dir) 
         broad_human_evals_writer.writerow(["Step", "Run", "Strategy", "N_INIT", "Items", "Costs", "IsLicit", "IsTI"])
-#    eval_metrics = get_out_file("ModelEvalLogs.csv", args.exp_dir)
-#    eval_metrics.write("ent,good,bad,diff,acc,rej,Step,Run,Strategy,N_Init,IsTI,judgement,proposed_form,entropy_before,entropy_after,entropy_diff,change_in_probs\n") # including things it queried about
 
 
     results_by_observations_writer = get_csv_writer("ResultsByObservations.csv", args.exp_dir)
@@ -893,12 +834,6 @@ def main(args):
                         entropy_diff_unique = None
                     # TODO: add expected information gain
 
-#                    eval_metrics.write(str((p * np.log(p) + (1-p) * np.log(1-p)).mean())+",")
-#                    for k, v in scores.items():
-#                        #print(f"{k:8s} {v:.4f}")
-#                        eval_metrics.write(str(v)+',')
-#                    eval_metrics.write(str(step)+','+str(run)+','+str(strategy)+','+str(N_INIT)+","+str(is_ti(str(dataset.vocab.decode(candidate)).replace(",","")))+","+str(judgment)+","+str(dataset.vocab.decode(candidate)).replace(",","")+","+str(entropy_before)+","+str(entropy_after)+","+str(entropy_diff)+","+str(change_in_probs)+'\n')
-#                    eval_metrics.flush()
                     wandb_table_data.append([step, strategy, str_candidate, judgment, list(featurized_candidate), eig,  entropy_before, entropy_after, entropy_diff, entropy_before_unique, entropy_after_unique, entropy_diff_unique, change_in_probs, chosen_strategy, chosen_cand_type])
 
 
@@ -909,15 +844,6 @@ def main(args):
                     wandb.log({f'results_after_observe/{k}': v for k, v in results_after_observe.items()})
     
 #
-                    #print("Judging human forms...")
-                    #corral_of_judged_human_forms = []
-
-                    # print(learner.hypotheses[0].entropy(candidate, debug=True))
-
-#                    if auc_streak >= 5:
-#                        break
-
-                    
                 logs[strategy].append(log)
                 # create a scatter plot using wandb.plot()
 
