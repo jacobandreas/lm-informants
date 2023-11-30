@@ -10,18 +10,19 @@ from scorers import _load_phoneme_features
 import itertools as it
 from truncated_normal import tn_kl, tn_entropy
 
+
 class BayesianScorer:
     def __init__(
         self,
-        n_features = 512,
-        alpha_prior_mu = 5.0,
-        alpha_prior_sigma = 1.0,
-        beta_prior_mu = -10.0,
-        beta_prior_sigma = 20.0,
-        step_size = 0.01,
-        n_updates = 2000,
-        seed = 0,
-        use_mean = False,
+        n_features=512,
+        alpha_prior_mu=5.0,
+        alpha_prior_sigma=1.0,
+        beta_prior_mu=-10.0,
+        beta_prior_sigma=20.0,
+        step_size=0.01,
+        n_updates=2000,
+        seed=0,
+        use_mean=False,
     ):
         assert alpha_prior_mu > 0
         assert alpha_prior_sigma > 0
@@ -49,7 +50,7 @@ class BayesianScorer:
         alpha_prior_mu,
         alpha_prior_sigma,
         beta_prior_mu,
-        beta_prior_sigma
+        beta_prior_sigma,
     ):
         n_samples, n_features = data.shape
 
@@ -61,7 +62,7 @@ class BayesianScorer:
         beta_prior = dist.TruncatedNormal(
             jnp.full(n_features, beta_prior_mu),
             jnp.full(n_features, beta_prior_sigma),
-            high=0
+            high=0,
         )
 
         alpha = numpyro.sample("alpha", alpha_prior)
@@ -80,19 +81,19 @@ class BayesianScorer:
         alpha_prior_mu,
         alpha_prior_sigma,
         beta_prior_mu,
-        beta_prior_sigma
+        beta_prior_sigma,
     ):
         _, n_features = data.shape
 
         alpha_posterior_mu = numpyro.param(
             "alpha_posterior_mu",
             alpha_prior_mu,
-            constraint=dist.constraints.greater_than(0)
+            constraint=dist.constraints.greater_than(0),
         )
         alpha_posterior_sigma = numpyro.param(
             "alpha_posterior_sigma",
             alpha_prior_sigma,
-            constraint=dist.constraints.greater_than(0)
+            constraint=dist.constraints.greater_than(0),
         )
         alpha_posterior = dist.TruncatedNormal(
             alpha_posterior_mu,
@@ -103,17 +104,15 @@ class BayesianScorer:
         beta_posterior_mu = numpyro.param(
             "beta_posterior_mu",
             jnp.full(n_features, beta_prior_mu),
-            constraint=dist.constraints.less_than(0)
+            constraint=dist.constraints.less_than(0),
         )
         beta_posterior_sigma = numpyro.param(
             "beta_posterior_sigma",
             jnp.full(n_features, beta_prior_sigma),
-            constraint=dist.constraints.greater_than(0)
+            constraint=dist.constraints.greater_than(0),
         )
         beta_posterior = dist.TruncatedNormal(
-             beta_posterior_mu,
-             beta_posterior_sigma,
-             high=0
+            beta_posterior_mu, beta_posterior_sigma, high=0
         )
 
         numpyro.sample("alpha", alpha_posterior)
@@ -130,13 +129,13 @@ class BayesianScorer:
         beta_prior_sigma,
         step_size,
         n_updates,
-        rng_key
+        rng_key,
     ):
         svi = SVI(
             BayesianScorer._model,
             BayesianScorer._guide,
             optim=Adam(step_size=step_size),
-            loss=Trace_ELBO()
+            loss=Trace_ELBO(),
         )
         new_params = svi.run(
             rng_key,
@@ -151,13 +150,8 @@ class BayesianScorer:
             stable_update=True,
         ).params
         return new_params
-    
-    def update_posterior(
-        self,
-        data,
-        judgments,
-        update
-    ):
+
+    def update_posterior(self, data, judgments, update):
         new_params = self.compute_posterior(
             data,
             judgments,
@@ -167,18 +161,18 @@ class BayesianScorer:
             self.beta_prior_sigma,
             self.step_size,
             self.n_updates,
-            self.rng_key            
+            self.rng_key,
         )
         if update:
             self.params = new_params
         return new_params
-    
+
     @staticmethod
     def make_posterior(params):
         beta = dist.TruncatedNormal(
             params["beta_posterior_mu"],
             params["beta_posterior_sigma"],
-            high=0
+            high=0,
         )
         alpha = dist.TruncatedNormal(
             params["alpha_posterior_mu"],
@@ -186,10 +180,10 @@ class BayesianScorer:
             low=0,
         )
         return beta, alpha
-    
+
     def get_posterior(self):
         return self.make_posterior(self.params)
-    
+
     def logits(self, featurized_seq):
         if self.use_mean:
             beta, alpha = self.get_posterior()
@@ -198,10 +192,7 @@ class BayesianScorer:
             beta_estimate = self.params["beta_posterior_mu"]
             alpha_estimate = self.params["alpha_posterior_mu"]
 
-        logits = jnp.matmul(
-            featurized_seq,
-            beta_estimate
-        ) + alpha_estimate
+        logits = jnp.matmul(featurized_seq, beta_estimate) + alpha_estimate
         return logits
 
     @staticmethod
@@ -211,21 +202,21 @@ class BayesianScorer:
         beta_entropy = jnp.sum(tn_entropy(
             params["beta_posterior_mu"][ind],
             params["beta_posterior_sigma"][ind],
-            b=0
+            b=0,
         )).item()
         alpha_entropy = tn_entropy(
             params["alpha_posterior_mu"],
             params["alpha_posterior_sigma"],
-            a=0
+            a=0,
         ).item()
         entropy = beta_entropy + alpha_entropy
         if length_norm:
-            entropy /= len(ind) + 1 # (1 for alpha)
+            entropy /= len(ind) + 1  # (1 for alpha)
         return entropy
-    
+
     def get_entropy(self, ind=None, length_norm=False):
         return self.entropy(self.params, ind, length_norm)
-        
+
     @staticmethod
     def info_gain(new_params, old_params):
         old_entropy = BayesianScorer.entropy(old_params)
@@ -261,16 +252,16 @@ class BayesianScorer:
 
 class BayesianLearner:
     def __init__(
-        self, 
+        self,
         dataset,
         strategy,
         linear_train_dataset,
         index_of_next_item,
-        feature_type = "atr_harmony",
-        phoneme_feature_file = None,
-        track_params = False,
-        seed = 0,
-        use_mean = False # TODO: remove later
+        feature_type="atr_harmony",
+        phoneme_feature_file=None,
+        track_params=False,
+        seed=0,
+        use_mean=False,  # TODO: remove later
     ):
         assert strategy in {
             "train",
@@ -287,7 +278,7 @@ class BayesianLearner:
             "kl_train_history",
         }
 
-        self.use_mean = use_mean # TODO: remove later
+        self.use_mean = use_mean  # TODO: remove later
         self.dataset = dataset
         self.strategy = strategy
         self.linear_train_dataset = linear_train_dataset
@@ -300,9 +291,7 @@ class BayesianLearner:
         self._featurized_cache = {}
         self.feature_type = feature_type
         self.phoneme_features, self.feature_vocab = _load_phoneme_features(
-            dataset,
-            self.feature_type,
-            phoneme_feature_file = phoneme_feature_file
+            dataset, self.feature_type, phoneme_feature_file=phoneme_feature_file
         )
         self.ngram_features = {}
         for ff in it.product(range(len(self.feature_vocab)), repeat=self.ORDER):
@@ -338,15 +327,18 @@ class BayesianLearner:
         else:
             features = np.zeros(len(self.ngram_features))
             for i in range(len(seq) - self.ORDER + 1):
-                features_here = [self.phoneme_features[seq[j]].nonzero()[0] for j in range(i, i+self.ORDER)]
+                features_here = [
+                    self.phoneme_features[seq[j]].nonzero()[0]
+                    for j in range(i, i + self.ORDER)
+                ]
                 for ff in it.product(*features_here):
                     features[self.ngram_features[ff]] += 1
             self._featurized_cache[seq] = features
             return features
-        
+
     def binary_featurize(self, seq):
         return jnp.array(self.featurize(seq) > 0, float)
-        
+
     def initialize(self):
         self.observed_judgments = []
         self.observed_features = []
@@ -354,7 +346,7 @@ class BayesianLearner:
         self.hypothesis = BayesianScorer(
             n_features=self.n_features,
             seed=self.seed,
-            use_mean=self.use_mean  # TODO: after testing, set true or false accordingly and remove param
+            use_mean=self.use_mean,  # TODO: after testing, set true or false accordingly and remove param
         )
 
         if self.track_params:
@@ -368,18 +360,13 @@ class BayesianLearner:
             self.avg_seen_beta_mu = []
             self.avg_seen_beta_sigma = []
             self.avg_unseen_beta_mu = []
-            self.avg_unseen_beta_sigma = [] 
+            self.avg_unseen_beta_sigma = []
             self.proposed_from = []
             self.train_avgs = []
             self.metric_avgs = []
             self.update_param_trackers()
 
-    def observe(
-        self,
-        seq,
-        judgment,
-        update=True
-    ):
+    def observe(self, seq, judgment, update=True):
         featurized = self.binary_featurize(seq)
         self.observed_judgments.append(float(judgment))
         self.observed_features.append(featurized)
@@ -401,27 +388,33 @@ class BayesianLearner:
             self.observed_feat_idxs.update(jnp.where(featurized)[0].tolist())
             self.update_param_trackers()
         return new_params
-    
+
     def update_history(self, metric_val):
         assert self.history_based or self.mixed
         assert self.last_proposed is not None
         if self.last_proposed == "train":
             self.n_observed_train += 1
-            self.train_avg += (1 / self.n_observed_train)*(metric_val - self.train_avg)
+            self.train_avg += (1 / self.n_observed_train) * (
+                metric_val - self.train_avg
+            )
         else:
             self.n_observed_metric += 1
-            self.metric_avg += (1 / self.n_observed_metric)*(metric_val - self.metric_avg)
-    
+            self.metric_avg += (1 / self.n_observed_metric) * (
+                metric_val - self.metric_avg
+            )
+
     def propose(self, n_candidates=100, forbidden_seqs=[]):
         exclude = set(self.observed_seqs + forbidden_seqs)
-        
+
         if len(self.observed_seqs) < len(self.first_strategies):
             if self.first_strategies[len(self.observed_seqs)] == "train":
                 self.last_proposed = "train"
-                return self.get_train_candidate(exclude) 
-        elif self.strategy == "train" or  (self.history_based and self.train_avg >= self.metric_avg):
+                return self.get_train_candidate(exclude)
+        elif self.strategy == "train" or (
+            self.history_based and self.train_avg >= self.metric_avg
+        ):
             self.last_proposed = "train"
-            return self.get_train_candidate(exclude) 
+            return self.get_train_candidate(exclude)
 
         # TODO: candidates can come from edits too (not using actually)
         candidates = []
@@ -432,13 +425,14 @@ class BayesianLearner:
         scores, expected_train = self.score_candidates(candidates)
         scored_candidates = zip(candidates, scores)
         best_cand = max(scored_candidates, key=lambda c: c[1])
-        
+
         if len(self.observed_seqs) >= len(self.first_strategies):
-            if ((self.model_based and expected_train >= best_cand[1]) or 
-                (self.mixed and self.train_avg >= best_cand[1])):
+            if (self.model_based and expected_train >= best_cand[1]) or (
+                self.mixed and self.train_avg >= best_cand[1]
+            ):
                 self.last_proposed = "train"
                 return self.get_train_candidate(exclude)
-        
+
         self.last_proposed = "metric"
         return best_cand[0]
 
@@ -448,17 +442,17 @@ class BayesianLearner:
             self.index_of_next_item += 1
             if seq not in exclude:
                 return seq
-            
+
     def score_candidates(self, seqs):
         if self.strategy == "unif":
-            return [0]*len(seqs), "NA"
+            return [0] * len(seqs), "NA"
         if self.strategy == "entropy":
             return [self.entropy_param(seq, length_norm=True) for seq in seqs], "NA"
         if self.strategy == "entropy_pred":
             return [self.entropy_pred(seq) for seq in seqs], "NA"
         assert self.metric_func is not None
         return self.get_batch_expected_metric(seqs)
-    
+
     def get_batch_expected_metric(self, seqs):
         featurized_seqs = [self.binary_featurize(seq) for seq in seqs]
 
@@ -471,7 +465,7 @@ class BayesianLearner:
             self.hypothesis.beta_prior_sigma,
             self.hypothesis.step_size,
             self.hypothesis.n_updates,
-            self.hypothesis.rng_key
+            self.hypothesis.rng_key,
         )
 
         prob_pos = [self.probs(seq) for seq in seqs]
@@ -481,52 +475,63 @@ class BayesianLearner:
         current_params = [self.hypothesis.params for _ in range(len(seqs))]
         pos_params = self.pool.starmap(BayesianScorer.compute_posterior, pos_inputs)
         neg_params = self.pool.starmap(BayesianScorer.compute_posterior, neg_inputs)
-        pos_deltas = self.pool.starmap(self.metric_func, zip(pos_params, current_params))
-        neg_deltas = self.pool.starmap(self.metric_func, zip(neg_params, current_params))
+        pos_deltas = self.pool.starmap(
+            self.metric_func, zip(pos_params, current_params)
+        )
+        neg_deltas = self.pool.starmap(
+            self.metric_func, zip(neg_params, current_params)
+        )
 
-        expected = [prob_pos[i] * pos_deltas[i] + (1-prob_pos[i]) * neg_deltas[i] for i in range(len(seqs))]
-        expected_train = sum([prob_pos[i] * pos_deltas[i] for i in range(len(seqs))])/sum(prob_pos)
+        expected = [
+            prob_pos[i] * pos_deltas[i] + (1 - prob_pos[i]) * neg_deltas[i]
+            for i in range(len(seqs))
+        ]
+        expected_train = sum(
+            [prob_pos[i] * pos_deltas[i] for i in range(len(seqs))]
+        ) / sum(prob_pos)
         return expected, expected_train
 
     def logits(self, seq):
         featurized_seq = self.binary_featurize(seq)
         logits = self.hypothesis.logits(featurized_seq)
         return logits
-    
+
     def probs(self, seq):
         logits = self.logits(seq)
         probs = jax.nn.sigmoid(logits)
         return probs
-    
+
     def logprobs(self, seq):
         probs = self.probs(seq)
         # condition prevents 0 probs / nan logprobs / inf costs
         # works bc logprobs converges to logits when approaching -inf
         logprobs = jnp.log(probs) if probs > 0 else self.logits(seq)
         return logprobs
-    
+
     def cost(self, seq):
         logprobs = self.logprobs(seq)
         cost = -logprobs
         return cost
-    
+
     def entropy_pred(self, seq):
         p = self.probs(seq)
-        entropy = -p*jnp.log(p)-((1-p) * jnp.log(1-p))
+        entropy = -p * jnp.log(p) - ((1 - p) * jnp.log(1 - p))
         return entropy
-    
+
     def entropy_param(self, seq, length_norm=False):
         ind = jnp.where(self.binary_featurize(seq))[0]
         return self.hypothesis.get_entropy(ind, length_norm)
-    
+
     def update_param_trackers(self):
         p = self.hypothesis.params
         seen_feats = np.array(list(self.observed_feat_idxs))
-        unseen_feats = np.array([i for i in range(self.n_features) if i not in self.observed_feat_idxs])
+        unseen_feats = np.array(
+            [i for i in range(self.n_features) if i not in self.observed_feat_idxs]
+        )
 
         self.n_seen_feats.append(len(seen_feats))
         self.pct_good_examples.append(
-            sum(self.observed_judgments)/len(self.observed_judgments)
+            sum(self.observed_judgments) / len(self.observed_judgments)
             if len(self.observed_judgments)
             else 0
         )
@@ -535,19 +540,13 @@ class BayesianLearner:
         self.avg_beta_mu.append(p["beta_posterior_mu"].mean())
         self.avg_beta_sigma.append(p["beta_posterior_sigma"].mean())
         self.avg_seen_beta_mu.append(
-            p["beta_posterior_mu"][seen_feats].mean()
-            if len(seen_feats)
-            else np.nan
+            p["beta_posterior_mu"][seen_feats].mean() if len(seen_feats) else np.nan
         )
         self.avg_seen_beta_sigma.append(
-            p["beta_posterior_sigma"][seen_feats].mean()
-            if len(seen_feats)
-            else np.nan
+            p["beta_posterior_sigma"][seen_feats].mean() if len(seen_feats) else np.nan
         )
         self.avg_unseen_beta_mu.append(
-            p["beta_posterior_mu"][unseen_feats].mean()
-            if len(unseen_feats)
-            else np.nan
+            p["beta_posterior_mu"][unseen_feats].mean() if len(unseen_feats) else np.nan
         )
         self.avg_unseen_beta_sigma.append(
             p["beta_posterior_sigma"][unseen_feats].mean()
@@ -572,5 +571,5 @@ class BayesianLearner:
             "avg_unseen_beta_sigma": self.avg_unseen_beta_sigma,
             "proposed_from": self.proposed_from,
             "train_avgs": self.train_avgs,
-            "metric_avgs": self.metric_avgs
+            "metric_avgs": self.metric_avgs,
         }

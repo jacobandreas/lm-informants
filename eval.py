@@ -100,8 +100,19 @@ def get_test_data(args, train_dataset):
                 phonemes += [BOUNDARY]
             encoding = train_dataset.vocab.encode(phonemes)
             encoded.append(encoding)
-            num_features.append(len(mean_field_scorer._featurize(encoding).nonzero()[0]))
-        return pd.DataFrame({"encoded": encoded, "label": labels, "num_phonemes": num_phonemes, "num_features": num_features, "item": items, "source": sources})
+            num_features.append(
+                len(mean_field_scorer._featurize(encoding).nonzero()[0])
+            )
+        return pd.DataFrame(
+            {
+                "encoded": encoded,
+                "label": labels,
+                "num_phonemes": num_phonemes,
+                "num_features": num_features,
+                "item": items,
+                "source": sources,
+            }
+        )
 
     if args.feature_type.startswith("atr_lg_"):
         data = pd.read_csv(f"data/generated_langs/{args.feature_type}_test_set.csv")
@@ -131,7 +142,7 @@ def get_test_data(args, train_dataset):
     return pd.DataFrame({"encoded": encoded, "label": labels})
 
 
-def get_auc(learner, dataset):      
+def get_auc(learner, dataset):
     probs = [learner.probs(encoded) for encoded in dataset["encoded"]]
     labels = dataset["label"].values.astype(int)
     return auc(labels, probs)
@@ -149,13 +160,16 @@ def eval_english(learner, dataset):
         dataset["source"],
         dataset["item"],
         dataset["num_phonemes"],
-        dataset["num_features"])
+        dataset["num_features"],
+    )
     auc = auc_results["auc"]
     additional_logs = {
         "costs": wandb.Table(dataframe=costs_df),
-        "corrs": wandb.Table(dataframe=corrs_df)
+        "corrs": wandb.Table(dataframe=corrs_df),
     }
-    additional_logs.update({f"human_correlation_{k}": v for k, v in corrs_df.to_dict().items()})
+    additional_logs.update(
+        {f"human_correlation_{k}": v for k, v in corrs_df.to_dict().items()}
+    )
     additional_logs.update({f"auc_results/{k}": v for k, v in auc_results.items()})
     return auc, additional_logs
 
@@ -213,7 +227,9 @@ def write_trackers(args, trackers):
 def write_params(args, learner, step):
     p = learner.hypothesis.params
     for dist, param in product(["alpha", "beta"], ["mu", "sigma"]):
-        path = make_folders_for_path(f"{args.output_dir}/{learner.strategy}-{learner.seed}/{dist}/{param}/{step}")
+        path = make_folders_for_path(
+            f"{args.output_dir}/{learner.strategy}-{learner.seed}/{dist}/{param}/{step}"
+        )
         np.save(path, p[f"{dist}_posterior_{param}"])
 
 
@@ -238,7 +254,7 @@ def log_step(step, auc, learner, additional_logs=None):
         f"step": step,
     }
     if additional_logs:
-        log.update({f"{strategy}/{k}":v for k,v in additional_logs.items()})
+        log.update({f"{strategy}/{k}": v for k, v in additional_logs.items()})
     wandb.log(log)
 
 
