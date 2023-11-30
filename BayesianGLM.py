@@ -193,7 +193,7 @@ class BayesianScorer:
     def logits(self, featurized_seq):
         if self.use_mean:
             beta, alpha = self.get_posterior()
-            beta_estimate, alpha_estimate = beta.mean(), alpha.mean()
+            beta_estimate, alpha_estimate = beta.mean, alpha.mean
         else:
             beta_estimate = self.params["beta_posterior_mu"]
             alpha_estimate = self.params["alpha_posterior_mu"]
@@ -500,7 +500,9 @@ class BayesianLearner:
     
     def logprobs(self, seq):
         probs = self.probs(seq)
-        logprobs = jnp.log(probs)
+        # condition prevents 0 probs / nan logprobs / inf costs
+        # works bc logprobs converges to logits when approaching -inf
+        logprobs = jnp.log(probs) if probs > 0 else self.logits(seq)
         return logprobs
     
     def cost(self, seq):
