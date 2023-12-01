@@ -14,15 +14,15 @@ from truncated_normal import tn_kl, tn_entropy
 class BayesianScorer:
     def __init__(
         self,
-        n_features=512,
-        alpha_prior_mu=5.0,
-        alpha_prior_sigma=1.0,
-        beta_prior_mu=-10.0,
-        beta_prior_sigma=20.0,
-        step_size=0.01,
-        n_updates=2000,
-        seed=0,
-        use_mean=False,
+        seed,
+        n_features,
+        alpha_prior_mu,
+        alpha_prior_sigma,
+        beta_prior_mu,
+        beta_prior_sigma,
+        step_size,
+        n_updates,
+        use_mean,
     ):
         assert alpha_prior_mu > 0
         assert alpha_prior_sigma > 0
@@ -261,7 +261,14 @@ class BayesianLearner:
         phoneme_feature_file=None,
         track_params=False,
         seed=0,
-        use_mean=False,  # TODO: remove later
+        # scorer hyperparams
+        alpha_prior_mu=5.0,
+        alpha_prior_sigma=1.0,
+        beta_prior_mu=-10.0,
+        beta_prior_sigma=20.0,
+        step_size=0.01,
+        n_updates=2000,
+        use_mean=False,
     ):
         assert strategy in {
             "train",
@@ -278,7 +285,6 @@ class BayesianLearner:
             "kl_train_history",
         }
 
-        self.use_mean = use_mean  # TODO: remove later
         self.dataset = dataset
         self.strategy = strategy
         self.linear_train_dataset = linear_train_dataset
@@ -321,6 +327,15 @@ class BayesianLearner:
         if self.metric == "kl":
             self.metric_func = BayesianScorer.kl_divergence
 
+        # scorer hyperparams
+        self.alpha_prior_mu = alpha_prior_mu
+        self.alpha_prior_sigma = alpha_prior_sigma
+        self.beta_prior_mu = beta_prior_mu
+        self.beta_prior_sigma = beta_prior_sigma
+        self.step_size = step_size
+        self.n_updates = n_updates
+        self.use_mean = use_mean
+
     def featurize(self, seq):
         if seq in self._featurized_cache:
             return self._featurized_cache[seq]
@@ -344,9 +359,15 @@ class BayesianLearner:
         self.observed_features = []
         self.observed_seqs = []
         self.hypothesis = BayesianScorer(
-            n_features=self.n_features,
             seed=self.seed,
-            use_mean=self.use_mean,  # TODO: after testing, set true or false accordingly and remove param
+            n_features=self.n_features,
+            alpha_prior_mu=self.alpha_prior_mu,
+            alpha_prior_sigma=self.alpha_prior_sigma,
+            beta_prior_mu=self.beta_prior_mu,
+            beta_prior_sigma=self.beta_prior_sigma,
+            step_size=self.step_size,
+            n_updates=self.n_updates,
+            use_mean=self.use_mean,
         )
 
         if self.track_params:

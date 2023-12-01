@@ -9,21 +9,26 @@ from scorers import MeanFieldScorer, HWScorer
 import os
 from main import read_in_blicks, BOUNDARY, eval_corrs
 import matplotlib.pyplot as plt
+import seaborn as sns
 import datasets
 import argparse
 import wandb
 from functools import reduce
 from itertools import product
+import time
 
 
 def evaluate(args):
     train_data = get_train_data(args)
     informant = get_informant(args, train_data)
     for seed in range(args.n_seeds):
+        run_label = get_run_label(args, seed)
+        config = vars(args)
+        config["label"]=run_label
         wandb.init(
-            project=args.run_name,
-            name=f"seed={seed}",
-            config=vars(args),
+            project=args.name,
+            name=run_label,
+            config=config,
             reinit=True,
             force=True,
         )
@@ -34,37 +39,55 @@ def evaluate(args):
             learner = get_learner(args, train_data, strategy, seed)
             trackers = train_and_eval_learner(args, learner, informant)
             write_trackers(args, trackers)
-    path = os.path.join(args.output_dir, args.csv_name)
-    plot(path)
+    make_heatmaps(args)
+
+
+def get_run_label(args, seed):
+    d = vars(args)
+    params = []
+    for k in args.label_run_by:
+        params.append(
+            f"{k}={d[k]}"
+            if k != "seed"
+            else f"seed={seed}"
+        )
+    name = "_".join(params)
+    return name
 
 
 def train_and_eval_learner(args, learner, informant):
     test_data = get_test_data(args, learner.dataset)
     forbidden_seqs = test_data["encoded"].values.tolist()
-    init_auc = get_auc(learner, test_data)
-    aucs = [init_auc]
-    log_step(0, init_auc, learner)
+    init_results = eval_learner(learner, test_data)
+    all_results = [init_results]
+    times = [0]
+    log_step(0, 0, learner, init_results)
     write_params(args, learner, 0)
     for step in tqdm(
         range(1, args.n_steps + 1),
         unit="step",
         desc=f"{learner.strategy}-{learner.seed}",
     ):
+        t0 = time.time()
         candidate = learner.propose(args.n_candidates, forbidden_seqs)
         judgment = informant.judge(candidate)
         learner.observe(candidate, judgment)
+        time_elapsed = time.time() - t0
         if args.feature_type == "english":
-            auc, additional_logs = eval_english(learner, test_data)
+            results = eval_learner_english(learner, test_data)
         else:
-            auc, additional_logs = get_auc(learner, test_data), None
-        aucs.append(auc)
-        log_step(step, auc, learner, additional_logs)
+            results = eval_learner(learner, test_data)
+        all_results.append(results)
+        times.append(time_elapsed)
+        log_step(step, time_elapsed, learner, results)
         write_params(args, learner, step)
     trackers = learner.get_param_trackers()
-    trackers["seed"] = learner.seed
-    trackers["strategy"] = learner.strategy
-    trackers["auc"] = aucs
+    trackers["time"] = times
     trackers["step"] = np.arange(args.n_steps + 1)
+    trackers["seed"] = [learner.seed]*(args.n_steps + 1)
+    trackers["strategy"] = [learner.strategy]*(args.n_steps + 1)
+    for k in all_results[0]:
+        trackers[k] = [r[k] for r in all_results]
     return trackers
 
 
@@ -141,19 +164,19 @@ def get_test_data(args, train_dataset):
     labels = [informant.judge(e) for e in encoded]
     return pd.DataFrame({"encoded": encoded, "label": labels})
 
-
-def get_auc(learner, dataset):
-    probs = [learner.probs(encoded) for encoded in dataset["encoded"]]
+def eval_learner(learner, dataset):
     labels = dataset["label"].values.astype(int)
-    return auc(labels, probs)
+    probs = np.array([learner.probs(encoded) for encoded in dataset["encoded"]])
+    logits = np.array([learner.logits(encoded) for encoded in dataset["encoded"]])
+    results = {}
+    results["auc"] = auc(labels, probs)
+    results["log-likelihood"] = log_likelihood(labels, probs, logits)
+    results["accuracy"] = metrics.accuracy_score(labels, probs>0.5)
+    results["f1"] = metrics.f1_score(labels, probs>0.5)
+    return results
 
 
-def auc(labels, probs):
-    fpr, tpr, _ = metrics.roc_curve(labels, probs, pos_label=1)
-    return metrics.auc(fpr, tpr)
-
-
-def eval_english(learner, dataset):
+def eval_learner_english(learner, dataset):
     corrs_df, auc_results, costs_df = eval_corrs(
         [learner.cost(encoded).item() for encoded in dataset["encoded"]],
         dataset["label"],
@@ -162,16 +185,32 @@ def eval_english(learner, dataset):
         dataset["num_phonemes"],
         dataset["num_features"],
     )
-    auc = auc_results["auc"]
-    additional_logs = {
+    results = {
         "costs": wandb.Table(dataframe=costs_df),
         "corrs": wandb.Table(dataframe=corrs_df),
     }
-    additional_logs.update(
+    results.update(
         {f"human_correlation_{k}": v for k, v in corrs_df.to_dict().items()}
     )
-    additional_logs.update({f"auc_results/{k}": v for k, v in auc_results.items()})
-    return auc, additional_logs
+    results.update({f"auc_results/{k}": v for k, v in auc_results.items()})
+    results.update(eval_learner(learner, dataset[dataset["source"]==5]))
+    return results
+
+
+def auc(labels, probs):
+    fpr, tpr, _ = metrics.roc_curve(labels, probs, pos_label=1)
+    return metrics.auc(fpr, tpr)
+
+
+def log_likelihood(labels, probs, logits):
+    with np.errstate(divide = 'ignore'):
+        true_logprobs = np.log(probs)
+        false_logprobs = np.log(1-probs)
+    true_logprobs[probs==0] = logits[probs==0]
+    false_logprobs[probs==1] = -logits[probs==1]
+    assert np.all(-np.inf < true_logprobs) and np.all(true_logprobs < np.inf)
+    assert np.all(-np.inf < false_logprobs) and np.all(false_logprobs < np.inf)
+    return np.sum(true_logprobs[labels==1]) + np.sum(false_logprobs[labels==0])
 
 
 def get_learner(args, dataset, strategy, seed):
@@ -186,10 +225,17 @@ def get_learner(args, dataset, strategy, seed):
         index_of_next_item=0,
         feature_type=args.feature_type,
         track_params=True,
-        use_mean=args.use_mean,
         phoneme_feature_file="data/hw/atr_harmony_features.txt"
         if args.feature_type.startswith("atr_lg_")
         else None,
+        # scorer hyperparams
+        alpha_prior_mu=args.alpha_prior_mu,
+        alpha_prior_sigma=args.alpha_prior_sigma,
+        beta_prior_mu=args.beta_prior_mu,
+        beta_prior_sigma=args.beta_prior_sigma,
+        step_size=args.step_size,
+        n_updates=args.n_updates,
+        use_mean=args.use_mean,
     )
     learner.initialize()
     return learner
@@ -213,10 +259,11 @@ def get_informant(args, train_dataset):
 
 
 def write_trackers(args, trackers):
+    trackers.update({k: [v]*(args.n_steps + 1) for k,v in vars(args).items()})
     path = make_folders_for_path(f"{args.output_dir}/{args.csv_name}")
     if os.path.exists(path):
         keys = set(pd.read_csv(path, index_col=False, nrows=0).columns)
-        assert keys == trackers.keys()
+        assert keys == trackers.keys(), f"mismatch: {keys.symmetric_difference(trackers.keys())}"
         pd.DataFrame.from_dict(trackers).to_csv(
             path, mode="a", index=False, header=False
         )
@@ -228,14 +275,16 @@ def write_params(args, learner, step):
     p = learner.hypothesis.params
     for dist, param in product(["alpha", "beta"], ["mu", "sigma"]):
         path = make_folders_for_path(
-            f"{args.output_dir}/{learner.strategy}-{learner.seed}/{dist}/{param}/{step}"
+            f"{args.output_dir}/seed-{learner.seed}/{learner.strategy}/{dist}/{param}/step-{step}"
         )
         np.save(path, p[f"{dist}_posterior_{param}"])
 
 
-def log_step(step, auc, learner, additional_logs=None):
+def log_step(step, time_elapsed, learner, results):
     strategy = learner.strategy
     log = {
+        f"step": step,
+        f"{strategy}/time": time_elapsed,
         f"{strategy}/last_proposed_is_train": int(learner.last_proposed == "train"),
         f"{strategy}/n_observed_train": learner.n_observed_train,
         f"{strategy}/n_observed_metric": learner.n_observed_metric,
@@ -250,11 +299,8 @@ def log_step(step, auc, learner, additional_logs=None):
         f"{strategy}/avg_unseen_beta_mu": learner.avg_unseen_beta_mu[-1],
         f"{strategy}/avg_unseen_beta_sigma": learner.avg_unseen_beta_sigma[-1],
         f"{strategy}/pct_good_examples": learner.pct_good_examples[-1],
-        f"{strategy}/auc": auc,
-        f"step": step,
     }
-    if additional_logs:
-        log.update({f"{strategy}/{k}": v for k, v in additional_logs.items()})
+    log.update({f"{strategy}/{k}": v for k, v in results.items()})
     wandb.log(log)
 
 
@@ -265,53 +311,44 @@ def make_folders_for_path(path):
             os.mkdir(new_path)
         return new_path
 
-    reduce(f, path.split("/")[:-1])
+    path = "./" + path
+    folders = reduce(f, path.split("/")[:-1])
+    assert os.path.exists(folders)
     return path
 
 
-def plot(csv_name, cmap="tab20"):
-    data = pd.read_csv(csv_name, index_col=False)
+def make_heatmaps(args):
+    output_path = os.path.join(args.output_dir, "heatmaps")
+    csv_path = os.path.join(args.output_dir, args.csv_name)
+    data = pd.read_csv(csv_path, index_col=False)
     strategies = data["strategy"].unique().tolist()
-    n_seeds = len(data["seed"].unique())
-
-    grouped_data = data.groupby(["strategy", "step"])["auc"]
-    means = grouped_data.mean()
-    stds = grouped_data.std()
-
-    plt.style.use("ggplot")
-    cmap = plt.get_cmap(cmap)
-    colors = [cmap(i) for i in np.linspace(0, 1, num=len(strategies))]
-    strategies.sort(key=lambda s: -means[(s,)].iloc[-1])
-    for i, strategy in enumerate(strategies):
-        m = means[(strategy,)].values
-        ci = 1.96 * stds[(strategy,)].values / np.sqrt(n_seeds)
-        plt.plot(
-            range(len(m)),
-            m,
-            label=f"{strategy} (auc={'{:.2f}'.format(m[-1])})",
-            color=colors[i],
-        )
-        plt.fill_between(range(len(m)), m - ci, m + ci, alpha=0.2, color=colors[i])
-    plt.xlabel("step")
-    plt.ylabel("auc")
-    plt.legend(bbox_to_anchor=(1.05, 1.0), loc="upper left")
-    plt.savefig(csv_name.replace(".csv", ".pdf"), bbox_inches="tight")
+    final_step = data[data["step"]==np.max(data["step"])]
+    for metric in ["auc", "f1", "accuracy", "log-likelihood"]:
+        low = np.min(final_step[metric])
+        high = np.max(final_step[metric])
+        for strategy in strategies:
+            plt.clf()
+            d = final_step[final_step["strategy"]==strategy]
+            m = d.groupby(args.label_run_by)[metric].mean().unstack(level=0)
+            sns.heatmap(m, annot=True, fmt=".4g", vmin=low, vmax=high)
+            plt.title(f"{strategy} {metric}")
+            save_path = make_folders_for_path(os.path.join(output_path, f"{strategy}_{metric}.pdf"))
+            plt.savefig(save_path, bbox_inches="tight")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--run_name", type=str, default="lm-informants")
+    parser.add_argument("--name", type=str, default="lm-informants")
     parser.add_argument("--lexicon_file", type=str, default=None)
     parser.add_argument("--feature_type", type=str, default="atr_harmony")
     parser.add_argument("--min_length", type=int, default=2)
     parser.add_argument("--max_length", type=int, default=5)
-    parser.add_argument("--shuffle_train", type=bool, default=True)
+    parser.add_argument("--shuffle_train", action="store_true")
     parser.add_argument("--n_steps", type=int, default=150)
     parser.add_argument("--n_candidates", type=int, default=100)
     parser.add_argument("--n_seeds", type=int, default=5)
-    parser.add_argument("--use_mean", type=bool, default=False)
     parser.add_argument("--csv_name", type=str, default="results.csv")
-    parser.add_argument("--output_dir", type=str, default="./outputs")
+    parser.add_argument("--output_dir", type=str, default=f"outputs")
     strategies = [
         "train",
         "unif",
@@ -327,5 +364,14 @@ if __name__ == "__main__":
         "kl_train_history",
     ]
     parser.add_argument("--strategies", nargs="+", default=strategies)
+    parser.add_argument("--label_run_by", nargs="+", default=["seed"])
+    # scorer hyperparams
+    parser.add_argument("--alpha_prior_mu", type=float, default=5.0)
+    parser.add_argument("--alpha_prior_sigma", type=float, default=1.0)
+    parser.add_argument("--beta_prior_mu", type=float, default=-10.0)
+    parser.add_argument("--beta_prior_sigma", type=float, default=20.0)
+    parser.add_argument("--step_size", type=float, default=0.01)
+    parser.add_argument("--n_updates", type=int, default=2000)
+    parser.add_argument("--use_mean", action="store_true")
     args = parser.parse_args()
     evaluate(args)
