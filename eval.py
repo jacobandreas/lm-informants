@@ -7,13 +7,13 @@ from tqdm import tqdm
 from informants import HWInformant, TrigramInformant
 from scorers import MeanFieldScorer, HWScorer
 import os
+import pathlib
 from main import read_in_blicks, BOUNDARY, eval_corrs
 import matplotlib.pyplot as plt
 import seaborn as sns
 import datasets
 import argparse
 import wandb
-from functools import reduce
 from itertools import product
 import time
 
@@ -22,17 +22,22 @@ def evaluate(args):
     train_data = get_train_data(args)
     informant = get_informant(args, train_data)
     for seed in range(args.n_seeds):
-        run_label = get_run_label(args, seed)
-        config = vars(args)
-        config["label"]=run_label
-        wandb.init(
-            project=args.name,
-            name=run_label,
-            config=config,
-            reinit=True,
-            force=True,
-        )
         for strategy in args.strategies:
+            group = group_by(args, strategy=strategy, seed=seed)
+            config = vars(args)
+            config["seed"] = seed
+            config["strategy"] = strategy
+            config["group"] = group
+            wandb.init(
+                project=args.name,
+                entity=args.wandb_team,
+                group=group,
+                run=f"{strategy}-{seed}",
+                mode=args.wandb_mode,
+                config=config,
+                reinit=True,
+                force=True,
+            )
             random.seed(seed)
             np.random.seed(seed)
             train_data.random.seed(seed)
@@ -42,17 +47,17 @@ def evaluate(args):
     make_heatmaps(args)
 
 
-def get_run_label(args, seed):
+def group_by(args, **kwargs):
     d = vars(args)
     params = []
-    for k in args.label_run_by:
+    for k in args.group_by:
         params.append(
-            f"{k}={d[k]}"
-            if k != "seed"
-            else f"seed={seed}"
+            f"{k}={kwargs[k]}"
+            if k in kwargs
+            else f"{k}={d[k]}"
         )
-    name = "_".join(params)
-    return name
+    group = "_".join(params)
+    return group
 
 
 def train_and_eval_learner(args, learner, informant):
@@ -281,39 +286,31 @@ def write_params(args, learner, step):
 
 
 def log_step(step, time_elapsed, learner, results):
-    strategy = learner.strategy
     log = {
-        f"step": step,
-        f"{strategy}/time": time_elapsed,
-        f"{strategy}/last_proposed_is_train": int(learner.last_proposed == "train"),
-        f"{strategy}/n_observed_train": learner.n_observed_train,
-        f"{strategy}/n_observed_metric": learner.n_observed_metric,
-        f"{strategy}/train_avg": learner.train_avg,
-        f"{strategy}/metric_avg": learner.metric_avg,
-        f"{strategy}/alpha_mu": learner.alpha_mu[-1],
-        f"{strategy}/alpha_sigma": learner.alpha_sigma[-1],
-        f"{strategy}/avg_beta_mu": learner.avg_beta_mu[-1],
-        f"{strategy}/avg_beta_sigma": learner.avg_beta_sigma[-1],
-        f"{strategy}/avg_seen_beta_mu": learner.avg_seen_beta_mu[-1],
-        f"{strategy}/avg_seen_beta_sigma": learner.avg_seen_beta_sigma[-1],
-        f"{strategy}/avg_unseen_beta_mu": learner.avg_unseen_beta_mu[-1],
-        f"{strategy}/avg_unseen_beta_sigma": learner.avg_unseen_beta_sigma[-1],
-        f"{strategy}/pct_good_examples": learner.pct_good_examples[-1],
+        "step": step,
+        "time": time_elapsed,
+        "last_proposed_is_train": int(learner.last_proposed == "train"),
+        "n_observed_train": learner.n_observed_train,
+        "n_observed_metric": learner.n_observed_metric,
+        "train_avg": learner.train_avg,
+        "metric_avg": learner.metric_avg,
+        "alpha_mu": learner.alpha_mu[-1],
+        "alpha_sigma": learner.alpha_sigma[-1],
+        "avg_beta_mu": learner.avg_beta_mu[-1],
+        "avg_beta_sigma": learner.avg_beta_sigma[-1],
+        "avg_seen_beta_mu": learner.avg_seen_beta_mu[-1],
+        "avg_seen_beta_sigma": learner.avg_seen_beta_sigma[-1],
+        "avg_unseen_beta_mu": learner.avg_unseen_beta_mu[-1],
+        "avg_unseen_beta_sigma": learner.avg_unseen_beta_sigma[-1],
+        "pct_good_examples": learner.pct_good_examples[-1],
     }
-    log.update({f"{strategy}/{k}": v for k, v in results.items()})
+    log.update(results)
     wandb.log(log)
 
 
 def make_folders_for_path(path):
-    def f(path, sub_folder):
-        new_path = os.path.join(path, sub_folder)
-        if not os.path.exists(new_path):
-            os.mkdir(new_path)
-        return new_path
-
-    path = "./" + path
-    folders = reduce(f, path.split("/")[:-1])
-    assert os.path.exists(folders)
+    path = pathlib.Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
     return path
 
 
@@ -329,7 +326,7 @@ def make_heatmaps(args):
         for strategy in strategies:
             plt.clf()
             d = final_step[final_step["strategy"]==strategy]
-            m = d.groupby(args.label_run_by)[metric].mean().unstack(level=0)
+            m = d.groupby(args.group_by)[metric].mean().unstack(level=0)
             sns.heatmap(m, annot=True, fmt=".4g", vmin=low, vmax=high)
             plt.title(f"{strategy} {metric}")
             save_path = make_folders_for_path(os.path.join(output_path, f"{strategy}_{metric}.pdf"))
@@ -338,7 +335,9 @@ def make_heatmaps(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--name", type=str, default="lm-informants")
+    parser.add_argument("--name", type=str)
+    parser.add_argument("--wandb_team", type=str, default=None)
+    parser.add_argument("--wandb_mode", type=str, default="online")
     parser.add_argument("--lexicon_file", type=str, default=None)
     parser.add_argument("--feature_type", type=str, default="atr_harmony")
     parser.add_argument("--min_length", type=int, default=2)
@@ -364,7 +363,7 @@ if __name__ == "__main__":
         "kl_train_history",
     ]
     parser.add_argument("--strategies", nargs="+", default=strategies)
-    parser.add_argument("--label_run_by", nargs="+", default=["seed"])
+    parser.add_argument("--group_by", nargs="+", default=["seed"])
     # scorer hyperparams
     parser.add_argument("--alpha_prior_mu", type=float, default=5.0)
     parser.add_argument("--alpha_prior_sigma", type=float, default=1.0)
