@@ -32,7 +32,7 @@ def evaluate(args):
                 project=args.name,
                 entity=args.wandb_team,
                 group=group,
-                run=f"{strategy}-{seed}",
+                name=f"{strategy}-{seed}",
                 mode=args.wandb_mode,
                 config=config,
                 reinit=True,
