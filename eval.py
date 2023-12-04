@@ -305,6 +305,7 @@ def log_step(step, time_elapsed, learner, results):
         "pct_good_examples": learner.pct_good_examples[-1],
     }
     log.update(results)
+    log.update({f"{learner.strategy}/{k}":v for k,v in log.items()})
     wandb.log(log)
 
 
