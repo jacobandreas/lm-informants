@@ -78,10 +78,8 @@ def train_and_eval_learner(args, learner, informant):
         judgment = informant.judge(candidate)
         learner.observe(candidate, judgment)
         time_elapsed = time.time() - t0
-        if args.feature_type == "english":
-            results = eval_learner_english(learner, test_data)
-        else:
-            results = eval_learner(learner, test_data)
+        
+        results = eval_learner(learner, test_data)
         all_results.append(results)
         times.append(time_elapsed)
         log_step(step, time_elapsed, learner, results)
@@ -169,7 +167,14 @@ def get_test_data(args, train_dataset):
     labels = [informant.judge(e) for e in encoded]
     return pd.DataFrame({"encoded": encoded, "label": labels})
 
+
 def eval_learner(learner, dataset):
+    if learner.feature_type == "english":
+        return eval_learner_english(learner, dataset)
+    return eval_learner_general(learner, dataset)
+
+
+def eval_learner_general(learner, dataset):
     labels = dataset["label"].values.astype(int)
     probs = np.array([learner.probs(encoded) for encoded in dataset["encoded"]])
     logits = np.array([learner.logits(encoded) for encoded in dataset["encoded"]])
@@ -198,7 +203,7 @@ def eval_learner_english(learner, dataset):
         {f"human_correlation_{k}": v for k, v in corrs_df.to_dict().items()}
     )
     results.update({f"auc_results/{k}": v for k, v in auc_results.items()})
-    results.update(eval_learner(learner, dataset[dataset["source"]==5]))
+    results.update(eval_learner_general(learner, dataset[dataset["source"]==5]))
     return results
 
 
