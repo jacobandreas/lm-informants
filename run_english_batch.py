@@ -175,16 +175,16 @@ def load_eval_dataset(informant, mf_scorer):
     # only 5 is auc, others are human eval sets
     return eval_dataset[eval_dataset['source']==5] 
 
-def get_auc(scorer, eval_dataset):
+def get_auc(scorer, eval_dataset, length_norm=False):
     # Learner.cost() is used to get predictions for the test set
-    costs = [scorer.cost(encod) for encod in eval_dataset['encoded'].values]
+    costs = [scorer.cost(encod, length_norm=length_norm) for encod in eval_dataset['encoded'].values]
     auc = eval_auc(costs, eval_dataset['label'].values)
     return auc
 
 import os
 import wandb
 
-def initialize_hyp(lla, prior, tol, max_updates, dataset, phoneme_feature_path):
+def initialize_hyp(lla, prior, tol, max_updates, dataset, phoneme_feature_path, feature_type="english"):
     print("Initializing learner...")
     # You may also have to create a slightly modified learner class to wrap around your linear model scorer
     scorer = scorers.MeanFieldScorer(dataset, 
