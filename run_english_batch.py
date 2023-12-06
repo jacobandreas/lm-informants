@@ -203,6 +203,7 @@ def run(lla, prior, max_updates, tol, train_file, eval_dataset, phoneme_feature_
         out_dir='big_batch', 
         wandb_project='1128_big_batch', 
         num_samples=None,
+        tags=[],
        ):
     if not os.path.exists(out_dir):
         os.mkdir(out_dir)
@@ -222,7 +223,7 @@ def run(lla, prior, max_updates, tol, train_file, eval_dataset, phoneme_feature_
         'probs_file': probs_file,
     }
     
-    wandb_run = wandb.init(config=config, project=wandb_project, reinit=True, entity='lm-informants')
+    wandb_run = wandb.init(config=config, project=wandb_project, reinit=True, entity='lm-informants', tags=tags)
 
     print(config)
     
@@ -330,15 +331,16 @@ if __name__ == "__main__":
     # tol = 0.001/512
     # max_updates=None
 
-#    llas = [0.522731931474557]
-#    priors = [0.00138533389897108]
-    priors = [0.00240504883318384]
-    llas = [5.41687946870128]
+    llas = [0.522731931474557]
+    priors = [0.00138533389897108]
+#    priors = [0.00240504883318384]
+#    llas = [5.41687946870128]
     tols = [0.001/512]
     max_updates_lst = [1, None]
     # num_samples_lst = [None, 1000]
 #    num_samples_lst = [10, None, 5000, 1000]
-    num_samples_lst = [10, None]
+    num_samples_lst = [None]
+    tags = ["entropy_weight_0.0"]
 
     eval_dataset = load_eval_dataset(informant, mf_scorer)
 
@@ -355,4 +357,4 @@ if __name__ == "__main__":
 
     for lla, prior, tol, max_updates, num_samples, train_file in itertools.product(llas, priors, tols, max_updates_lst, num_samples_lst, train_files):
 
-        run(lla, prior, max_updates, tol, train_file, eval_dataset, phoneme_feature_path, num_samples=num_samples)
+        run(lla, prior, max_updates, tol, train_file, eval_dataset, phoneme_feature_path, num_samples=num_samples, tags=tags)

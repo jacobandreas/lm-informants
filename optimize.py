@@ -158,7 +158,8 @@ def update_one_step(probs,
         verbose=False): # was originally called update
 
     clip_val = np.inf
-#        clip_val = 30 
+#        clip_val = 30
+    entropy_weight = 0.0
 
     new_probs = probs.copy()
     
@@ -186,7 +187,7 @@ def update_one_step(probs,
         update_sum = update_vector.sum()
 
         log_score = (
-            np.log(this_prob) - np.log(1-this_prob) - update_sum
+            entropy_weight*(np.log(this_prob) - np.log(1-this_prob)) - update_sum
         )
 
         # TODO: want a one-sided clip?
