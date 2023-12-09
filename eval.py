@@ -16,6 +16,7 @@ import argparse
 import wandb
 from itertools import product
 import time
+import gc
 
 
 def evaluate(args):
@@ -44,6 +45,9 @@ def evaluate(args):
             learner = get_learner(args, train_data, strategy, seed)
             trackers = train_and_eval_learner(args, learner, informant)
             write_trackers(args, trackers)
+            del learner
+            del trackers
+            gc.collect()
     make_heatmaps(args)
 
 

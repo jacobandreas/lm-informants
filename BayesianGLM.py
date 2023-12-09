@@ -168,6 +168,7 @@ class BayesianScorer:
         return new_params
 
     @staticmethod
+    @jax.jit
     def make_posterior(params):
         beta = dist.TruncatedNormal(
             params["beta_posterior_mu"],
