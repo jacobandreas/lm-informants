@@ -88,6 +88,7 @@ def train_and_eval_learner(args, learner, informant):
         times.append(time_elapsed)
         log_step(step, time_elapsed, learner, results)
         write_params(args, learner, step)
+        gc.collect()
     trackers = learner.get_param_trackers()
     trackers["time"] = times
     trackers["step"] = np.arange(args.n_steps + 1)

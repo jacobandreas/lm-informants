@@ -5,6 +5,7 @@ import numpyro
 import numpyro.distributions as dist
 from numpyro.infer import SVI, Trace_ELBO
 from numpyro.optim import Adam
+from joblib import Parallel, delayed, parallel_backend
 import multiprocessing
 from scorers import _load_phoneme_features
 import itertools as it
@@ -292,7 +293,6 @@ class BayesianLearner:
         self.index_of_next_item = index_of_next_item
         self.track_params = track_params
         self.seed = seed
-        self.pool = multiprocessing.Pool(processes=multiprocessing.cpu_count() - 1)
 
         self.ORDER = 3
         self._featurized_cache = {}
@@ -476,33 +476,28 @@ class BayesianLearner:
         return self.get_batch_expected_metric(seqs)
 
     def get_batch_expected_metric(self, seqs):
-        featurized_seqs = [self.binary_featurize(seq) for seq in seqs]
-
-        make_input = lambda f, l: (
-            jnp.stack(self.observed_features + [f]),
-            jnp.array(self.observed_judgments + [l]),
-            self.hypothesis.alpha_prior_mu,
-            self.hypothesis.alpha_prior_sigma,
-            self.hypothesis.beta_prior_mu,
-            self.hypothesis.beta_prior_sigma,
-            self.hypothesis.step_size,
-            self.hypothesis.n_updates,
-            self.hypothesis.rng_key,
-        )
-
-        prob_pos = [self.probs(seq) for seq in seqs]
-        pos_inputs = [make_input(f, 1.0) for f in featurized_seqs]
-        neg_inputs = [make_input(f, 0.0) for f in featurized_seqs]
-
-        current_params = [self.hypothesis.params for _ in range(len(seqs))]
-        pos_params = self.pool.starmap(BayesianScorer.compute_posterior, pos_inputs)
-        neg_params = self.pool.starmap(BayesianScorer.compute_posterior, neg_inputs)
-        pos_deltas = self.pool.starmap(
-            self.metric_func, zip(pos_params, current_params)
-        )
-        neg_deltas = self.pool.starmap(
-            self.metric_func, zip(neg_params, current_params)
-        )
+        @jax.jit
+        def compute_posterior(featurized_seq, label):
+            return BayesianScorer.compute_posterior(
+                jnp.stack(self.observed_features + [featurized_seq]),
+                jnp.array(self.observed_judgments + [label]),
+                self.hypothesis.alpha_prior_mu,
+                self.hypothesis.alpha_prior_sigma,
+                self.hypothesis.beta_prior_mu,
+                self.hypothesis.beta_prior_sigma,
+                self.hypothesis.step_size,
+                self.hypothesis.n_updates,
+                self.hypothesis.rng_key,
+            )
+        
+        n_jobs = min(multiprocessing.cpu_count() - 1, len(seqs))
+        with parallel_backend("loky", n_jobs=n_jobs):
+            featurized_seqs = Parallel()(delayed(self.binary_featurize)(seq) for seq in seqs)
+            pos_params = Parallel()(delayed(compute_posterior)(f, 1.0) for f in featurized_seqs)
+            neg_params = Parallel()(delayed(compute_posterior)(f, 0.0) for f in featurized_seqs)
+            pos_deltas = Parallel()(delayed(self.metric_func)(p, self.hypothesis.params) for p in pos_params)
+            neg_deltas = Parallel()(delayed(self.metric_func)(n, self.hypothesis.params) for n in neg_params)
+            prob_pos = Parallel()(delayed(self.probs)(seq) for seq in seqs)
 
         expected = [
             prob_pos[i] * pos_deltas[i] + (1 - prob_pos[i]) * neg_deltas[i]
