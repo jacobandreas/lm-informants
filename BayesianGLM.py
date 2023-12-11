@@ -55,15 +55,13 @@ class BayesianScorer:
     ):
         n_samples, n_features = data.shape
 
-        alpha_prior = dist.TruncatedNormal(
+        alpha_prior = dist.Normal(
             alpha_prior_mu,
             alpha_prior_sigma,
-            low=0,
         )
-        beta_prior = dist.TruncatedNormal(
+        beta_prior = dist.Normal(
             jnp.full(n_features, beta_prior_mu),
             jnp.full(n_features, beta_prior_sigma),
-            high=0,
         )
 
         alpha = numpyro.sample("alpha", alpha_prior)
@@ -96,10 +94,9 @@ class BayesianScorer:
             alpha_prior_sigma,
             constraint=dist.constraints.greater_than(0),
         )
-        alpha_posterior = dist.TruncatedNormal(
+        alpha_posterior = dist.Normal(
             alpha_posterior_mu,
             alpha_posterior_sigma,
-            low=0,
         )
 
         beta_posterior_mu = numpyro.param(
@@ -112,8 +109,9 @@ class BayesianScorer:
             jnp.full(n_features, beta_prior_sigma),
             constraint=dist.constraints.greater_than(0),
         )
-        beta_posterior = dist.TruncatedNormal(
-            beta_posterior_mu, beta_posterior_sigma, high=0
+        beta_posterior = dist.Normal(
+            beta_posterior_mu,
+            beta_posterior_sigma,
         )
 
         numpyro.sample("alpha", alpha_posterior)
@@ -171,15 +169,13 @@ class BayesianScorer:
     @staticmethod
     @jax.jit
     def make_posterior(params):
-        beta = dist.TruncatedNormal(
+        beta = dist.Normal(
             params["beta_posterior_mu"],
             params["beta_posterior_sigma"],
-            high=0,
         )
-        alpha = dist.TruncatedNormal(
+        alpha = dist.Normal(
             params["alpha_posterior_mu"],
             params["alpha_posterior_sigma"],
-            low=0,
         )
         return beta, alpha
 
@@ -204,12 +200,10 @@ class BayesianScorer:
         beta_entropy = jnp.sum(tn_entropy(
             params["beta_posterior_mu"][ind],
             params["beta_posterior_sigma"][ind],
-            b=0,
         )).item()
         alpha_entropy = tn_entropy(
             params["alpha_posterior_mu"],
             params["alpha_posterior_sigma"],
-            a=0,
         ).item()
         entropy = beta_entropy + alpha_entropy
         if length_norm:
@@ -232,20 +226,20 @@ class BayesianScorer:
             new_params["beta_posterior_mu"],
             new_params["beta_posterior_sigma"],
             -jnp.inf,
-            0,
+            jnp.inf,
             old_params["beta_posterior_mu"],
             old_params["beta_posterior_sigma"],
             -jnp.inf,
-            0,
+            jnp.inf,
         )).item()
         alpha_kl = tn_kl(
             new_params["alpha_posterior_mu"],
             new_params["alpha_posterior_sigma"],
-            0,
+            -jnp.inf,
             jnp.inf,
             old_params["alpha_posterior_mu"],
             old_params["alpha_posterior_sigma"],
-            0,
+            -jnp.inf,
             jnp.inf,
         ).item()
         kl = beta_kl + alpha_kl
