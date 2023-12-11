@@ -48,7 +48,8 @@ def evaluate(args):
             del learner
             del trackers
             gc.collect()
-    make_heatmaps(args)
+    if len(args.group_by) == 2:
+        make_heatmaps(args)
 
 
 def group_by(args, **kwargs):
@@ -326,22 +327,26 @@ def make_folders_for_path(path):
 
 
 def make_heatmaps(args):
+    assert len(args.group_by) == 2
     output_path = os.path.join(args.output_dir, "heatmaps")
     csv_path = os.path.join(args.output_dir, args.csv_name)
     data = pd.read_csv(csv_path, index_col=False)
     strategies = data["strategy"].unique().tolist()
-    final_step = data[data["step"]==np.max(data["step"])]
     for metric in ["auc", "f1", "accuracy", "log-likelihood"]:
-        low = np.min(final_step[metric])
-        high = np.max(final_step[metric])
+        metric_auc = data.groupby(["step", "strategy"] + args.group_by)[metric].mean().unstack(["strategy"] + args.group_by).apply(get_metric_auc)
+        vmin = np.min(metric_auc)
+        vmax = np.max(metric_auc)
         for strategy in strategies:
             plt.clf()
-            d = final_step[final_step["strategy"]==strategy]
-            m = d.groupby(args.group_by)[metric].mean().unstack(level=0)
-            sns.heatmap(m, annot=True, fmt=".4g", vmin=low, vmax=high)
+            m = metric_auc.loc[strategy, :, :].unstack()
+            sns.heatmap(m, annot=True, fmt=".4g", vmin=vmin, vmax=vmax, cmap="Blues")
             plt.title(f"{strategy} {metric}")
             save_path = make_folders_for_path(os.path.join(output_path, f"{strategy}_{metric}.pdf"))
             plt.savefig(save_path, bbox_inches="tight")
+
+
+def get_metric_auc(metric_vals):
+    return sum((metric_vals.iloc[i] + metric_vals.iloc[i+1]) / 2 for i in range(len(metric_vals)-1)) / len(metric_vals)
 
 
 if __name__ == "__main__":

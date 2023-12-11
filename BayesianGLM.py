@@ -476,6 +476,9 @@ class BayesianLearner:
         return self.get_batch_expected_metric(seqs)
 
     def get_batch_expected_metric(self, seqs):
+        featurized_seqs = [self.binary_featurize(seq) for seq in seqs]
+        prob_pos = [self.probs(seq) for seq in seqs]
+
         @jax.jit
         def compute_posterior(featurized_seq, label):
             return BayesianScorer.compute_posterior(
@@ -492,13 +495,11 @@ class BayesianLearner:
         
         n_jobs = min(multiprocessing.cpu_count() - 1, len(seqs))
         with parallel_backend("loky", n_jobs=n_jobs):
-            featurized_seqs = Parallel()(delayed(self.binary_featurize)(seq) for seq in seqs)
             pos_params = Parallel()(delayed(compute_posterior)(f, 1.0) for f in featurized_seqs)
             neg_params = Parallel()(delayed(compute_posterior)(f, 0.0) for f in featurized_seqs)
             pos_deltas = Parallel()(delayed(self.metric_func)(p, self.hypothesis.params) for p in pos_params)
             neg_deltas = Parallel()(delayed(self.metric_func)(n, self.hypothesis.params) for n in neg_params)
-            prob_pos = Parallel()(delayed(self.probs)(seq) for seq in seqs)
-
+        
         expected = [
             prob_pos[i] * pos_deltas[i] + (1 - prob_pos[i]) * neg_deltas[i]
             for i in range(len(seqs))
