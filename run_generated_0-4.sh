@@ -1,6 +1,7 @@
 WANDB_PROJECT=1106_all_atr_generated
 
-for SEED in 0 1 2 3 4 
+#for SEED in 0 1 2 3 4 
+for SEED in 2 3 4 
 do
 	# Generate languages
 	python generate_langs.py --seed ${SEED}
@@ -30,5 +31,6 @@ do
 #			--tags "" \
 			done
 		done
+	wandb sync --clean
 	done
 done

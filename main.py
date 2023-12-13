@@ -945,6 +945,9 @@ if __name__ == "__main__":
     
     parser.add_argument('--min_length', default=2, type=int, help='min length for sampling random sequences')
     parser.add_argument('--max_length', default=5, type=int, help='max length for sampling random sequences')
+
+    parser.add_argument('--use_zipfian' action='store_true', help='Whether to use frequencies of English words in sampling from train')
+    parser.set_defaults(use_zipfian=False)
     
     def parse_max_updates(value):
         if value == 'None':
@@ -996,6 +999,9 @@ if __name__ == "__main__":
 
 
     args = parser.parse_args()
+
+    if args.feature_type == 'english' and args.use_zipfian: 
+        raise NotImplementedError()
 
 
     if args.reverse_judgments and args.metric_expect_assume_labels:
