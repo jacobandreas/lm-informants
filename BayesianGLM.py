@@ -9,6 +9,7 @@ from joblib import Parallel, delayed, parallel_backend
 import multiprocessing
 from scorers import _load_phoneme_features
 import itertools as it
+import gc
 from truncated_normal import tn_kl, tn_entropy
 
 
@@ -496,7 +497,9 @@ class BayesianLearner:
         n_jobs = min(multiprocessing.cpu_count() - 1, len(seqs))
         with parallel_backend("loky", n_jobs=n_jobs):
             pos_params = Parallel()(delayed(compute_posterior)(f, 1.0) for f in featurized_seqs)
+            gc.collect()
             neg_params = Parallel()(delayed(compute_posterior)(f, 0.0) for f in featurized_seqs)
+            gc.collect()
             pos_deltas = Parallel()(delayed(self.metric_func)(p, self.hypothesis.params) for p in pos_params)
             neg_deltas = Parallel()(delayed(self.metric_func)(n, self.hypothesis.params) for n in neg_params)
         
