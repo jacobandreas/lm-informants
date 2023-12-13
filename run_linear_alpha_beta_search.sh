@@ -1,4 +1,4 @@
-WANDB_PROJECT=linear_alpha_beta_search
+WANDB_PROJECT=linear_alpha_beta_search_loky
 WANDB_TEAM=lm-informants
 N_SEEDS=2
 N_STEPS=100
@@ -18,7 +18,7 @@ do
       --feature_type atr_harmony \
       --alpha_prior_mu ${ALPHA} \
       --beta_prior_mu ${BETA} \
-      --strategies train unif entropy_pred eig_train_model \
+      --strategies eig_train_model train unif entropy_pred \
       --group_by alpha_prior_mu beta_prior_mu \
       --shuffle_train
   done
