@@ -350,7 +350,7 @@ class BayesianLearner:
                 ]
                 for ff in it.product(*features_here):
                     features[self.ngram_features[ff]] += 1
-            self._featurized_cache[seq] = features
+#            self._featurized_cache[seq] = features
             return features
 
     def binary_featurize(self, seq):
