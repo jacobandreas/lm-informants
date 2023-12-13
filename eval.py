@@ -193,7 +193,7 @@ def eval_learner(learner, dataset):
 def eval_learner_general(learner, dataset):
     labels = dataset["label"].values.astype(int)
 #    probs = np.array([learner.probs(encoded) for encoded in dataset["encoded"]])
-    logits = np.array([learner.logits(encoded) for encoded in dataset["encoded"]])
+    logits = np.array([learner.logits(encoded, do_cache=True) for encoded in dataset["encoded"]])
     probs = jax.nn.sigmoid(logits)
     results = {}
     results["auc"] = auc(labels, probs)
