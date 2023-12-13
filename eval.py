@@ -29,6 +29,7 @@ def evaluate(args):
             config["seed"] = seed
             config["strategy"] = strategy
             config["group"] = group
+            tags = [] if args.tags is None else [t.strip() for t in args.tags.split(",")]
             wandb.init(
                 project=args.name,
                 entity=args.wandb_team,
@@ -38,6 +39,8 @@ def evaluate(args):
                 config=config,
                 reinit=True,
                 force=True,
+                tags=tags,
+
             )
             random.seed(seed)
             np.random.seed(seed)
@@ -364,6 +367,8 @@ if __name__ == "__main__":
     parser.add_argument("--n_seeds", type=int, default=5)
     parser.add_argument("--csv_name", type=str, default="results.csv")
     parser.add_argument("--output_dir", type=str, default=f"outputs")
+    # comma separated string
+    parser.add_argument('--tags', type=str, default=None)
     strategies = [
         "train",
         "unif",
