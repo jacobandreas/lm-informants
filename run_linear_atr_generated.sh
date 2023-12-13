@@ -7,7 +7,7 @@ ALPHA_SIGMA=0.01
 ALPHA=5
 BETA=-5
 
-for SEED in 0 1 2 3 4 5
+for SEED in 0 1 2 
 do
     python generate_langs.py --seed ${SEED}
 

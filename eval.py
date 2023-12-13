@@ -22,7 +22,7 @@ import gc
 def evaluate(args):
     train_data = get_train_data(args)
     informant = get_informant(args, train_data)
-    for seed in range(args.start_seed, args.n_seeds):
+    for seed in range(args.start_seed, args.start_seed+args.n_seeds):
         for strategy in args.strategies:
             group = group_by(args, strategy=strategy, seed=seed)
             config = vars(args)

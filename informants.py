@@ -64,7 +64,7 @@ class TrigramInformant:
     def judge(self, seq):
         # check if in lexicon, return True if so
         if seq in self.set_dataset:
-            print(f"seq in lexicon, returning True:\t{seq}")
+#            print(f"seq in lexicon, returning True:\t{seq}")
             return True
 
         featurized = self.scorer._featurize(seq).nonzero()[0]
