@@ -22,7 +22,7 @@ import gc
 def evaluate(args):
     train_data = get_train_data(args)
     informant = get_informant(args, train_data)
-    for seed in range(args.n_seeds):
+    for seed in range(args.start_seed, args.n_seeds):
         for strategy in args.strategies:
             group = group_by(args, strategy=strategy, seed=seed)
             config = vars(args)
@@ -362,6 +362,7 @@ if __name__ == "__main__":
     parser.add_argument("--n_steps", type=int, default=150)
     parser.add_argument("--n_candidates", type=int, default=100)
     parser.add_argument("--n_seeds", type=int, default=5)
+    parser.add_argument("--start_seed", type=int, default=0)
     parser.add_argument("--csv_name", type=str, default="results.csv")
     parser.add_argument("--output_dir", type=str, default=f"outputs")
     strategies = [
