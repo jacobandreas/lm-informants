@@ -42,7 +42,7 @@ def eval_auc(costs, labels):
     roc_auc = metrics.auc(fpr, tpr)
     return roc_auc
 
-def eval_corrs(costs, labels, sources, items, num_phonemes, num_features): # nb, sources comes in via TIs, and labels are human judgments. now, if soucres = 5, these are pulled off, and used for auc calculation
+def eval_corrs(costs, labels, sources, items, num_phonemes, num_features, eval_auc=True): # nb, sources comes in via TIs, and labels are human judgments. now, if soucres = 5, these are pulled off, and used for auc calculation
     data = pd.DataFrame({'costs': costs, 'labels': labels, 'sources': sources, 'items':items, 'num_phonemes': num_phonemes, 'num_features': num_features})
     '''
     print("eval corrs breakdown:")
@@ -56,17 +56,21 @@ def eval_corrs(costs, labels, sources, items, num_phonemes, num_features): # nb,
 
 #    group_corr = df1.groupby('sources').apply(lambda x: np.corrcoef(-x['costs'], x['labels'])[0, 1]).reset_index(        name='spearman_corr')
     group_corr = df1.groupby('sources').apply(lambda x: stats.spearmanr(-x['costs'], x['labels'])[0]).reset_index(name='spearman_corr')
-    print("CORR:")
+#    print("CORR:")
     #print(group_corr)
 
     # Extract 'costs' and 'labels' columns from df2 as lists
-    
-    costs = df2['costs'].tolist()
-    labels = df2['labels'].tolist()
-    roc_auc = eval_auc(costs, labels)
-    auc_results = {'auc': roc_auc}
-    print("roc_auc is", roc_auc)
+   
+    if eval_auc:
+        costs = df2['costs'].tolist()
+        labels = df2['labels'].tolist()
+        roc_auc = eval_auc(costs, labels)
+        auc_results = {'auc': roc_auc}
+#        print("roc_auc is", roc_auc)
+    else:
+        auc_results = {}
 
+    """
     for num in df2['num_phonemes'].unique(): 
         temp = df2[df2['num_phonemes']==num]
 #        print(f'num phonemes = {num} ({len(temp)})')
@@ -75,9 +79,10 @@ def eval_corrs(costs, labels, sources, items, num_phonemes, num_features): # nb,
         labels = temp['labels'].tolist()
         roc_auc = eval_auc(costs, labels)
         auc_results[f'auc_{num}_features']=roc_auc
+    """
 
-    print(group_corr)
-    print("number of forms in auc test set is",len(df2))
+#    print(group_corr)
+#    print("number of forms in auc test set is",len(df2))
     '''
     print("top 10:")
     print(df2.head(10))

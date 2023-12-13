@@ -17,8 +17,9 @@ import wandb
 from itertools import product
 import time
 import gc
+import jax
 
-
+#@profile
 def evaluate(args):
     train_data = get_train_data(args)
     informant = get_informant(args, train_data)
@@ -68,14 +69,17 @@ def group_by(args, **kwargs):
     return group
 
 
+#@profile
 def train_and_eval_learner(args, learner, informant):
     test_data = get_test_data(args, learner.dataset)
     forbidden_seqs = test_data["encoded"].values.tolist()
+    time_eval_start = time.time()
     init_results = eval_learner(learner, test_data)
+    time_eval = time.time() - time_eval_start
     all_results = [init_results]
     times = [0]
-    log_step(0, 0, learner, init_results)
-    write_params(args, learner, 0)
+    log_step(0, 0, time_eval, learner, init_results)
+#    write_params(args, learner, 0)
     for step in tqdm(
         range(1, args.n_steps + 1),
         unit="step",
@@ -87,11 +91,13 @@ def train_and_eval_learner(args, learner, informant):
         learner.observe(candidate, judgment)
         time_elapsed = time.time() - t0
         
+        t1 = time.time()
         results = eval_learner(learner, test_data)
+        time_eval = time.time() - t1
         all_results.append(results)
         times.append(time_elapsed)
-        log_step(step, time_elapsed, learner, results)
-        write_params(args, learner, step)
+        log_step(step, time_elapsed, time_eval, learner, results)
+#        write_params(args, learner, step)
         gc.collect()
     trackers = learner.get_param_trackers()
     trackers["time"] = times
@@ -183,10 +189,12 @@ def eval_learner(learner, dataset):
     return eval_learner_general(learner, dataset)
 
 
+#@profile
 def eval_learner_general(learner, dataset):
     labels = dataset["label"].values.astype(int)
-    probs = np.array([learner.probs(encoded) for encoded in dataset["encoded"]])
-    logits = np.array([learner.logits(encoded) for encoded in dataset["encoded"]])
+#    probs = np.array([learner.probs(encoded) for encoded in dataset["encoded"]])
+    logits = np.array([learner.logits(encoded, do_cache=True) for encoded in dataset["encoded"]])
+    probs = jax.nn.sigmoid(logits)
     results = {}
     results["auc"] = auc(labels, probs)
     results["log-likelihood"] = log_likelihood(labels, probs, logits)
@@ -194,15 +202,16 @@ def eval_learner_general(learner, dataset):
     results["f1"] = metrics.f1_score(labels, probs>0.5)
     return results
 
-
+#@profile
 def eval_learner_english(learner, dataset):
     corrs_df, auc_results, costs_df = eval_corrs(
-        [learner.cost(encoded).item() for encoded in dataset["encoded"]],
+        [learner.cost(encoded, do_cache=True).item() for encoded in dataset["encoded"]],
         dataset["label"],
         dataset["source"],
         dataset["item"],
         dataset["num_phonemes"],
         dataset["num_features"],
+        eval_auc=False,
     )
     results = {
         "costs": wandb.Table(dataframe=costs_df),
@@ -299,10 +308,11 @@ def write_params(args, learner, step):
         np.save(path, p[f"{dist}_posterior_{param}"])
 
 
-def log_step(step, time_elapsed, learner, results):
+def log_step(step, time_elapsed, time_eval, learner, results):
     log = {
         "step": step,
-        "time": time_elapsed,
+        "times/time": time_elapsed,
+        "times/time_eval": time_eval,
         "last_proposed_is_train": int(learner.last_proposed == "train"),
         "n_observed_train": learner.n_observed_train,
         "n_observed_metric": learner.n_observed_metric,

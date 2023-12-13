@@ -153,6 +153,7 @@ class BayesianScorer:
         ).params
         return new_params
 
+    #@profile
     def update_posterior(self, data, judgments, update):
         new_params = self.compute_posterior(
             data,
@@ -338,7 +339,8 @@ class BayesianLearner:
         self.n_updates = n_updates
         self.use_mean = use_mean
 
-    def featurize(self, seq):
+    #@profile
+    def featurize(self, seq, do_cache=False):
         if seq in self._featurized_cache:
             return self._featurized_cache[seq]
         else:
@@ -350,11 +352,12 @@ class BayesianLearner:
                 ]
                 for ff in it.product(*features_here):
                     features[self.ngram_features[ff]] += 1
-#            self._featurized_cache[seq] = features
+            if do_cache:
+                self._featurized_cache[seq] = features
             return features
 
-    def binary_featurize(self, seq):
-        return jnp.array(self.featurize(seq) > 0, float)
+    def binary_featurize(self, seq, **kwargs):
+        return jnp.array(self.featurize(seq, **kwargs) > 0, float)
 
     def initialize(self):
         self.observed_judgments = []
@@ -389,6 +392,7 @@ class BayesianLearner:
             self.metric_avgs = []
             self.update_param_trackers()
 
+    #@profile
     def observe(self, seq, judgment, update=True):
         featurized = self.binary_featurize(seq)
         self.observed_judgments.append(float(judgment))
@@ -497,11 +501,13 @@ class BayesianLearner:
         n_jobs = min(multiprocessing.cpu_count() - 1, len(seqs))
         with parallel_backend("loky", n_jobs=n_jobs):
             pos_params = Parallel()(delayed(compute_posterior)(f, 1.0) for f in featurized_seqs)
+            pos_deltas = Parallel()(delayed(self.metric_func)(p, self.hypothesis.params) for p in pos_params)
+            del pos_params
             gc.collect()
             neg_params = Parallel()(delayed(compute_posterior)(f, 0.0) for f in featurized_seqs)
-            gc.collect()
-            pos_deltas = Parallel()(delayed(self.metric_func)(p, self.hypothesis.params) for p in pos_params)
             neg_deltas = Parallel()(delayed(self.metric_func)(n, self.hypothesis.params) for n in neg_params)
+            del neg_params
+            gc.collect()
         
         expected = [
             prob_pos[i] * pos_deltas[i] + (1 - prob_pos[i]) * neg_deltas[i]
@@ -512,25 +518,25 @@ class BayesianLearner:
         ) / sum(prob_pos)
         return expected, expected_train
 
-    def logits(self, seq):
-        featurized_seq = self.binary_featurize(seq)
+    def logits(self, seq, **kwargs):
+        featurized_seq = self.binary_featurize(seq, **kwargs)
         logits = self.hypothesis.logits(featurized_seq)
         return logits
 
-    def probs(self, seq):
-        logits = self.logits(seq)
+    def probs(self, seq, **kwargs):
+        logits = self.logits(seq, **kwargs)
         probs = jax.nn.sigmoid(logits)
         return probs
 
-    def logprobs(self, seq):
-        probs = self.probs(seq)
+    def logprobs(self, seq, **kwargs):
+        probs = self.probs(seq, **kwargs)
         # condition prevents 0 probs / nan logprobs / inf costs
         # works bc logprobs converges to logits when approaching -inf
         logprobs = jnp.log(probs) if probs > 0 else self.logits(seq)
         return logprobs
 
-    def cost(self, seq):
-        logprobs = self.logprobs(seq)
+    def cost(self, seq, **kwargs):
+        logprobs = self.logprobs(seq, **kwargs)
         cost = -logprobs
         return cost
 
