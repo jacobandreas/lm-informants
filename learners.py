@@ -8,7 +8,7 @@ import scorers
 from tqdm import tqdm
 from scipy.special import logsumexp
 from copy import deepcopy 
-
+import gc
 import torch
 #from torchmetrics.functional import kl_divergence
 from torch import nn, optim
