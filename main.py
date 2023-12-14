@@ -18,6 +18,7 @@ from AnalyzeSyntheticData import is_ti
 import wandb
 import matplotlib.pyplot as plt
 import time
+import random
 import multiprocessing
 
 import cProfile
@@ -67,17 +68,17 @@ def eval_corrs(costs, labels, sources, items, num_phonemes, num_features): # nb,
     auc_results = {'auc': roc_auc}
     print("roc_auc is", roc_auc)
 
-    for num in df2['num_phonemes'].unique(): 
-        temp = df2[df2['num_phonemes']==num]
-#        print(f'num phonemes = {num} ({len(temp)})')
-#        print(temp.head(3))
-        costs = temp['costs'].tolist()
-        labels = temp['labels'].tolist()
-        roc_auc = eval_auc(costs, labels)
-        auc_results[f'auc_{num}_features']=roc_auc
+#     for num in df2['num_phonemes'].unique(): 
+#         temp = df2[df2['num_phonemes']==num]
+# #        print(f'num phonemes = {num} ({len(temp)})')
+# #        print(temp.head(3))
+#         costs = temp['costs'].tolist()
+#         labels = temp['labels'].tolist()
+#         roc_auc = eval_auc(costs, labels)
+#         auc_results[f'auc_{num}_features']=roc_auc
 
-    print(group_corr)
-    print("number of forms in auc test set is",len(df2))
+    # print(group_corr)
+    # print("number of forms in auc test set is",len(df2))
     '''
     print("top 10:")
     print(df2.head(10))
@@ -146,13 +147,21 @@ def main(args):
             lexicon_file_name = f"data/hw/{args.feature_type}_lexicon.txt"
     else:
         lexicon_file_name = args.lexicon_file
-        assert os.path.exists(lexicon_file_name) 
-    dataset = datasets.load_lexicon(lexicon_file_name, min_length=args.min_length, max_length=args.max_length)
+        assert os.path.exists(lexicon_file_name)
+    if args.use_zipfian:
+        dataset = datasets.load_lexicon_with_probabilities(min_length=args.min_length, max_length=args.max_length)
+    else: 
+        dataset = datasets.load_lexicon(lexicon_file_name, min_length=args.min_length, max_length=args.max_length)
     linear_train_dataset = dataset.data
-    print("len of train data:", len(linear_train_dataset))
-    random = np.random.RandomState(0)
-    if args.shuffle_train:
-        random.shuffle(linear_train_dataset)
+
+    # TODO: make sure it's okay that index_of_next_train not used when use_zipfian
+    
+    # if not args.use_zipfian:
+    #     # if use_zipfian, randomly samply from linear_train_dataset anyway (don't go in order)
+    #     print("len of train data:", len(linear_train_dataset))
+    #     random = np.random.RandomState(0)
+    #     if args.shuffle_train:
+    #         random.shuffle(linear_train_dataset)
 
     if args.feature_type == "english":
         filtered_features = pd.read_csv('all_feats_in_data_english.csv', header=None)[0].values
@@ -370,6 +379,7 @@ def main(args):
                             "metric_expect_assume_labels": args.metric_expect_assume_labels,
                             "train_expect_type": args.train_expect_type,
                             "reverse_judgments": args.reverse_judgments,
+                            "use_zipfian": args.use_zipfian,
                             }
                     tags = [] if args.tags is None else [t.strip() for t in args.tags.split(",")]
                     wandb_run = wandb.init(config=config, project=args.wandb_project, name=strategy, reinit=True, tags = tags, entity="lm-informants") 
@@ -383,8 +393,15 @@ def main(args):
                 np.random.seed(run)
                 dataset.random.seed(run)
                 linear_train_dataset = dataset.data.copy()
+                linear_train_probs = dataset.probs.copy()
                 if args.shuffle_train:
-                    random.shuffle(linear_train_dataset) # turn this off if you want to have train be always the same order.
+                    if args.use_zipfian:
+                        assert len(linear_train_dataset) == len(linear_train_probs), f'{len(linear_train_dataset)} != {len(linear_train_probs)}'
+                        # shuffle linear_train_dataset, linear_train_probs together
+                        linear_train_dataset, linear_train_probs = zip(*random.sample(list(zip(linear_train_dataset, linear_train_probs)), len(linear_train_dataset)))
+                        # TODO: this probably doesn't do anything bc linear_train_dataset is not sampled from in order when use_zipfian
+                    else:
+                        random.shuffle(linear_train_dataset) # turn this off if you want to have train be always the same order.
                     
                 init_examples = []
                 for _ in range(N_INIT):
@@ -394,7 +411,13 @@ def main(args):
                 if strategy not in logs:
                     logs[strategy] = []
                 log = []
-                learner = learners.VBLearner(dataset, strategy=strategy, linear_train_dataset = linear_train_dataset, index_of_next_item = index_of_next_item, seed=run) 
+                print("linear train probs:", len(linear_train_probs))
+                learner = learners.VBLearner(dataset, 
+                                             strategy=strategy, 
+                                             linear_train_dataset = linear_train_dataset, index_of_next_item = index_of_next_item, 
+                                             seed=run,
+                                             linear_train_probs=linear_train_probs,
+                                             ) 
                 # TODO: make more robust; learner needs to create mean field scorer with appropriate phoneme features, using atr_harmony, but would be nice to specify appropriate phoneme features somehow in the commandline
                 if args.feature_type.startswith('atr_lg_'):
                     phoneme_feature_file = 'data/hw/atr_harmony_features.txt'
@@ -410,7 +433,8 @@ def main(args):
                         features=filtered_features, 
                         max_updates_propose=args.max_updates_propose, 
                         max_updates_observe=args.max_updates_observe,
-                        phoneme_feature_file=phoneme_feature_file)
+                        phoneme_feature_file=phoneme_feature_file,
+                        use_zipfian=args.use_zipfian,)
 
                 all_features = learner.all_features(return_indices=True)
                 unique_feature_indices = [f_idx for (_, f, f_idx) in all_features if f in unique_features]
@@ -946,7 +970,7 @@ if __name__ == "__main__":
     parser.add_argument('--min_length', default=2, type=int, help='min length for sampling random sequences')
     parser.add_argument('--max_length', default=5, type=int, help='max length for sampling random sequences')
 
-    parser.add_argument('--use_zipfian' action='store_true', help='Whether to use frequencies of English words in sampling from train')
+    parser.add_argument('--use_zipfian', action='store_true', help='Whether to use frequencies of English words in sampling from train')
     parser.set_defaults(use_zipfian=False)
     
     def parse_max_updates(value):
@@ -971,7 +995,9 @@ if __name__ == "__main__":
                 None,
                 'proposal_samples', 
                 'lexicon_samples', 
-                'true_candidate'],
+                'true_candidate',
+                'poisson_samples',
+                ],
             help=('how to compute the train expectation in'
             'kl_train_model/eig_train_model '
             '(ignored by other strategies); '
@@ -1000,9 +1026,9 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    if args.feature_type == 'english' and args.use_zipfian: 
-        raise NotImplementedError()
-
+    if args.feature_type != 'english' and args.use_zipfian: 
+        raise NotImplementedError('Zipfian sampling not implemented for non-english feature types')
+    
 
     if args.reverse_judgments and args.metric_expect_assume_labels:
         raise NotImplementedError("Not yet implemented to reverse judgments when assuming labels for metric expectation in forward-looking strategies; need to reverse labels there too")

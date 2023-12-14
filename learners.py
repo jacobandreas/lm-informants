@@ -17,9 +17,11 @@ from util import kl_bern, entropy
 from optimize import * 
 
 class Learner:
-    def __init__(self, dataset, strategy, linear_train_dataset, index_of_next_item, ):
+    def __init__(self, dataset, strategy, linear_train_dataset, index_of_next_item, linear_train_probs=[]):
         self.dataset = dataset
         self.linear_train_dataset = linear_train_dataset
+        self.linear_train_probs = linear_train_probs
+        print("Sum of linear train probs:", sum(linear_train_probs))
         self.index_of_next_item = index_of_next_item
         #self.next_token_button = next_token_button
 
@@ -92,6 +94,7 @@ class Learner:
             features=None,
             max_updates_propose=None,
             max_updates_observe=None,
+            use_zipfian=False,
             **kwargs,
             ):
         self.hypotheses = [
@@ -110,6 +113,11 @@ class Learner:
         self.observed_feats_unique = set()
         self.max_updates_propose = max_updates_propose
         self.max_updates_observe = max_updates_observe
+        self.use_zipfian = use_zipfian
+
+        if self.use_zipfian:
+            assert len(self.linear_train_probs) != []
+            assert len(self.linear_train_dataset) == len(self.linear_train_probs), f"len of linear train dataset: {len(self.linear_train_dataset)} != len of linear train probs: {len(self.linear_train_probs)}"
 
         if self.strategy_name in [
                 "eig_train_mixed", 
@@ -168,10 +176,12 @@ class VBLearner(Learner):
             self, 
             dataset, 
             strategy, 
-            linear_train_dataset,index_of_next_item,
+            linear_train_dataset,
+            index_of_next_item,
             seed=42,
+            linear_train_probs=[], 
             ):
-        super().__init__(dataset, strategy, linear_train_dataset, index_of_next_item)
+        super().__init__(dataset, strategy, linear_train_dataset, index_of_next_item, linear_train_probs=linear_train_probs)
         self.perturb_random_state = random.Random(seed) # used for selecting edited candidates 
         self.strategy_random_state = random.Random(seed) # used for selecting strategies for, eg, history strategies
         self.results_by_observations = []
@@ -469,8 +479,8 @@ class VBLearner(Learner):
                 pos_and_neg_scores = self.pool.map(func, inputs_labels)
                 pos_scores = pos_and_neg_scores[:len(inputs)]
                 neg_scores = pos_and_neg_scores[len(inputs):]
-                print("metric pos scores: ", pos_scores)
-                print("metric neg scores: ", neg_scores)
+                # print("metric pos scores: ", pos_scores[:5])
+                # print("metric neg scores: ", neg_scores[:5])
                 assert len(pos_scores) == len(neg_scores)
 
     #            scores = [self.get_expected_metric(seq, pos, neg, features=inp[0]) for (inp, seq, (pos, neg)) in zip(inputs, candidates, pos_and_neg_scores)]
@@ -522,6 +532,10 @@ class VBLearner(Learner):
         return expectation 
 
     def get_train_candidate(self, n_candidates, obs_set):
+
+        if self.use_zipfian:
+            return self.get_zipfian_train_candidate(obs_set)
+
         #print(self.linear_train_dataset)
         print("len of train data:", len(self.linear_train_dataset))
         while True:
@@ -531,7 +545,17 @@ class VBLearner(Learner):
             #seq = self.dataset.random_example()
             if seq not in obs_set:
                 return seq
-
+            
+    def get_zipfian_train_candidate(self, obs_set):
+        # sample according to linear_train_probs
+        while True:
+            # choose a random index according to linear_train_probs
+            # breakpoint()
+            index = np.random.choice(len(self.linear_train_dataset), p=self.linear_train_probs)
+            seq = self.linear_train_dataset[index]
+            if seq not in obs_set:
+                return seq
+            
     def propose(self, n_candidates, forbidden_data, length_norm, train_expect_type, metric_expect_assume_labels=False, verbose=False, prop_edits=0.0, informant=None):
         obs_set_a = set(s for s, _, j in self.observations)
         obs_set = set(s for s in (forbidden_data+list(obs_set_a)))
@@ -643,7 +667,10 @@ class VBLearner(Learner):
             if train_is_history:
                 train_score = train_mean
             else:
-                
+
+                if self.use_zipfian:
+                    assert train_expect_type == "poisson_samples", "only poisson_samples supported for zipfian"
+                 
                 if train_expect_type == 'lexicon_samples':
                     ## all this below is for computing expectation over actual train candidates
                     train_candidates = []
@@ -664,6 +691,15 @@ class VBLearner(Learner):
                     print(f' | {train_candidate}')
                     train_score = self.get_train_metric(metric, [train_candidate], metrics=None, p_trains=np.ones(1))
 
+                elif train_expect_type == 'poisson_samples':
+                    assert self.use_zipfian
+                    train_candidates = []
+                    # sample with dataset.random_seq_poisson()
+                    while len(train_candidates) < n_candidates:
+                        # TODO: figure out random seed
+                        c = self.dataset.random_seq_poisson()
+                        if c not in obs_set and c not in train_candidates:
+                            train_candidates.append(c)
                 else:
                     raise ValueError(train_expect_type)
 

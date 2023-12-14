@@ -1,4 +1,5 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from decimal import Decimal, getcontext
 import numpy as np
 
 BOUNDARY = "$"
@@ -43,14 +44,29 @@ class Vocab:
         return len(self.index)
 
 
-@dataclass
+# @dataclass
+# class Dataset:
+#     data: list
+#     vocab: Vocab
+#     onset: bool = False
+#     random: np.random.RandomState = np.random.RandomState(0)
+#     min_length: int = 2 
+#     max_length: int = 5
+#     probs: list = field(default_factory=list) # Only used
+#     lamb: float = 1.31 # 1.31 is the lambda value of the Poisson distribution that best fits the CMU data (with weighting by freq)
+
 class Dataset:
-    data: list
-    vocab: Vocab
-    onset: bool = False
-    random: np.random.RandomState = np.random.RandomState(0)
-    min_length: int = 2 
-    max_length: int = 5
+    def __init__(self, data, vocab, onset=False, random=np.random.RandomState(0), min_length=2, max_length=5, probs=np.array([]), lamb=1.31):
+        print("Initializing Dataset...")
+        self.data = data
+        self.vocab = vocab
+        self.onset = onset
+        self.random = random
+        self.min_length = min_length
+        self.max_length = max_length
+        self.probs = probs
+        self.lamb = lamb
+        print("Probs:", len(probs))
 
     def random_seq(self):
         length = self.random.randint(self.min_length, self.max_length)
@@ -114,6 +130,21 @@ class Dataset:
         #return self.data[np.random.randint(len(self.data))]
         return self.data[self.random.randint(len(self.data))]
 
+    def random_seq_poisson(self):
+        """ Generate length with Poisson distribution, then generate sequence """
+        length = self.random.poisson(self.lamb)
+        seq = []
+        for i in range(length):
+            seq.append(self.random.randint(1, len(self.vocab)))
+        if self.onset:
+            seq = [0] + seq[:2]
+        else:
+            seq = [0] + seq + [0]
+        return tuple(seq)
+
+    # sample with probs 
+    def random_example_by_probs(self):
+        return self.data[self.random.choice(len(self.data), p=self.probs)]
 
 def load_cmu(min_length, max_length):
     vocab = Vocab()
@@ -151,7 +182,52 @@ def load_lexicon(file_name, min_length, max_length):
     print(f"Loading lexicon with min_length={min_length}, max_length={max_length}...")
     return Dataset(data, vocab, min_length=min_length, max_length=max_length)
 
+def load_cmu_words_and_probs(file_name='data/SmallCMUWithFrequencies_Prepped.txt'):
+    # load SmallCMUWithFrequencies_Prepped.txt and create a dictionary
+    # with words as keys and frequencies as values
+    word_freq_dict = {}
+    with open(file_name, 'r') as f:
+        for line in f:
+            # counts are per million
+            word, counts = line.strip().split('\t')
+            freq = float(counts) 
+            word_freq_dict[word] = freq
 
+    # Need to use Decimal to avoid floating point errors
+    total_freq = Decimal(sum(word_freq_dict.values()))
+    # print("Total frequency:", total_freq)
+
+    # Go back through and normalize the probabilities
+    new_word_freq_dict = {}
+    for word in word_freq_dict:
+        new_word_freq_dict[word] = float(Decimal(word_freq_dict[word]) / total_freq)
+
+    word_freq_dict = new_word_freq_dict
+    # Check that probabilities sum to 1
+    probs = list(word_freq_dict.values())
+    words = list(word_freq_dict.keys())
+
+    probs_sum = np.sum(probs)
+    print("Probs sum:", probs_sum)
+    assert np.isclose(probs_sum, 1.0), f"Probabilities do not sum to 1.0: {np.sum(list(word_freq_dict.values()))}"
+
+    return words, probs
+
+def load_lexicon_with_probabilities(min_length, max_length, file_name='data/SmallCMUWithFrequencies_Prepped.txt'):
+    vocab = Vocab()
+    words, probs = load_cmu_words_and_probs(file_name=file_name)
+    data = []
+    for word in words:
+        word = word.split()
+        phonemes = [BOUNDARY] + list(word) + [BOUNDARY]
+        data.append(vocab.encode(phonemes, add=True))
+    print(f"Loading lexicon with probabilities...")
+    print('data:', data)
+    print('probs:', probs)
+    # probs_np = np.array(probs, dtype=np.float128)
+    # assert np.isclose(sum(probs), 1.0), f"Probabilities do not sum to 1.0: {np.sum(probs)}"
+    assert np.isclose(np.sum(np.array(probs, dtype=np.float128)), 1.0), f"Probabilities do not sum to 1.0: {np.sum(list(word_freq_dict.values()))}"
+    return Dataset(data, vocab, probs=probs, min_length=min_length, max_length=max_length)
 
 def load_cmu_onsets(min_length, max_length):
     vocab = Vocab()

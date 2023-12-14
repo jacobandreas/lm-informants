@@ -67,7 +67,7 @@ class MeanFieldScorer: # this is us
         self.LOG_LOG_ALPHA_RATIO = log_log_alpha_ratio
         self.tolerance = tolerance
         self.feature_type = feature_type
-        self.warm_start = warm_start 
+        self.warm_start = warm_start
         self._featurized_cache = {}
 
         # TODO: this is super hacky, used for plotting intermediate updates
@@ -671,6 +671,7 @@ def _load_phoneme_features(dataset, feature_type, phoneme_feature_file=None):
                 feat = feature_vocab.get(f"{feat_val}{feat_names[i]}")
                 feat_vec[feat] = 1
             #feat_vec[feature_vocab.get("-word_boundary")] = 1
+            # breakpoint()
             phoneme_features[dataset.vocab.get(phoneme)] = feat_vec
 
         boundary_vec = np.zeros(len(feature_vocab))
