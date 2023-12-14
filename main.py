@@ -502,7 +502,7 @@ def main(args):
                     step = i
 #                    step=N_INIT+i
                     p = learner.hypotheses[0].probs
-                    probs_file = os.path.join(probs_dir, f'{i}.npy')
+                    probs_file = os.path.join(probs_dir, f'{strategy}-{i}.npy')
                     print(f"Saving current probs to: {probs_file}")
                     np.save(probs_file, p)
                     wandb.save(probs_file, )

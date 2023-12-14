@@ -160,7 +160,7 @@ def update_one_step(probs,
 
     clip_val = np.inf
 #        clip_val = 30
-    entropy_weight = 0.0
+    entropy_weight = 1.0
 
     new_probs = probs.copy()
     

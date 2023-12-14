@@ -3,12 +3,15 @@ WANDB_PROJECT=1213_english_zipfian
 TAG=test
 NUM_STEPS=250
 NUM_CANDS=100
-SEED=0
+SEED=$1
+STRATEGIES=$2
+echo "seed: $SEED";
+echo "strategies: $STRATEGIES";
 
 # prior p_all_off of 0.5
 PRIOR=0.00227035682449808
 LLA=5.25792364149749
-python main.py --exp_dir ${EXP_DIR}/prior=${PRIOR}-log_ratio=${LLA} \
+python main.py --exp_dir ${EXP_DIR}/prior=${PRIOR}-log_ratio=${LLA}-seed=${SEED} \
 	--log_log_alpha_ratio ${LLA} \
 	--prior_prob ${PRIOR} \
 	--wandb_project $WANDB_PROJECT \
@@ -17,7 +20,7 @@ python main.py --exp_dir ${EXP_DIR}/prior=${PRIOR}-log_ratio=${LLA} \
 	--start_run ${SEED} \
 	--feature_type "english" \
 	--eval_humans \
-	--strategies eig_train_mixed train unif \
+	--strategies $STRATEGIES \
 	--feature_type english \
 	--num_candidates $NUM_CANDS \
 	--tags $TAG \
