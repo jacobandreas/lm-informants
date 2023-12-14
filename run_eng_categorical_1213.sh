@@ -1,8 +1,8 @@
 EXP_DIR=results/1213_english_zipfian
 WANDB_PROJECT=1213_english_zipfian
-TAG=test
+TAG=1214_50_cands
 NUM_STEPS=250
-NUM_CANDS=100
+NUM_CANDS=50
 SEED=$1
 STRATEGIES=$2
 echo "seed: $SEED";

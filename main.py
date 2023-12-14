@@ -20,6 +20,7 @@ import matplotlib.pyplot as plt
 import time
 import random
 import multiprocessing
+import gc
 
 import cProfile
 import pdb
@@ -779,6 +780,7 @@ def main(args):
                     start_time = time.time()
 #                    pdb.set_trace()
                     learner.observe(candidate, judgment, verbose=args.verbose, do_plot_wandb=args.do_plot_wandb, batch=args.batch)
+                    gc.collect()
                     end_time = time.time()
                     update_duration = (end_time-start_time)/60
                    

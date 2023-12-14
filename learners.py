@@ -189,7 +189,7 @@ class VBLearner(Learner):
         self.gain_list_from_alterative = []
         self.strategy_for_this_candidate = None
 
-        self.pool = multiprocessing.Pool(processes=multiprocessing.cpu_count())
+        self.pool = multiprocessing.Pool(processes=multiprocessing.cpu_count()-1)
         
     def initialize_hyp(self, 
             log_log_alpha_ratio=1, 
@@ -462,6 +462,7 @@ class VBLearner(Learner):
                 inputs_labels = [(*i, lab) for i, lab in zip(inputs, labels)]
                 func = info_gain_helper if metric == 'eig' else kl_helper 
                 scores = self.pool.map(func, inputs_labels)
+                gc.collect()
 
                 print("kl candidate labels:", [(seq, lab) for (seq, lab) in zip(candidates, labels)])
                 print("kl candidate scores:", scores)
@@ -477,6 +478,7 @@ class VBLearner(Learner):
 
                 func = info_gain_helper if metric == 'eig' else kl_helper 
                 pos_and_neg_scores = self.pool.map(func, inputs_labels)
+                gc.collect()
                 pos_scores = pos_and_neg_scores[:len(inputs)]
                 neg_scores = pos_and_neg_scores[len(inputs):]
                 # print("metric pos scores: ", pos_scores[:5])
@@ -519,6 +521,7 @@ class VBLearner(Learner):
 
                 func = get_ig_pos if metric == "eig" else get_kl_pos 
                 metrics = self.pool.map(func, inputs)
+                gc.collect()
         else:
             raise ValueError
 
