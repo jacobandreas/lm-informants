@@ -20,7 +20,7 @@ import matplotlib.pyplot as plt
 import time
 import random
 import multiprocessing
-
+import gc
 import cProfile
 import pdb
 
@@ -502,7 +502,7 @@ def main(args):
                     step = i
 #                    step=N_INIT+i
                     p = learner.hypotheses[0].probs
-                    probs_file = os.path.join(probs_dir, f'{i}.npy')
+                    probs_file = os.path.join(probs_dir, f'{strategy}-{i}.npy')
                     print(f"Saving current probs to: {probs_file}")
                     np.save(probs_file, p)
                     wandb.save(probs_file, )
@@ -779,6 +779,7 @@ def main(args):
                     start_time = time.time()
 #                    pdb.set_trace()
                     learner.observe(candidate, judgment, verbose=args.verbose, do_plot_wandb=args.do_plot_wandb, batch=args.batch)
+                    gc.collect()
                     end_time = time.time()
                     update_duration = (end_time-start_time)/60
                    

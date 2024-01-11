@@ -1,12 +1,8 @@
 EXP_DIR=results/1214_english_zipfian
 WANDB_PROJECT=1214_english_zipfian
-TAG=1214_1500GB
-NUM_STEPS=250
+TAG=canaan
+NUM_STEPS=200
 NUM_CANDS=100
-SEED=$1
-STRATEGIES=$2
-echo "seed: $SEED";
-echo "strategies: $STRATEGIES";
 
 # prior p_all_off of 0.5
 PRIOR=0.00227035682449808
@@ -18,10 +14,10 @@ python main.py --exp_dir ${EXP_DIR}/prior=${PRIOR}-log_ratio=${LLA}-seed=${SEED}
 	--wandb_project $WANDB_PROJECT \
 	--num_steps $NUM_STEPS \
 	--num_runs 1 \
-	--start_run ${SEED} \
+	--start_run 3 \
 	--feature_type "english" \
 	--eval_humans \
-	--strategies $STRATEGIES \
+	--strategies eig_train_mixed \
 	--feature_type english \
 	--num_candidates $NUM_CANDS \
 	--tags $TAG \
