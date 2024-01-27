@@ -200,6 +200,7 @@ def eval_learner_general(learner, dataset):
     results["log-likelihood"] = log_likelihood(labels, probs, logits)
     results["accuracy"] = metrics.accuracy_score(labels, probs>0.5)
     results["f1"] = metrics.f1_score(labels, probs>0.5)
+    results["entropy_over_params"] = learner.hypothesis.get_entropy()
     return results
 
 #@profile
