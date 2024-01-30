@@ -252,6 +252,11 @@ class BayesianScorer:
         ).item()
         kl = beta_kl + alpha_kl
         return kl
+    
+    @staticmethod
+    def cross_entropy(new_params, old_params):
+        return BayesianScorer.entropy(new_params) + BayesianScorer.kl_divergence(new_params, old_params)
+
 
 
 class BayesianLearner:
