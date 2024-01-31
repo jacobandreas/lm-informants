@@ -47,42 +47,22 @@ def expected_metric(featurized_seq):
 
     eig = prob_pos * pos_ig + (1 - prob_pos) * neg_ig
     ekl = prob_pos * pos_kl + (1 - prob_pos) * neg_kl
-
-    # recreate eig
-    old_entropy = BayesianScorer.entropy(init_params)
-    pos_cross = BayesianScorer.cross_entropy(pos_params, init_params)
-    neg_cross = BayesianScorer.cross_entropy(neg_params, init_params)
-    expected_new_cross = prob_pos * pos_cross + (1 - prob_pos) * neg_cross
-    diff = old_entropy - expected_new_cross
-    derived_eig = ekl + diff
+    
+    missing_quantity = 0 # TBD
+    derived_eig = ekl + missing_quantity
     return eig, derived_eig, ekl
 
 
 # TEST HERE
 featurized_seq = [0, 1] # binary
 eig, derived, ekl = expected_metric(featurized_seq)
+print("EKL:", ekl)
 print("EIG:", eig)
 print("EIG':", derived)
-print("EKL:", ekl)
 
-for n_features in range(1, 11):
-    for k in range(n_features):
-      f = [0.0] * (n_features-k) + [1.0] * k
-      eig, eig_derived, _ = expected_metric(featurized_seq)
-      assert math.isclose(eig, eig_derived, abs_tol=1e-6), f"{k}: {eig}, {eig_derived}"
-    print(f"PASSED N={n_features}")
-
-# OUTPUT:
-# EIG: 0.16682214
-# EIG': 0.16682234
-# EKL: 0.07647029
-# PASSED N=1
-# PASSED N=2
-# PASSED N=3
-# PASSED N=4
-# PASSED N=5
-# PASSED N=6
-# PASSED N=7
-# PASSED N=8
-# PASSED N=9
-# PASSED N=10
+# for n_features in range(1, 11):
+#     for k in range(n_features):
+#       f = [0.0] * (n_features-k) + [1.0] * k
+#       eig, eig_derived, _ = expected_metric(featurized_seq)
+#       assert math.isclose(eig, eig_derived, abs_tol=1e-6), f"{k}: {eig}, {eig_derived}"
+#     print(f"PASSED N={n_features}")
