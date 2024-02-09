@@ -232,21 +232,17 @@ def get_info_gain(featurized_seq, orig_probs, observed_feats, observed_judgments
         
     return entropy_over_features_before_observing_item - entropy_over_features_after_observing_item
 
-def eigkl_quantities(featurized_seq, orig_probs, observed_feats, observed_judgments, observed_feats_unique, converge_type, log_log_alpha_ratio, tolerance, max_updates):
+def eigkl_quantities(featurized_seq, orig_probs, observed_feats, observed_judgments, observed_feats_unique, converge_type, log_log_alpha_ratio, tolerance, max_updates, label=1):
     entropy_before = -1 * ((orig_probs * np.log(orig_probs) + (1 - orig_probs) * np.log(1 - orig_probs))).sum()
+    assert entropy_before > 0
+
     feats_to_update = {*observed_feats_unique, *featurized_seq}
     
-    label = 1
     p, _ = update(observed_feats+[featurized_seq], observed_judgments+[label], converge_type, orig_probs, feats_to_update=feats_to_update, verbose=False, log_log_alpha_ratio=log_log_alpha_ratio, tolerance=tolerance, max_updates=max_updates)
-    cross_entropy_after_pos = -1 * ((p * np.log(orig_probs) + (1 - p) * np.log(1 - orig_probs))).sum()
+    cross_entropy_after = -1 * ((p * np.log(orig_probs) + (1 - p) * np.log(1 - orig_probs))).sum()
+    assert cross_entropy_after > 0
 
-    label = -1
-    p, _ = update(observed_feats+[featurized_seq], observed_judgments+[label], converge_type, orig_probs, feats_to_update=feats_to_update, verbose=False, log_log_alpha_ratio=log_log_alpha_ratio, tolerance=tolerance, max_updates=max_updates)
-    cross_entropy_after_neg = -1 * ((p * np.log(orig_probs) + (1 - p) * np.log(1 - orig_probs))).sum()
-    assert entropy_before > 0
-    assert cross_entropy_after_pos > 0
-    assert cross_entropy_after_neg > 0
-    return (entropy_before, cross_entropy_after_pos, cross_entropy_after_neg)
+    return entropy_before, cross_entropy_after
 
 
 
@@ -280,4 +276,4 @@ def kl_helper(c):
     return get_kl(*c[:-1], label=c[-1]) 
 
 def eigkl_quantities_helper(c):
-    return eigkl_quantities(*c[:-1])
+    return eigkl_quantities(*c[:-1], label=c[-1])

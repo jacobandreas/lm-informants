@@ -465,21 +465,35 @@ class VBLearner(Learner):
 
                 inputs_labels = [(*i, 1) for i in inputs] + [(*i, -1) for i in inputs]
 
+                # typical eig calculation
                 eig_pos_and_neg_scores = self.pool.map(info_gain_helper, inputs_labels)
                 eig_pos_scores = eig_pos_and_neg_scores[:len(inputs)]
                 eig_neg_scores = eig_pos_and_neg_scores[len(inputs):]
                 assert len(eig_pos_scores) == len(eig_neg_scores)
                 eig_scores = [self.get_expected_metric(seq, pos, neg, features=inp[0]) for (inp, seq, pos, neg) in zip(inputs, candidates, eig_pos_scores, eig_neg_scores)]
 
+                # typical ekl calculation
                 ekl_pos_and_neg_scores = self.pool.map(kl_helper, inputs_labels)
                 ekl_pos_scores = ekl_pos_and_neg_scores[:len(inputs)]
                 ekl_neg_scores = ekl_pos_and_neg_scores[len(inputs):]
                 assert len(ekl_pos_scores) == len(ekl_neg_scores)
                 ekl_scores = [self.get_expected_metric(seq, pos, neg, features=inp[0]) for (inp, seq, pos, neg) in zip(inputs, candidates, ekl_pos_scores, ekl_neg_scores)]
 
-                entropy_before, cross_entropy_after_pos, cross_entropy_after_neg = zip(*self.pool.map(eigkl_quantities_helper, inputs_labels))
-                expected_diff = [orig - self.get_expected_metric(seq, pos, neg, features=inp[0]) for (inp, seq, pos, neg, orig) in zip(inputs, candidates, cross_entropy_after_pos, cross_entropy_after_neg, entropy_before)]
+                # supposed difference calculation
+                entropy_before, cross_entropy_after = zip(*self.pool.map(eigkl_quantities_helper, inputs_labels))
+                assert len(set(entropy_before)) == 1 # should all be same
+                entropy_before = entropy_before[0]
+                # this is H(P(Theta | x, y=1), P(Theta))
+                cross_entropy_after_pos = cross_entropy_after[:len(inputs)]
+                # this is H(P(Theta | x, y=0), P(Theta))
+                cross_entropy_after_neg = cross_entropy_after[len(inputs):]
+                # this is H(P(Theta | x), P(Theta))
+                expected_cross_entropy = [self.get_expected_metric(seq, pos, neg, features=inp[0]) for (inp, seq, pos, neg) in zip(inputs, candidates, cross_entropy_after_pos, cross_entropy_after_neg)]
+                # this is the full difference: H(P(Theta)) - H(P(Theta | x) | P(Theta))
+                expected_diff = [entropy_before - ece for ece in expected_cross_entropy]
+                # recreate eig_scores
                 eig_prime = [ekl + diff for ekl, diff in zip(ekl_scores, expected_diff)]
+               
                 with open('eig_prime.txt', 'a') as f:
                     print("ekl:", [x.item() for x in ekl_scores], file=f)
                     print("gap:", [x.item() for x in expected_diff], file=f)
