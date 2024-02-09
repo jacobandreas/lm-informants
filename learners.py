@@ -465,22 +465,35 @@ class VBLearner(Learner):
 
                 inputs_labels = [(*i, 1) for i in inputs] + [(*i, -1) for i in inputs]
 
-                func = info_gain_helper if metric == 'eig' else kl_helper 
-                pos_and_neg_scores = self.pool.map(func, inputs_labels)
-                pos_scores = pos_and_neg_scores[:len(inputs)]
-                neg_scores = pos_and_neg_scores[len(inputs):]
-                print("metric pos scores: ", pos_scores)
-                print("metric neg scores: ", neg_scores)
-                assert len(pos_scores) == len(neg_scores)
+                eig_pos_and_neg_scores = self.pool.map(info_gain_helper, inputs_labels)
+                eig_pos_scores = eig_pos_and_neg_scores[:len(inputs)]
+                eig_neg_scores = eig_pos_and_neg_scores[len(inputs):]
+                assert len(eig_pos_scores) == len(eig_neg_scores)
+                eig_scores = [self.get_expected_metric(seq, pos, neg, features=inp[0]) for (inp, seq, pos, neg) in zip(inputs, candidates, eig_pos_scores, eig_neg_scores)]
 
-    #            scores = [self.get_expected_metric(seq, pos, neg, features=inp[0]) for (inp, seq, (pos, neg)) in zip(inputs, candidates, pos_and_neg_scores)]
+                ekl_pos_and_neg_scores = self.pool.map(kl_helper, inputs_labels)
+                ekl_pos_scores = ekl_pos_and_neg_scores[:len(inputs)]
+                ekl_neg_scores = ekl_pos_and_neg_scores[len(inputs):]
+                assert len(ekl_pos_scores) == len(ekl_neg_scores)
+                ekl_scores = [self.get_expected_metric(seq, pos, neg, features=inp[0]) for (inp, seq, pos, neg) in zip(inputs, candidates, ekl_pos_scores, ekl_neg_scores)]
 
-                scores = [self.get_expected_metric(seq, pos, neg, features=inp[0]) for (inp, seq, pos, neg) in zip(inputs, candidates, pos_scores, neg_scores)]
+                entropy_before, cross_entropy_after_pos, cross_entropy_after_neg = zip(*self.pool.map(eigkl_quantities_helper, inputs_labels))
+                expected_diff = [orig - self.get_expected_metric(seq, pos, neg, features=inp[0]) for (inp, seq, pos, neg, orig) in zip(inputs, candidates, cross_entropy_after_pos, cross_entropy_after_neg, entropy_before)]
+                eig_prime = [ekl + diff for ekl, diff in zip(ekl_scores, expected_diff)]
+                with open('eig_prime.txt', 'a') as f:
+                    print("ekl:", [x.item() for x in ekl_scores], file=f)
+                    print("gap:", [x.item() for x in expected_diff], file=f)
+                    print("eig':", [x.item() for x in eig_prime], file=f)
+                    print("eig:", [x.item() for x in eig_scores], file=f)
+                assert np.allclose(eig_scores, eig_prime)
+                with open('eig_prime.txt', 'a') as f:
+                    print("VALIDATED", file=f)
+                    print("", file=f)
 
                 # useful for saving the pos scores for train
                 if return_pos_scores:
-                    return scores, pos_scores
-                return scores
+                    return eig_scores, eig_pos_scores
+                return eig_scores
 
         elif metric == "entropy_pred": 
             # TODO: implement multiprocessing; nontrivial bc requires non-local function
