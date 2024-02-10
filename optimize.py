@@ -235,8 +235,8 @@ def get_info_gain(featurized_seq, orig_probs, observed_feats, observed_judgments
 def eigkl_quantities(featurized_seq, orig_probs, observed_feats, observed_judgments, observed_feats_unique, converge_type, log_log_alpha_ratio, tolerance, max_updates, label=1):
     feats_to_update = {*observed_feats_unique, *featurized_seq}
     new_probs, _ = update(observed_feats+[featurized_seq], observed_judgments+[label], converge_type, orig_probs, feats_to_update=feats_to_update, verbose=False, log_log_alpha_ratio=log_log_alpha_ratio, tolerance=tolerance, max_updates=max_updates)
-    cross_entropy_after = -1 * ((new_probs * np.log(orig_probs) + (1 - new_probs) * np.log(1 - orig_probs))).sum()
-    return cross_entropy_after, new_probs
+    new_cross_entropy = -1 * ((new_probs * np.log(orig_probs) + (1 - new_probs) * np.log(1 - orig_probs))).sum()
+    return new_cross_entropy, new_probs
 
 def get_ig_pos(c):
     return get_info_gain(*c, label=1)

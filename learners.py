@@ -484,13 +484,13 @@ class VBLearner(Learner):
                 orig_probs = probs
                 orig_entropy = -1*(orig_probs * np.log(orig_probs) + (1 - orig_probs) * np.log(1 - orig_probs)).sum()
                 # collecting required quantities (first for expected cross entropy, second for direct cross entropy)
-                cross_entropy_after, p_theta_y_xs = zip(*self.pool.map(eigkl_quantities_helper, inputs_labels))
+                new_cross_entropy, p_theta_y_xs = zip(*self.pool.map(eigkl_quantities_helper, inputs_labels))
 
                 # (A) USING EXPECTED CROSS ENTROPY
                 # this is H(P(Theta | y=1, x), P(Theta))
-                new_cross_entropy_pos = cross_entropy_after[:len(inputs)]
+                new_cross_entropy_pos = new_cross_entropy[:len(inputs)]
                 # this is H(P(Theta | y=0, x), P(Theta))
-                new_cross_entropy_neg = cross_entropy_after[len(inputs):]
+                new_cross_entropy_neg = new_cross_entropy[len(inputs):]
                 # this is expectation of above become H(P(Theta | x), P(Theta))
                 expected_new_cross_entropy = [self.get_expected_metric(seq, pos, neg, features=inp[0]) for (inp, seq, pos, neg) in zip(inputs, candidates, new_cross_entropy_pos, new_cross_entropy_neg)]
                 # this is now the full difference: H(P(Theta)) - H(P(Theta | x) | P(Theta))
