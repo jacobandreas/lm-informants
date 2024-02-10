@@ -491,7 +491,7 @@ class VBLearner(Learner):
                 new_cross_entropy_pos = new_cross_entropy[:len(inputs)]
                 # this is H(P(Theta | y=0, x), P(Theta))
                 new_cross_entropy_neg = new_cross_entropy[len(inputs):]
-                # this is expectation of above become H(P(Theta | x), P(Theta))
+                # this is expectation of above to become H(P(Theta | x), P(Theta))
                 expected_new_cross_entropy = [self.get_expected_metric(seq, pos, neg, features=inp[0]) for (inp, seq, pos, neg) in zip(inputs, candidates, new_cross_entropy_pos, new_cross_entropy_neg)]
                 # this is now the full difference: H(P(Theta)) - H(P(Theta | x) | P(Theta))
                 expected_diff = [orig_entropy - ce for ce in expected_new_cross_entropy]
@@ -512,6 +512,7 @@ class VBLearner(Learner):
                 # recreate eig_scores
                 eig_b = [ekl + diff for ekl, diff in zip(ekl_scores, direct_diff)]  
 
+                # check that the two recreation methods are equivalent to the standard eig, and otherwise consistent
                 direct_new_entropy = [-1*(p_theta_given_x * np.log(p_theta_given_x) + (1 - p_theta_given_x) * np.log(1 - p_theta_given_x)).sum() for p_theta_given_x in p_theta_given_xs]
                 assert np.all(direct_new_cross_entropy >= direct_new_entropy)
                 assert np.allclose(expected_new_cross_entropy, direct_new_cross_entropy)
