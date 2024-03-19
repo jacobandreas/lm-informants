@@ -3,7 +3,7 @@ from itertools import product
 from functools import reduce
 
 n_features = 3
-prior_feat_prob = 0.25
+prior_constraint_prob = 0.25
 p_correct_label = 1-1e-10
 
 # ------------------- JOINT -------------------
@@ -21,7 +21,7 @@ def joint_likelihood(features, label):
 
 def joint_prior():
     return np.array([
-        np.power(prior_feat_prob, np.sum(constraints==1)) * np.power(1 - prior_feat_prob, np.sum(constraints==0))
+        np.power(prior_constraint_prob, np.sum(constraints==1)) * np.power(1 - prior_constraint_prob, np.sum(constraints==0))
         for constraints in np.array(list(product([0, 1], repeat=n_features)))
     ])
 
@@ -48,7 +48,7 @@ def single_likelihood(features, label):
     ])
 
 def single_prior():
-    return np.full(n_features, prior_feat_prob)
+    return np.full(n_features, prior_constraint_prob)
 
 def single_posterior(features, label):
     prior = single_prior()
@@ -170,7 +170,6 @@ def assess(features, rnd=5, f=None):
     print("Single:", np.round(ekl_single, rnd), file=f)
     print("Joint:", np.round(ekl_joint, rnd), file=f)
     print(file=f)
-
 
 with open("test_0.txt", "w") as f:
     assess([0,0,0], f=f)
