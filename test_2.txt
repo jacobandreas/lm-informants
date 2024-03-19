@@ -1,0 +1,57 @@
+Priors...
+Joint (by constraint):
+ [0.25 0.25 0.25]
+Single (by constraint):
+ [0.25 0.25 0.25]
+Difference (by constraint):
+ [0. 0. 0.]
+
+Joint (combinations):
+ [0.42188 0.14062 0.14062 0.04688 0.14062 0.04688 0.04688 0.01562]
+Single (combinations):
+ [0.42188 0.14062 0.14062 0.04688 0.14062 0.04688 0.04688 0.01562]
+Difference (combinations):
+ [0. 0. 0. 0. 0. 0. 0. 0.]
+
+Features: [1, 1, 0]
+P(in_lang) (single): 0.5625
+P(in_lang) (joint): 0.5625
+
+Posteriors (Y=1)...
+Joint (by constraint):
+ [0.   0.   0.25]
+Single (by constraint):
+ [0.   0.   0.25]
+Difference (by constraint):
+ [-0. -0.  0.]
+
+Joint (combinations):
+ [0.75 0.25 0.   0.   0.   0.   0.   0.  ]
+Single (combinations):
+ [0.75 0.25 0.   0.   0.   0.   0.   0.  ]
+Difference (combinations):
+ [ 0.  0. -0. -0. -0. -0.  0.  0.]
+
+Posteriors (Y=0)...
+Joint (by constraint):
+ [0.57143 0.57143 0.25   ]
+Single (by constraint):
+ [0.4  0.4  0.25]
+Difference (by constraint):
+ [0.17143 0.17143 0.     ]
+
+Joint (combinations):
+ [0.      0.      0.32143 0.10714 0.32143 0.10714 0.10714 0.03571]
+Single (combinations):
+ [0.27 0.09 0.18 0.06 0.18 0.06 0.12 0.04]
+Difference (combinations):
+ [-0.27    -0.09     0.14143  0.04714  0.14143  0.04714 -0.01286 -0.00429]
+
+Expected Info Gain (EIG)...
+Single: 0.53579
+Joint: 0.68531
+
+Expected KL Divergence (EKL)...
+Single: 0.37099
+Joint: 0.68531
+
