@@ -465,22 +465,69 @@ class VBLearner(Learner):
 
                 inputs_labels = [(*i, 1) for i in inputs] + [(*i, -1) for i in inputs]
 
-                func = info_gain_helper if metric == 'eig' else kl_helper 
-                pos_and_neg_scores = self.pool.map(func, inputs_labels)
-                pos_scores = pos_and_neg_scores[:len(inputs)]
-                neg_scores = pos_and_neg_scores[len(inputs):]
-                print("metric pos scores: ", pos_scores)
-                print("metric neg scores: ", neg_scores)
-                assert len(pos_scores) == len(neg_scores)
+                # typical eig calculation
+                eig_pos_and_neg_scores = self.pool.map(info_gain_helper, inputs_labels)
+                eig_pos_scores = eig_pos_and_neg_scores[:len(inputs)]
+                eig_neg_scores = eig_pos_and_neg_scores[len(inputs):]
+                assert len(eig_pos_scores) == len(eig_neg_scores)
+                eig_scores = [self.get_expected_metric(seq, pos, neg, features=inp[0]) for (inp, seq, pos, neg) in zip(inputs, candidates, eig_pos_scores, eig_neg_scores)]
 
-    #            scores = [self.get_expected_metric(seq, pos, neg, features=inp[0]) for (inp, seq, (pos, neg)) in zip(inputs, candidates, pos_and_neg_scores)]
+                # typical ekl calculation
+                ekl_pos_and_neg_scores = self.pool.map(kl_helper, inputs_labels)
+                ekl_pos_scores = ekl_pos_and_neg_scores[:len(inputs)]
+                ekl_neg_scores = ekl_pos_and_neg_scores[len(inputs):]
+                assert len(ekl_pos_scores) == len(ekl_neg_scores)
+                ekl_scores = [self.get_expected_metric(seq, pos, neg, features=inp[0]) for (inp, seq, pos, neg) in zip(inputs, candidates, ekl_pos_scores, ekl_neg_scores)]
 
-                scores = [self.get_expected_metric(seq, pos, neg, features=inp[0]) for (inp, seq, pos, neg) in zip(inputs, candidates, pos_scores, neg_scores)]
+                # --> RECREATING EIG HERE <--
+
+                orig_probs = probs
+                orig_entropy = -1*(orig_probs * np.log(orig_probs) + (1 - orig_probs) * np.log(1 - orig_probs)).sum()
+                # collecting required quantities (first for expected cross entropy, second for direct cross entropy)
+                new_cross_entropy, p_theta_y_xs = zip(*self.pool.map(eigkl_quantities_helper, inputs_labels))
+
+                # (A) USING EXPECTED CROSS ENTROPY
+                # this is H(P(Theta | y=1, x), P(Theta))
+                new_cross_entropy_pos = new_cross_entropy[:len(inputs)]
+                # this is H(P(Theta | y=0, x), P(Theta))
+                new_cross_entropy_neg = new_cross_entropy[len(inputs):]
+                # this is expectation of above to become H(P(Theta | x), P(Theta))
+                expected_new_cross_entropy = [self.get_expected_metric(seq, pos, neg, features=inp[0]) for (inp, seq, pos, neg) in zip(inputs, candidates, new_cross_entropy_pos, new_cross_entropy_neg)]
+                # this is now the full difference: H(P(Theta)) - H(P(Theta | x) | P(Theta))
+                expected_diff = [orig_entropy - ce for ce in expected_new_cross_entropy]
+                # recreate eig_scores
+                eig_a = [ekl + diff for ekl, diff in zip(ekl_scores, expected_diff)]
+               
+                # (B) USING DIRECT CROSS ENTROPY
+                # this is P(Theta | y=1, x)
+                p_theta_given_1_xs = p_theta_y_xs[:len(inputs)]
+                # this is P(Theta | y=0, x)
+                p_theta_given_0_xs = p_theta_y_xs[len(inputs):]
+                # this is expectation of above to become P(Theta | x)
+                p_theta_given_xs = [self.get_expected_metric(seq, torch.from_numpy(pos), torch.from_numpy(neg), features=inp[0]).numpy() for (inp, seq, pos, neg) in zip(inputs, candidates, p_theta_given_1_xs, p_theta_given_0_xs)]                
+                # this now computes the cross entropy H(P(Theta | x), P(Theta))
+                direct_new_cross_entropy = [-1*(p_theta_x * np.log(orig_probs) + (1 - p_theta_x) * np.log(1 - orig_probs)).sum() for p_theta_x in p_theta_given_xs]
+                # this is the full difference: H(P(Theta)) - H(P(Theta | x) | P(Theta))
+                direct_diff = [orig_entropy - ce for ce in direct_new_cross_entropy]
+                # recreate eig_scores
+                eig_b = [ekl + diff for ekl, diff in zip(ekl_scores, direct_diff)]  
+
+                # check that the two recreation methods are equivalent to the standard eig, and otherwise consistent
+                direct_new_entropy = [-1*(p_theta_given_x * np.log(p_theta_given_x) + (1 - p_theta_given_x) * np.log(1 - p_theta_given_x)).sum() for p_theta_given_x in p_theta_given_xs]
+                assert np.all(direct_new_cross_entropy >= direct_new_entropy)
+                assert np.allclose(expected_new_cross_entropy, direct_new_cross_entropy)
+                assert np.allclose(eig_scores, eig_a)
+                assert np.allclose(eig_scores, eig_b)
+                with open('recreate_eig.txt', 'a') as f:
+                    print("eig:", [x.item() for x in eig_scores], file=f)
+                    print("eig-a:", [x.item() for x in eig_a], file=f)
+                    print("eig-b:", [x.item() for x in eig_b], file=f)
+                    print("", file=f)
 
                 # useful for saving the pos scores for train
                 if return_pos_scores:
-                    return scores, pos_scores
-                return scores
+                    return eig_scores, eig_pos_scores
+                return eig_scores
 
         elif metric == "entropy_pred": 
             # TODO: implement multiprocessing; nontrivial bc requires non-local function
