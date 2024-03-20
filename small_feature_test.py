@@ -141,9 +141,9 @@ def expected(features, func="eig", return_all=False):
                   func(posterior_dist_0_s, prior_dist_s, element_wise=True) * (1 - p_in_lang_s))
     
     # as currently done
-    p_in_lang_s = joint_prob_in_language(features, single_to_joint(prior_dist_s))
-    expected_s_broken = (func(posterior_dist_1_s, prior_dist_s, element_wise=False) * p_in_lang_s +
-                         func(posterior_dist_0_s, prior_dist_s, element_wise=False) * (1 - p_in_lang_s))
+    p_in_lang_s_ = joint_prob_in_language(features, single_to_joint(prior_dist_s))
+    expected_s_broken = (func(posterior_dist_1_s, prior_dist_s, element_wise=False) * p_in_lang_s_ +
+                         func(posterior_dist_0_s, prior_dist_s, element_wise=False) * (1 - p_in_lang_s_))
 
 
     prior_dist_j = joint_prior()
@@ -193,14 +193,14 @@ def assess(features, rnd=5, f=None):
     compare_dists(posterior_dist_0_s, posterior_dist_0_j, rnd=rnd, f=f)
 
     print("Expected Info Gain (EIG)...", file=f)
-    print("Single (as currently done):", np.round(eig_s_broken, rnd), file=f)
-    print("Single:", np.round(np.sum(eig_s), rnd), file=f)
+    print("Single (with joint probability):", np.round(eig_s_broken, rnd), file=f)
+    print("Single (element-wise until end):", np.round(np.sum(eig_s), rnd), file=f)
     print("Joint:", np.round(eig_j, rnd), file=f)
     print(file=f)
 
     print("Expected KL Divergence (EKL)...", file=f)
-    print("Single (as currently done):", np.round(ekl_s_broken, rnd), file=f)
-    print("Single:", np.round(np.sum(ekl_s), rnd), file=f)
+    print("Single (with joint probability):", np.round(ekl_s_broken, rnd), file=f)
+    print("Single (element-wise until end):", np.round(np.sum(ekl_s), rnd), file=f)
     print("Joint:", np.round(ekl_j, rnd), file=f)
     print(file=f)
 
