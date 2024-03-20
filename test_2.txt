@@ -14,7 +14,7 @@ Difference (combinations):
  [0. 0. 0. 0. 0. 0. 0. 0.]
 
 Features: [1, 1, 0]
-P(in_lang) (single): [0.375 0.375 0.5  ]
+P(in_lang) (single): 0.5625
 P(in_lang) (joint): 0.5625
 
 Posteriors (Y=1)...
@@ -48,10 +48,12 @@ Difference (combinations):
  [-0.27    -0.09     0.14143  0.04714  0.14143  0.04714 -0.01286 -0.00429]
 
 Expected Info Gain (EIG)...
-Single: [0.28341 0.28341 0.45166] (sum=1.01847)
+Single (as currently done): 0.53579
+Single: 0.28341
 Joint: 0.68531
 
 Expected KL Divergence (EKL)...
-Single: [0.28341 0.28341 0.3418 ] (sum=0.90861)
+Single (as currently done): 0.37099
+Single: 0.28341
 Joint: 0.68531
 

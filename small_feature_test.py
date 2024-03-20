@@ -113,24 +113,38 @@ def prob_in_language_OLD(features, matrix_dist):
     p = np.sum(compatible)
     return p
 
-def info_gain(posterior, prior):
-    entropy_before = -np.sum(prior * np.log(prior))
-    entropy_after = -np.sum(posterior * np.log(posterior))
-    return entropy_before - entropy_after
+def info_gain(posterior, prior, element_wise=False):
+    entropy_before = -prior * np.log(prior)
+    entropy_after = -posterior * np.log(posterior)
+    ig = entropy_before - entropy_after
+    if element_wise:
+        return ig
+    return np.sum(ig)
 
-def kl_divergence(posterior, prior):
-    return np.sum(posterior * np.log(posterior / prior))
+def kl_divergence(posterior, prior, element_wise=False):
+    kl = posterior * np.log(posterior / prior)
+    if element_wise:
+        return kl
+    return np.sum(kl)
 
 def expected(features, func="eig", return_all=False):
     funcs = {"eig": info_gain, "ekl": kl_divergence}
     func = funcs[func]
 
     prior_dist_s = single_prior()
-    p_in_lang_s = single_prob_in_language(features, prior_dist_s) # element-wise
     posterior_dist_1_s = single_posterior(features, 1)
     posterior_dist_0_s = single_posterior(features, 0)
-    expected_s = (func(posterior_dist_1_s, prior_dist_s) * p_in_lang_s +
-                  func(posterior_dist_0_s, prior_dist_s) * (1 - p_in_lang_s))
+
+    # element-wise
+    p_in_lang_s = single_prob_in_language(features, prior_dist_s)
+    expected_s = (func(posterior_dist_1_s, prior_dist_s, element_wise=True) * p_in_lang_s +
+                  func(posterior_dist_0_s, prior_dist_s, element_wise=True) * (1 - p_in_lang_s))
+    
+    # as currently done
+    p_in_lang_s = joint_prob_in_language(features, single_to_joint(prior_dist_s))
+    expected_s_broken = (func(posterior_dist_1_s, prior_dist_s, element_wise=False) * p_in_lang_s +
+                         func(posterior_dist_0_s, prior_dist_s, element_wise=False) * (1 - p_in_lang_s))
+
 
     prior_dist_j = joint_prior()
     p_in_lang_j = joint_prob_in_language(features, prior_dist_j)
@@ -140,8 +154,8 @@ def expected(features, func="eig", return_all=False):
                   func(posterior_dist_0_j, prior_dist_j) * (1 - p_in_lang_j))
 
     if return_all:
-        return prior_dist_s, p_in_lang_s, posterior_dist_1_s, posterior_dist_0_s, expected_s, prior_dist_j, p_in_lang_j, posterior_dist_1_j, posterior_dist_0_j, expected_j
-    return expected_s, expected_j
+        return prior_dist_s, p_in_lang_s, posterior_dist_1_s, posterior_dist_0_s, expected_s, expected_s_broken, prior_dist_j, p_in_lang_j, posterior_dist_1_j, posterior_dist_0_j, expected_j
+    return expected_s, expected_s_broken, expected_j
 
 # ------------------- TESTING -------------------
 
@@ -161,8 +175,8 @@ def compare_dists(single_dist, joint_dist, rnd=5, f=None):
     print(file=f)
 
 def assess(features, rnd=5, f=None):
-    prior_dist_s, p_in_lang_s, posterior_dist_1_s, posterior_dist_0_s, eig_s, prior_dist_j, p_in_lang_j, posterior_dist_1_j, posterior_dist_0_j, eig_j = expected(features, func="eig", return_all=True)
-    ekl_s, ekl_j = expected(features, func="ekl")
+    prior_dist_s, p_in_lang_s, posterior_dist_1_s, posterior_dist_0_s, eig_s, eig_s_broken, prior_dist_j, p_in_lang_j, posterior_dist_1_j, posterior_dist_0_j, eig_j = expected(features, func="eig", return_all=True)
+    ekl_s, ekl_s_broken, ekl_j = expected(features, func="ekl")
 
     print("Priors...", file=f)
     compare_dists(prior_dist_s, prior_dist_j, rnd=rnd, f=f)
@@ -179,12 +193,14 @@ def assess(features, rnd=5, f=None):
     compare_dists(posterior_dist_0_s, posterior_dist_0_j, rnd=rnd, f=f)
 
     print("Expected Info Gain (EIG)...", file=f)
-    print("Single:", np.round(eig_s, rnd), f"(sum={np.round(np.sum(eig_s), rnd)})", file=f)
+    print("Single (as currently done):", np.round(eig_s_broken, rnd), file=f)
+    print("Single:", np.round(np.sum(eig_s), rnd), file=f)
     print("Joint:", np.round(eig_j, rnd), file=f)
     print(file=f)
 
     print("Expected KL Divergence (EKL)...", file=f)
-    print("Single:", np.round(ekl_s, rnd), f"(sum={np.round(np.sum(ekl_s), rnd)})", file=f)
+    print("Single (as currently done):", np.round(ekl_s_broken, rnd), file=f)
+    print("Single:", np.round(np.sum(ekl_s), rnd), file=f)
     print("Joint:", np.round(ekl_j, rnd), file=f)
     print(file=f)
 
