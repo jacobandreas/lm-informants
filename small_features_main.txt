@@ -1,0 +1,55 @@
+prior: [0.25 0.25 0.25]
+item: [0, 0, 0]
+p_in_lang: tensor(1., dtype=torch.float64)
+probs after observing label=-1: [0.25 0.25 0.25]
+probs after observing label=1: [0.25 0.25 0.25]
+EIG
+POS: [0.0]
+NEG: [0.0]
+EXP: [tensor(0., dtype=torch.float64)]
+EKL
+POS: [0.0]
+NEG: [0.0]
+EXP: [tensor(0., dtype=torch.float64)]
+
+prior: [0.25 0.25 0.25]
+item: [1, 0, 0]
+p_in_lang: tensor(0.7500, dtype=torch.float64)
+probs after observing label=1: [1.0e-05 2.5e-01 2.5e-01]
+probs after observing label=-1: [0.99999 0.25    0.25   ]
+EIG
+POS: [0.5622100154141589]
+NEG: [0.5622100154141594]
+EXP: [tensor(0.5622, dtype=torch.float64)]
+EKL
+POS: [0.2875679293700181]
+NEG: [1.386158245792355]
+EXP: [tensor(0.5622, dtype=torch.float64)]
+
+prior: [0.25 0.25 0.25]
+item: [1, 1, 0]
+probs after observing label=1: [1.0e-05 1.0e-05 2.5e-01]  <-  incorrect posterior (both features were learned completely)
+probs after observing label=-1: [0.99999 0.99999 0.25   ] <-  incorrect posterior (both features were learned completely)
+p_in_lang: tensor(0.5625, dtype=torch.float64)
+EIG
+POS: [1.1244200308283177]
+NEG: [1.1244200308283185]
+EXP: [tensor(1.1244, dtype=torch.float64)]
+EKL
+POS: [0.5751358587400363]
+NEG: [2.77231649158471]
+EXP: [tensor(1.5364, dtype=torch.float64)]
+
+prior: [0.25 0.25 0.25]
+item: [1, 1, 1]
+probs after observing label=-1: [0.99999 0.99999 0.99999] <-  incorrect posterior (all features were learned completely)
+probs after observing label=1: [1.e-05 1.e-05 1.e-05]     <-  incorrect posterior (all features were learned completely)
+p_in_lang: tensor(0.4219, dtype=torch.float64)
+EIG
+POS: [1.6866300462424764]
+NEG: [1.686630046242478]
+EXP: [tensor(1.6866, dtype=torch.float64)]
+EKL
+POS: [0.8627037881100543]
+NEG: [4.158474737377064]
+EXP: [tensor(2.7681, dtype=torch.float64)]

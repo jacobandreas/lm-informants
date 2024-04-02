@@ -87,8 +87,10 @@ class MeanFieldScorer: # this is us
             self.ngram_features[ff] = len(self.ngram_features)
 
         print("# features: ", len(self.ngram_features))
-        self.probs = prior_prob * np.ones(len(self.ngram_features))
+        self.probs = prior_prob * np.ones(3) # amani test: set n_features to 3
+        # self.probs = prior_prob * np.ones(len(self.ngram_features))
         self.prior = self.probs.copy()
+        print("prior:", self.prior)
 
 #    @profile
     """
@@ -232,6 +234,7 @@ class MeanFieldScorer: # this is us
         return new_probs, results
 
     def _featurize(self, seq): # Canaan edit to do long distance
+        return np.array([1, 1, 1]) # amani test: set any seq to correspond to test_1.txt
         if seq in self._featurized_cache:
             return self._featurized_cache[seq]
         else:

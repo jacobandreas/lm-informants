@@ -204,9 +204,9 @@ def update_one_step(probs,
     # TODO: need to return updates for each feature
     results = {
             "new_probs": new_probs, 
-            "update_sum": update_sum,
+            "update_sum": np.nan, # update_sum,
 #                "update_unclipped": update_unclipped,
-            "log_p_all_off": np.mean(log_probs_all_off), # TODO: do we want the sum?
+            "log_p_all_off": np.nan, # np.mean(log_probs_all_off), # TODO: do we want the sum?
             }
 
     return results
@@ -226,6 +226,7 @@ def get_info_gain(featurized_seq, orig_probs, observed_feats, observed_judgments
     feats_to_update = {*observed_feats_unique, *featurized_seq}
 
     p, results = update(observed_feats+[featurized_seq], observed_judgments+[label], converge_type, orig_probs, feats_to_update=feats_to_update, verbose=False, log_log_alpha_ratio=log_log_alpha_ratio, tolerance=tolerance, max_updates=max_updates)
+    print(f"probs after observing label={label}:", p)
     entropy_over_features_after_observing_item = -1 * ((p * np.log(p) + (1 - p) * np.log(1 - p))).sum()
 #    print("entropy over features after observing item: ", entropy_over_features_after_observing_item)
     assert entropy_over_features_after_observing_item > 0, f"Entropy should be positive. Entropy={entropy_over_features_after_observing_item_positive}. Probs={p.round(decimals=3)}"
