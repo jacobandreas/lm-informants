@@ -614,10 +614,11 @@ def main(args):
                     phoneme_feature_file=phoneme_feature_file,
                 )
 
-                all_features = learner.all_features(return_indices=True)
-                unique_feature_indices = [
-                    f_idx for (_, f, f_idx) in all_features if f in unique_features
-                ]
+                # all_features = learner.all_features(return_indices=True)
+                # unique_feature_indices = [
+                #     f_idx for (_, f, f_idx) in all_features if f in unique_features
+                # ]
+                unique_feature_indices = [] # amani test: not needed for anything relevant
 
                 wandb_table_data = []
 
