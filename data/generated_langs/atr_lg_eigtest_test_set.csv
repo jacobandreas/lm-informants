@@ -1,0 +1,251 @@
+,item,label
+0,pe tI pa,True
+1,qa qI ka,True
+2,kI ka ki kE,False
+3,qe ki ta,True
+4,qi kE ke qi,False
+5,qa pI pa,True
+6,ti qE pe,False
+7,ke qE ka,False
+8,ta tE ka pE,True
+9,tI pa ti kI,False
+10,ka tE,True
+11,ke pa tE te,False
+12,qe qE ka pI,False
+13,ta tE,True
+14,ka ka qi ta,True
+15,qE ka qa ti,False
+16,pe qI pa,True
+17,ke qE qI,False
+18,ka qi pi,False
+19,te qi pa,True
+20,ta te ka,True
+21,ke ki pa,True
+22,pI ti tI kE,False
+23,qa tE qa tE,True
+24,ka qa pe kE,False
+25,pa te pa kE,True
+26,ta pe pa,True
+27,pI qe qE pI,False
+28,pe ki ka,True
+29,tI pE pI kI,False
+30,ta qi ka,True
+31,ki qI,True
+32,ta qE ta tI,True
+33,tE pa kI qi,False
+34,ki qi kE,False
+35,te qE qi ta,False
+36,ka te tI,False
+37,ke tI qi qI,False
+38,te qe ke tI,False
+39,kI tI tI,False
+40,qa ta ti ta,True
+41,pi kE qE ta,False
+42,te pi ka,True
+43,tE qI,False
+44,pe qa ta,False
+45,tI pi qI tI,False
+46,ka tI ka,True
+47,qa pe qa tE,True
+48,qi ti pi,False
+49,pa pI ka,True
+50,kI qi pe ta,False
+51,pE pE ki kE,False
+52,ta qI ka,True
+53,pe pa ke,False
+54,ta qE ta pI,True
+55,ka kE,True
+56,pI qI ke ta,False
+57,ka pI qa,True
+58,te pe ki pI,False
+59,qa pi pI pe,False
+60,ta tE pa,True
+61,ke pi ta,True
+62,te kI qa,True
+63,pi kE qi pi,False
+64,pa te ta,True
+65,te qI,True
+66,ke ki pe ti,False
+67,pa ta qa kI,False
+68,qi tI pe pI,False
+69,ka ta,True
+70,ka ta ke pa,True
+71,ta ki ka,True
+72,qa tI qa,True
+73,ta qE,True
+74,ki pa pI ka,False
+75,pE ti tI,False
+76,pe kE pa ki,False
+77,qE te pi pE,False
+78,qa pE ka,True
+79,pa qi pa,True
+80,te qi,True
+81,qE ti pa qe,False
+82,pa ka ti pa,True
+83,qa pE qa,True
+84,te qI pE,False
+85,ki tI te tI,False
+86,ta ti pa,True
+87,pi te qI te,False
+88,pa kE qa tE,True
+89,qa kE pi,False
+90,pe pa qi,False
+91,ta pI pa,True
+92,qa ka ke pa,True
+93,pe ke pE,False
+94,pa pi ka,True
+95,ta pI,True
+96,ta kE qa pI,True
+97,qa qa,True
+98,qa pE ke,False
+99,te tI ka,True
+100,ke pi te,False
+101,qa tI tI ka,False
+102,ka qe qa pE,True
+103,pa qE ka,True
+104,ka pE,True
+105,ta kE ka,True
+106,pa te ka tI,True
+107,qE qe tI ta,False
+108,ta kI qE qE,False
+109,qe ki,True
+110,qI qe qE qa,False
+111,ka pE tE kE,False
+112,ke ti ki qe,False
+113,te pE te,False
+114,qI kE ta ke,False
+115,ta qI kE,False
+116,ti ki,True
+117,qe qI ta,True
+118,qe tI,True
+119,ta ka ki pE,False
+120,kI pI ta pi,False
+121,te te pa kE,False
+122,tE ka ta ka,False
+123,kI ki qa kI,False
+124,ka ke ta,True
+125,qi pE qi,False
+126,ka pI ka,True
+127,te tI pe ti,False
+128,ka ke qa tE,True
+129,ta ka pi qe,False
+130,ke qI qa,True
+131,ti qI qE,False
+132,qE te pi,False
+133,ti ka pI kI,False
+134,ka qa kE ki,False
+135,kI qE qI ti,False
+136,ke kI pa,True
+137,ka pE ta tI,True
+138,qi qE pa,False
+139,ta qa kE,False
+140,pa ke ta,True
+141,pa ka,True
+142,qa pi pa,True
+143,qe qi ka te,False
+144,ka qE pa pE,True
+145,qa ti pa,True
+146,qa ke pE ki,False
+147,pi pa qI,False
+148,ka qe ta qI,True
+149,tE ka ta qI,False
+150,tI ka pI ki,False
+151,pa pa pa,False
+152,ti qI qa pa,False
+153,pa qE ka kI,True
+154,ta qE ta,True
+155,qi qa tE,False
+156,qa tE pa qE,True
+157,pI qa pe,False
+158,pe ti pa,True
+159,tI ke qi qi,False
+160,pa tE qa,True
+161,qe pE kE kI,False
+162,pa pa qi qa,True
+163,ke qI ta,True
+164,pe qI qa,True
+165,ta kE pa qI,True
+166,qe te te ki,False
+167,ti qa kI,False
+168,ke qI ka,True
+169,pe pi,True
+170,pa ki ta,True
+171,ka ka tE,False
+172,qe ti ka,True
+173,ta qE qa,True
+174,ta tI ta,True
+175,ta kI tI,False
+176,ka qe ta,True
+177,qa pe pa,True
+178,pa pe pa tI,True
+179,ta pe ka,True
+180,ta pi pa,True
+181,pI kE pa tI,False
+182,pe qi qI,False
+183,pI kI pa tE,False
+184,ki kI,True
+185,pa tE ta,True
+186,pi pe ka,False
+187,tI qe qa ki,False
+188,pa ki qa,True
+189,ta pe ta,True
+190,kI pa pa tE,False
+191,ta tI kE ki,False
+192,qa qi ka,True
+193,tE ke pE qa,False
+194,kE ka,False
+195,ke ki,True
+196,pi qi pi,False
+197,pe ti,True
+198,qe kI ta,True
+199,ta te ta,True
+200,tE ka ki,False
+201,ki pe qi qe,False
+202,tI pa ta tI,False
+203,pi ti ki ke,False
+204,ti qi qe,False
+205,qe pI ta,True
+206,te pI pa qa,False
+207,ka pe qa,True
+208,ti ti pI te,False
+209,qe qi qi kI,False
+210,ta ki qa,True
+211,ke tE pI kE,False
+212,pe ti ka,True
+213,qi qi pe qe,False
+214,qE ta pe ke,False
+215,ka tI,True
+216,ka ka qE te,False
+217,ke te pe,False
+218,ka pe pa qI,True
+219,ki ki,True
+220,qI tI tI,False
+221,pe ta tE,False
+222,pa qi ta,True
+223,qE pe kE ki,False
+224,pe qi qa,True
+225,ka pe ta,True
+226,tI tI qe pa,False
+227,ka pI kE,False
+228,ka ki qa,True
+229,ta ta qi qa,True
+230,te pi ta,True
+231,pe tI,True
+232,tI ki ki qa,False
+233,pI qe pi,False
+234,ti qe pi kE,False
+235,qi pe te,False
+236,qi tE te te,False
+237,ka ti qa,True
+238,ke pa ka,False
+239,qe kE qE,False
+240,qe ki qa,True
+241,ka tE ta kI,True
+242,ta pa ke ta,True
+243,kI pe ta qI,False
+244,qi qE tE,False
+245,qe pi ta,True
+246,ki tI,True
+247,ta pE ta,True
+248,qe ti qa,True
+249,ka ke qa,True

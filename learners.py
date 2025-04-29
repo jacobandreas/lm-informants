@@ -189,7 +189,18 @@ class VBLearner(Learner):
         self.gain_list_from_alterative = []
         self.strategy_for_this_candidate = None
 
-        self.pool = multiprocessing.Pool(processes=multiprocessing.cpu_count()-1)
+        self.pool = multiprocessing.Pool(processes=18)
+
+    def test_get_cands(self, n_candidates, obs_set):
+        cands = []
+        i = 0
+        while len(cands) < n_candidates:
+            seq = self.linear_train_dataset[i]
+            if seq not in obs_set:
+                cands.append(seq)
+            i += 1
+        np.random.shuffle(cands)
+        return cands
         
     def initialize_hyp(self, 
             log_log_alpha_ratio=1, 
@@ -567,45 +578,47 @@ class VBLearner(Learner):
         chosen_strategy = self.strategy_name
         
         # get train
-        if np.random.random() < self.propose_train or self.strategy_name == "train":
-            self.chosen_strategies.append(chosen_strategy)
-            self.chosen_cand_types.append(chosen_strategy)
-            return self.get_train_candidate(n_candidates, obs_set)
+        # if np.random.random() < self.propose_train or self.strategy_name == "train":
+        #     self.chosen_strategies.append(chosen_strategy)
+        #     self.chosen_cand_types.append(chosen_strategy)
+        #     return self.get_train_candidate(n_candidates, obs_set)
 
-        candidates = []
+        candidates = self.test_get_cands(n_candidates, obs_set)
+        candidate_types = ["random"] * len(candidates)
+
 #        print('proportion edits:', prop_edits)
-        if "train" not in self.seqs_by_strategy:
-            print("setting num_edits = 0 because there are no train observations")
-            num_edits = 0
-        else:
-            num_edits = int(prop_edits * n_candidates)
-        num_random = n_candidates - num_edits
-        assert num_edits + num_random == n_candidates
-        print('num edit candidates:', num_edits)
-        if self.strategy_name not in [ 
-                "eig_train_mixed", 
-                "eig_train_history",
-                "eig_train_model",
-                "kl_train_mixed", 
-                "kl_train_history",
-                "kl_train_model"]:
-            # only want editec candidates if working with mixed strategies (otherwise, have no train candidates to look back on -- TODO: implement also for any sequences that have been shown with positive label?)
-            assert num_edits == 0
+        # if "train" not in self.seqs_by_strategy:
+        #     print("setting num_edits = 0 because there are no train observations")
+        #     num_edits = 0
+        # else:
+        #     num_edits = int(prop_edits * n_candidates)
+        # num_random = n_candidates - num_edits
+        # assert num_edits + num_random == n_candidates
+        # print('num edit candidates:', num_edits)
+        # if self.strategy_name not in [ 
+        #         "eig_train_mixed", 
+        #         "eig_train_history",
+        #         "eig_train_model",
+        #         "kl_train_mixed", 
+        #         "kl_train_history",
+        #         "kl_train_model"]:
+        #     # only want editec candidates if working with mixed strategies (otherwise, have no train candidates to look back on -- TODO: implement also for any sequences that have been shown with positive label?)
+        #     assert num_edits == 0
 
-        while len(candidates) == 0:
-            candidates = [self.dataset.random_seq() for _ in range(num_random)]
-            candidates = [c for c in candidates if c not in obs_set]
-            candidate_types = ["random"] * len(candidates)
-            # perturb randomly selected train observations
-            # randomly sample from Train *with* replacement, bc early on, may not have seen num_edits # of observations
-            # TODO: does this mess up the consistency across runs with same random seed?
-            if num_edits > 0:
-                random_train_obs = self.perturb_random_state.choices(self.seqs_by_strategy['train'], k=num_edits)
-                edited_candidates = [self.dataset.perturb(r) for r in random_train_obs]
-                edited_candidates = [c for c in edited_candidates if c not in obs_set]
-                print("edited candidates")
-                candidates.extend(edited_candidates) 
-                candidate_types.extend(["edited"] * len(edited_candidates))
+        # while len(candidates) == 0:
+        #     candidates = [self.dataset.random_seq() for _ in range(num_random)]
+        #     candidates = [c for c in candidates if c not in obs_set]
+        #     candidate_types = ["random"] * len(candidates)
+        #     # perturb randomly selected train observations
+        #     # randomly sample from Train *with* replacement, bc early on, may not have seen num_edits # of observations
+        #     # TODO: does this mess up the consistency across runs with same random seed?
+        #     if num_edits > 0:
+        #         random_train_obs = self.perturb_random_state.choices(self.seqs_by_strategy['train'], k=num_edits)
+        #         edited_candidates = [self.dataset.perturb(r) for r in random_train_obs]
+        #         edited_candidates = [c for c in edited_candidates if c not in obs_set]
+        #         print("edited candidates")
+        #         candidates.extend(edited_candidates) 
+        #         candidate_types.extend(["edited"] * len(edited_candidates))
 
         # TODO: for super strategies, compute based on running averages OR have argument to propose that determines strategy, and if that is not there, default to self.strategy_name
 

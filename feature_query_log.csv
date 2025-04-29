@@ -1,0 +1,967 @@
+Feature,Candidate,Step,N_Init,Strategy,Run
++word_boundary :: -high :: +high,('$', 'ka', 'kI', 'ke', 'ta', '$'),0,0,unif,0
++word_boundary :: -high :: -low,('$', 'ka', 'kI', 'ke', 'ta', '$'),0,0,unif,0
++word_boundary :: -high :: -atr,('$', 'ka', 'kI', 'ke', 'ta', '$'),0,0,unif,0
++word_boundary :: +low :: +high,('$', 'ka', 'kI', 'ke', 'ta', '$'),0,0,unif,0
++word_boundary :: +low :: -low,('$', 'ka', 'kI', 'ke', 'ta', '$'),0,0,unif,0
++word_boundary :: +low :: -atr,('$', 'ka', 'kI', 'ke', 'ta', '$'),0,0,unif,0
+-high :: +high :: -high,('$', 'ka', 'kI', 'ke', 'ta', '$'),0,0,unif,0
+-high :: +high :: -low,('$', 'ka', 'kI', 'ke', 'ta', '$'),0,0,unif,0
+-high :: +high :: +atr,('$', 'ka', 'kI', 'ke', 'ta', '$'),0,0,unif,0
+-high :: -low :: -high,('$', 'ka', 'kI', 'ke', 'ta', '$'),0,0,unif,0
+-high :: -low :: -low,('$', 'ka', 'kI', 'ke', 'ta', '$'),0,0,unif,0
+-high :: -low :: +atr,('$', 'ka', 'kI', 'ke', 'ta', '$'),0,0,unif,0
+-high :: -atr :: -high,('$', 'ka', 'kI', 'ke', 'ta', '$'),0,0,unif,0
+-high :: -atr :: -low,('$', 'ka', 'kI', 'ke', 'ta', '$'),0,0,unif,0
+-high :: -atr :: +atr,('$', 'ka', 'kI', 'ke', 'ta', '$'),0,0,unif,0
++low :: +high :: -high,('$', 'ka', 'kI', 'ke', 'ta', '$'),0,0,unif,0
++low :: +high :: -low,('$', 'ka', 'kI', 'ke', 'ta', '$'),0,0,unif,0
++low :: +high :: +atr,('$', 'ka', 'kI', 'ke', 'ta', '$'),0,0,unif,0
++low :: -low :: -high,('$', 'ka', 'kI', 'ke', 'ta', '$'),0,0,unif,0
++low :: -low :: -low,('$', 'ka', 'kI', 'ke', 'ta', '$'),0,0,unif,0
++low :: -low :: +atr,('$', 'ka', 'kI', 'ke', 'ta', '$'),0,0,unif,0
++low :: -atr :: -high,('$', 'ka', 'kI', 'ke', 'ta', '$'),0,0,unif,0
++low :: -atr :: -low,('$', 'ka', 'kI', 'ke', 'ta', '$'),0,0,unif,0
++low :: -atr :: +atr,('$', 'ka', 'kI', 'ke', 'ta', '$'),0,0,unif,0
++high :: -high :: -high,('$', 'ka', 'kI', 'ke', 'ta', '$'),0,0,unif,0
++high :: -high :: +low,('$', 'ka', 'kI', 'ke', 'ta', '$'),0,0,unif,0
++high :: -low :: -high,('$', 'ka', 'kI', 'ke', 'ta', '$'),0,0,unif,0
++high :: -low :: +low,('$', 'ka', 'kI', 'ke', 'ta', '$'),0,0,unif,0
++high :: +atr :: -high,('$', 'ka', 'kI', 'ke', 'ta', '$'),0,0,unif,0
++high :: +atr :: +low,('$', 'ka', 'kI', 'ke', 'ta', '$'),0,0,unif,0
+-low :: -high :: -high,('$', 'ka', 'kI', 'ke', 'ta', '$'),0,0,unif,0
+-low :: -high :: +low,('$', 'ka', 'kI', 'ke', 'ta', '$'),0,0,unif,0
+-low :: -low :: -high,('$', 'ka', 'kI', 'ke', 'ta', '$'),0,0,unif,0
+-low :: -low :: +low,('$', 'ka', 'kI', 'ke', 'ta', '$'),0,0,unif,0
+-low :: +atr :: -high,('$', 'ka', 'kI', 'ke', 'ta', '$'),0,0,unif,0
+-low :: +atr :: +low,('$', 'ka', 'kI', 'ke', 'ta', '$'),0,0,unif,0
+-atr :: -high :: -high,('$', 'ka', 'kI', 'ke', 'ta', '$'),0,0,unif,0
+-atr :: -high :: +low,('$', 'ka', 'kI', 'ke', 'ta', '$'),0,0,unif,0
+-atr :: -low :: -high,('$', 'ka', 'kI', 'ke', 'ta', '$'),0,0,unif,0
+-atr :: -low :: +low,('$', 'ka', 'kI', 'ke', 'ta', '$'),0,0,unif,0
+-atr :: +atr :: -high,('$', 'ka', 'kI', 'ke', 'ta', '$'),0,0,unif,0
+-atr :: +atr :: +low,('$', 'ka', 'kI', 'ke', 'ta', '$'),0,0,unif,0
+-high :: -high :: +word_boundary,('$', 'ka', 'kI', 'ke', 'ta', '$'),0,0,unif,0
+-high :: +low :: +word_boundary,('$', 'ka', 'kI', 'ke', 'ta', '$'),0,0,unif,0
+-low :: -high :: +word_boundary,('$', 'ka', 'kI', 'ke', 'ta', '$'),0,0,unif,0
+-low :: +low :: +word_boundary,('$', 'ka', 'kI', 'ke', 'ta', '$'),0,0,unif,0
++atr :: -high :: +word_boundary,('$', 'ka', 'kI', 'ke', 'ta', '$'),0,0,unif,0
++atr :: +low :: +word_boundary,('$', 'ka', 'kI', 'ke', 'ta', '$'),0,0,unif,0
++word_boundary :: -high :: -high,('$', 'ta', 'kE', 'qa', '$'),1,0,unif,0
++word_boundary :: -high :: -low,('$', 'ta', 'kE', 'qa', '$'),1,0,unif,0
++word_boundary :: -high :: -atr,('$', 'ta', 'kE', 'qa', '$'),1,0,unif,0
++word_boundary :: +low :: -high,('$', 'ta', 'kE', 'qa', '$'),1,0,unif,0
++word_boundary :: +low :: -low,('$', 'ta', 'kE', 'qa', '$'),1,0,unif,0
++word_boundary :: +low :: -atr,('$', 'ta', 'kE', 'qa', '$'),1,0,unif,0
+-high :: -high :: -high,('$', 'ta', 'kE', 'qa', '$'),1,0,unif,0
+-high :: -high :: +low,('$', 'ta', 'kE', 'qa', '$'),1,0,unif,0
+-high :: -low :: -high,('$', 'ta', 'kE', 'qa', '$'),1,0,unif,0
+-high :: -low :: +low,('$', 'ta', 'kE', 'qa', '$'),1,0,unif,0
+-high :: -atr :: -high,('$', 'ta', 'kE', 'qa', '$'),1,0,unif,0
+-high :: -atr :: +low,('$', 'ta', 'kE', 'qa', '$'),1,0,unif,0
++low :: -high :: -high,('$', 'ta', 'kE', 'qa', '$'),1,0,unif,0
++low :: -high :: +low,('$', 'ta', 'kE', 'qa', '$'),1,0,unif,0
++low :: -low :: -high,('$', 'ta', 'kE', 'qa', '$'),1,0,unif,0
++low :: -low :: +low,('$', 'ta', 'kE', 'qa', '$'),1,0,unif,0
++low :: -atr :: -high,('$', 'ta', 'kE', 'qa', '$'),1,0,unif,0
++low :: -atr :: +low,('$', 'ta', 'kE', 'qa', '$'),1,0,unif,0
+-high :: -high :: +word_boundary,('$', 'ta', 'kE', 'qa', '$'),1,0,unif,0
+-high :: +low :: +word_boundary,('$', 'ta', 'kE', 'qa', '$'),1,0,unif,0
+-low :: -high :: +word_boundary,('$', 'ta', 'kE', 'qa', '$'),1,0,unif,0
+-low :: +low :: +word_boundary,('$', 'ta', 'kE', 'qa', '$'),1,0,unif,0
+-atr :: -high :: +word_boundary,('$', 'ta', 'kE', 'qa', '$'),1,0,unif,0
+-atr :: +low :: +word_boundary,('$', 'ta', 'kE', 'qa', '$'),1,0,unif,0
++word_boundary :: -high :: -high,('$', 'pE', 'pE', '$'),2,0,unif,0
++word_boundary :: -high :: -low,('$', 'pE', 'pE', '$'),2,0,unif,0
++word_boundary :: -high :: -atr,('$', 'pE', 'pE', '$'),2,0,unif,0
++word_boundary :: -low :: -high,('$', 'pE', 'pE', '$'),2,0,unif,0
++word_boundary :: -low :: -low,('$', 'pE', 'pE', '$'),2,0,unif,0
++word_boundary :: -low :: -atr,('$', 'pE', 'pE', '$'),2,0,unif,0
++word_boundary :: -atr :: -high,('$', 'pE', 'pE', '$'),2,0,unif,0
++word_boundary :: -atr :: -low,('$', 'pE', 'pE', '$'),2,0,unif,0
++word_boundary :: -atr :: -atr,('$', 'pE', 'pE', '$'),2,0,unif,0
+-high :: -high :: +word_boundary,('$', 'pE', 'pE', '$'),2,0,unif,0
+-high :: -low :: +word_boundary,('$', 'pE', 'pE', '$'),2,0,unif,0
+-high :: -atr :: +word_boundary,('$', 'pE', 'pE', '$'),2,0,unif,0
+-low :: -high :: +word_boundary,('$', 'pE', 'pE', '$'),2,0,unif,0
+-low :: -low :: +word_boundary,('$', 'pE', 'pE', '$'),2,0,unif,0
+-low :: -atr :: +word_boundary,('$', 'pE', 'pE', '$'),2,0,unif,0
+-atr :: -high :: +word_boundary,('$', 'pE', 'pE', '$'),2,0,unif,0
+-atr :: -low :: +word_boundary,('$', 'pE', 'pE', '$'),2,0,unif,0
+-atr :: -atr :: +word_boundary,('$', 'pE', 'pE', '$'),2,0,unif,0
++word_boundary :: +high :: +high,('$', 'pi', 'qi', 'tE', '$'),3,0,unif,0
++word_boundary :: +high :: -low,('$', 'pi', 'qi', 'tE', '$'),3,0,unif,0
++word_boundary :: +high :: +atr,('$', 'pi', 'qi', 'tE', '$'),3,0,unif,0
++word_boundary :: -low :: +high,('$', 'pi', 'qi', 'tE', '$'),3,0,unif,0
++word_boundary :: -low :: -low,('$', 'pi', 'qi', 'tE', '$'),3,0,unif,0
++word_boundary :: -low :: +atr,('$', 'pi', 'qi', 'tE', '$'),3,0,unif,0
++word_boundary :: +atr :: +high,('$', 'pi', 'qi', 'tE', '$'),3,0,unif,0
++word_boundary :: +atr :: -low,('$', 'pi', 'qi', 'tE', '$'),3,0,unif,0
++word_boundary :: +atr :: +atr,('$', 'pi', 'qi', 'tE', '$'),3,0,unif,0
++high :: +high :: -high,('$', 'pi', 'qi', 'tE', '$'),3,0,unif,0
++high :: +high :: -low,('$', 'pi', 'qi', 'tE', '$'),3,0,unif,0
++high :: +high :: -atr,('$', 'pi', 'qi', 'tE', '$'),3,0,unif,0
++high :: -low :: -high,('$', 'pi', 'qi', 'tE', '$'),3,0,unif,0
++high :: -low :: -low,('$', 'pi', 'qi', 'tE', '$'),3,0,unif,0
++high :: -low :: -atr,('$', 'pi', 'qi', 'tE', '$'),3,0,unif,0
++high :: +atr :: -high,('$', 'pi', 'qi', 'tE', '$'),3,0,unif,0
++high :: +atr :: -low,('$', 'pi', 'qi', 'tE', '$'),3,0,unif,0
++high :: +atr :: -atr,('$', 'pi', 'qi', 'tE', '$'),3,0,unif,0
+-low :: +high :: -high,('$', 'pi', 'qi', 'tE', '$'),3,0,unif,0
+-low :: +high :: -low,('$', 'pi', 'qi', 'tE', '$'),3,0,unif,0
+-low :: +high :: -atr,('$', 'pi', 'qi', 'tE', '$'),3,0,unif,0
+-low :: -low :: -high,('$', 'pi', 'qi', 'tE', '$'),3,0,unif,0
+-low :: -low :: -low,('$', 'pi', 'qi', 'tE', '$'),3,0,unif,0
+-low :: -low :: -atr,('$', 'pi', 'qi', 'tE', '$'),3,0,unif,0
+-low :: +atr :: -high,('$', 'pi', 'qi', 'tE', '$'),3,0,unif,0
+-low :: +atr :: -low,('$', 'pi', 'qi', 'tE', '$'),3,0,unif,0
+-low :: +atr :: -atr,('$', 'pi', 'qi', 'tE', '$'),3,0,unif,0
++atr :: +high :: -high,('$', 'pi', 'qi', 'tE', '$'),3,0,unif,0
++atr :: +high :: -low,('$', 'pi', 'qi', 'tE', '$'),3,0,unif,0
++atr :: +high :: -atr,('$', 'pi', 'qi', 'tE', '$'),3,0,unif,0
++atr :: -low :: -high,('$', 'pi', 'qi', 'tE', '$'),3,0,unif,0
++atr :: -low :: -low,('$', 'pi', 'qi', 'tE', '$'),3,0,unif,0
++atr :: -low :: -atr,('$', 'pi', 'qi', 'tE', '$'),3,0,unif,0
++atr :: +atr :: -high,('$', 'pi', 'qi', 'tE', '$'),3,0,unif,0
++atr :: +atr :: -low,('$', 'pi', 'qi', 'tE', '$'),3,0,unif,0
++atr :: +atr :: -atr,('$', 'pi', 'qi', 'tE', '$'),3,0,unif,0
++high :: -high :: +word_boundary,('$', 'pi', 'qi', 'tE', '$'),3,0,unif,0
++high :: -low :: +word_boundary,('$', 'pi', 'qi', 'tE', '$'),3,0,unif,0
++high :: -atr :: +word_boundary,('$', 'pi', 'qi', 'tE', '$'),3,0,unif,0
+-low :: -high :: +word_boundary,('$', 'pi', 'qi', 'tE', '$'),3,0,unif,0
+-low :: -low :: +word_boundary,('$', 'pi', 'qi', 'tE', '$'),3,0,unif,0
+-low :: -atr :: +word_boundary,('$', 'pi', 'qi', 'tE', '$'),3,0,unif,0
++atr :: -high :: +word_boundary,('$', 'pi', 'qi', 'tE', '$'),3,0,unif,0
++atr :: -low :: +word_boundary,('$', 'pi', 'qi', 'tE', '$'),3,0,unif,0
++atr :: -atr :: +word_boundary,('$', 'pi', 'qi', 'tE', '$'),3,0,unif,0
++word_boundary :: -high :: +high,('$', 'pa', 'qI', 'ka', '$'),4,0,unif,0
++word_boundary :: -high :: -low,('$', 'pa', 'qI', 'ka', '$'),4,0,unif,0
++word_boundary :: -high :: -atr,('$', 'pa', 'qI', 'ka', '$'),4,0,unif,0
++word_boundary :: +low :: +high,('$', 'pa', 'qI', 'ka', '$'),4,0,unif,0
++word_boundary :: +low :: -low,('$', 'pa', 'qI', 'ka', '$'),4,0,unif,0
++word_boundary :: +low :: -atr,('$', 'pa', 'qI', 'ka', '$'),4,0,unif,0
+-high :: +high :: -high,('$', 'pa', 'qI', 'ka', '$'),4,0,unif,0
+-high :: +high :: +low,('$', 'pa', 'qI', 'ka', '$'),4,0,unif,0
+-high :: -low :: -high,('$', 'pa', 'qI', 'ka', '$'),4,0,unif,0
+-high :: -low :: +low,('$', 'pa', 'qI', 'ka', '$'),4,0,unif,0
+-high :: -atr :: -high,('$', 'pa', 'qI', 'ka', '$'),4,0,unif,0
+-high :: -atr :: +low,('$', 'pa', 'qI', 'ka', '$'),4,0,unif,0
++low :: +high :: -high,('$', 'pa', 'qI', 'ka', '$'),4,0,unif,0
++low :: +high :: +low,('$', 'pa', 'qI', 'ka', '$'),4,0,unif,0
++low :: -low :: -high,('$', 'pa', 'qI', 'ka', '$'),4,0,unif,0
++low :: -low :: +low,('$', 'pa', 'qI', 'ka', '$'),4,0,unif,0
++low :: -atr :: -high,('$', 'pa', 'qI', 'ka', '$'),4,0,unif,0
++low :: -atr :: +low,('$', 'pa', 'qI', 'ka', '$'),4,0,unif,0
++high :: -high :: +word_boundary,('$', 'pa', 'qI', 'ka', '$'),4,0,unif,0
++high :: +low :: +word_boundary,('$', 'pa', 'qI', 'ka', '$'),4,0,unif,0
+-low :: -high :: +word_boundary,('$', 'pa', 'qI', 'ka', '$'),4,0,unif,0
+-low :: +low :: +word_boundary,('$', 'pa', 'qI', 'ka', '$'),4,0,unif,0
+-atr :: -high :: +word_boundary,('$', 'pa', 'qI', 'ka', '$'),4,0,unif,0
+-atr :: +low :: +word_boundary,('$', 'pa', 'qI', 'ka', '$'),4,0,unif,0
++word_boundary :: -high :: +high,('$', 'pa', 'ki', 'pa', '$'),5,0,unif,0
++word_boundary :: -high :: -low,('$', 'pa', 'ki', 'pa', '$'),5,0,unif,0
++word_boundary :: -high :: +atr,('$', 'pa', 'ki', 'pa', '$'),5,0,unif,0
++word_boundary :: +low :: +high,('$', 'pa', 'ki', 'pa', '$'),5,0,unif,0
++word_boundary :: +low :: -low,('$', 'pa', 'ki', 'pa', '$'),5,0,unif,0
++word_boundary :: +low :: +atr,('$', 'pa', 'ki', 'pa', '$'),5,0,unif,0
+-high :: +high :: -high,('$', 'pa', 'ki', 'pa', '$'),5,0,unif,0
+-high :: +high :: +low,('$', 'pa', 'ki', 'pa', '$'),5,0,unif,0
+-high :: -low :: -high,('$', 'pa', 'ki', 'pa', '$'),5,0,unif,0
+-high :: -low :: +low,('$', 'pa', 'ki', 'pa', '$'),5,0,unif,0
+-high :: +atr :: -high,('$', 'pa', 'ki', 'pa', '$'),5,0,unif,0
+-high :: +atr :: +low,('$', 'pa', 'ki', 'pa', '$'),5,0,unif,0
++low :: +high :: -high,('$', 'pa', 'ki', 'pa', '$'),5,0,unif,0
++low :: +high :: +low,('$', 'pa', 'ki', 'pa', '$'),5,0,unif,0
++low :: -low :: -high,('$', 'pa', 'ki', 'pa', '$'),5,0,unif,0
++low :: -low :: +low,('$', 'pa', 'ki', 'pa', '$'),5,0,unif,0
++low :: +atr :: -high,('$', 'pa', 'ki', 'pa', '$'),5,0,unif,0
++low :: +atr :: +low,('$', 'pa', 'ki', 'pa', '$'),5,0,unif,0
++high :: -high :: +word_boundary,('$', 'pa', 'ki', 'pa', '$'),5,0,unif,0
++high :: +low :: +word_boundary,('$', 'pa', 'ki', 'pa', '$'),5,0,unif,0
+-low :: -high :: +word_boundary,('$', 'pa', 'ki', 'pa', '$'),5,0,unif,0
+-low :: +low :: +word_boundary,('$', 'pa', 'ki', 'pa', '$'),5,0,unif,0
++atr :: -high :: +word_boundary,('$', 'pa', 'ki', 'pa', '$'),5,0,unif,0
++atr :: +low :: +word_boundary,('$', 'pa', 'ki', 'pa', '$'),5,0,unif,0
++word_boundary :: +high :: -high,('$', 'pi', 'ka', 'ti', 'ki', '$'),6,0,unif,0
++word_boundary :: +high :: +low,('$', 'pi', 'ka', 'ti', 'ki', '$'),6,0,unif,0
++word_boundary :: -low :: -high,('$', 'pi', 'ka', 'ti', 'ki', '$'),6,0,unif,0
++word_boundary :: -low :: +low,('$', 'pi', 'ka', 'ti', 'ki', '$'),6,0,unif,0
++word_boundary :: +atr :: -high,('$', 'pi', 'ka', 'ti', 'ki', '$'),6,0,unif,0
++word_boundary :: +atr :: +low,('$', 'pi', 'ka', 'ti', 'ki', '$'),6,0,unif,0
++high :: -high :: +high,('$', 'pi', 'ka', 'ti', 'ki', '$'),6,0,unif,0
++high :: -high :: -low,('$', 'pi', 'ka', 'ti', 'ki', '$'),6,0,unif,0
++high :: -high :: +atr,('$', 'pi', 'ka', 'ti', 'ki', '$'),6,0,unif,0
++high :: +low :: +high,('$', 'pi', 'ka', 'ti', 'ki', '$'),6,0,unif,0
++high :: +low :: -low,('$', 'pi', 'ka', 'ti', 'ki', '$'),6,0,unif,0
++high :: +low :: +atr,('$', 'pi', 'ka', 'ti', 'ki', '$'),6,0,unif,0
+-low :: -high :: +high,('$', 'pi', 'ka', 'ti', 'ki', '$'),6,0,unif,0
+-low :: -high :: -low,('$', 'pi', 'ka', 'ti', 'ki', '$'),6,0,unif,0
+-low :: -high :: +atr,('$', 'pi', 'ka', 'ti', 'ki', '$'),6,0,unif,0
+-low :: +low :: +high,('$', 'pi', 'ka', 'ti', 'ki', '$'),6,0,unif,0
+-low :: +low :: -low,('$', 'pi', 'ka', 'ti', 'ki', '$'),6,0,unif,0
+-low :: +low :: +atr,('$', 'pi', 'ka', 'ti', 'ki', '$'),6,0,unif,0
++atr :: -high :: +high,('$', 'pi', 'ka', 'ti', 'ki', '$'),6,0,unif,0
++atr :: -high :: -low,('$', 'pi', 'ka', 'ti', 'ki', '$'),6,0,unif,0
++atr :: -high :: +atr,('$', 'pi', 'ka', 'ti', 'ki', '$'),6,0,unif,0
++atr :: +low :: +high,('$', 'pi', 'ka', 'ti', 'ki', '$'),6,0,unif,0
++atr :: +low :: -low,('$', 'pi', 'ka', 'ti', 'ki', '$'),6,0,unif,0
++atr :: +low :: +atr,('$', 'pi', 'ka', 'ti', 'ki', '$'),6,0,unif,0
+-high :: +high :: +high,('$', 'pi', 'ka', 'ti', 'ki', '$'),6,0,unif,0
+-high :: +high :: -low,('$', 'pi', 'ka', 'ti', 'ki', '$'),6,0,unif,0
+-high :: +high :: +atr,('$', 'pi', 'ka', 'ti', 'ki', '$'),6,0,unif,0
+-high :: -low :: +high,('$', 'pi', 'ka', 'ti', 'ki', '$'),6,0,unif,0
+-high :: -low :: -low,('$', 'pi', 'ka', 'ti', 'ki', '$'),6,0,unif,0
+-high :: -low :: +atr,('$', 'pi', 'ka', 'ti', 'ki', '$'),6,0,unif,0
+-high :: +atr :: +high,('$', 'pi', 'ka', 'ti', 'ki', '$'),6,0,unif,0
+-high :: +atr :: -low,('$', 'pi', 'ka', 'ti', 'ki', '$'),6,0,unif,0
+-high :: +atr :: +atr,('$', 'pi', 'ka', 'ti', 'ki', '$'),6,0,unif,0
++low :: +high :: +high,('$', 'pi', 'ka', 'ti', 'ki', '$'),6,0,unif,0
++low :: +high :: -low,('$', 'pi', 'ka', 'ti', 'ki', '$'),6,0,unif,0
++low :: +high :: +atr,('$', 'pi', 'ka', 'ti', 'ki', '$'),6,0,unif,0
++low :: -low :: +high,('$', 'pi', 'ka', 'ti', 'ki', '$'),6,0,unif,0
++low :: -low :: -low,('$', 'pi', 'ka', 'ti', 'ki', '$'),6,0,unif,0
++low :: -low :: +atr,('$', 'pi', 'ka', 'ti', 'ki', '$'),6,0,unif,0
++low :: +atr :: +high,('$', 'pi', 'ka', 'ti', 'ki', '$'),6,0,unif,0
++low :: +atr :: -low,('$', 'pi', 'ka', 'ti', 'ki', '$'),6,0,unif,0
++low :: +atr :: +atr,('$', 'pi', 'ka', 'ti', 'ki', '$'),6,0,unif,0
++high :: +high :: +word_boundary,('$', 'pi', 'ka', 'ti', 'ki', '$'),6,0,unif,0
++high :: -low :: +word_boundary,('$', 'pi', 'ka', 'ti', 'ki', '$'),6,0,unif,0
++high :: +atr :: +word_boundary,('$', 'pi', 'ka', 'ti', 'ki', '$'),6,0,unif,0
+-low :: +high :: +word_boundary,('$', 'pi', 'ka', 'ti', 'ki', '$'),6,0,unif,0
+-low :: -low :: +word_boundary,('$', 'pi', 'ka', 'ti', 'ki', '$'),6,0,unif,0
+-low :: +atr :: +word_boundary,('$', 'pi', 'ka', 'ti', 'ki', '$'),6,0,unif,0
++atr :: +high :: +word_boundary,('$', 'pi', 'ka', 'ti', 'ki', '$'),6,0,unif,0
++atr :: -low :: +word_boundary,('$', 'pi', 'ka', 'ti', 'ki', '$'),6,0,unif,0
++atr :: +atr :: +word_boundary,('$', 'pi', 'ka', 'ti', 'ki', '$'),6,0,unif,0
++word_boundary :: +high :: -high,('$', 'qi', 'ta', 'qi', 'pa', '$'),7,0,unif,0
++word_boundary :: +high :: +low,('$', 'qi', 'ta', 'qi', 'pa', '$'),7,0,unif,0
++word_boundary :: -low :: -high,('$', 'qi', 'ta', 'qi', 'pa', '$'),7,0,unif,0
++word_boundary :: -low :: +low,('$', 'qi', 'ta', 'qi', 'pa', '$'),7,0,unif,0
++word_boundary :: +atr :: -high,('$', 'qi', 'ta', 'qi', 'pa', '$'),7,0,unif,0
++word_boundary :: +atr :: +low,('$', 'qi', 'ta', 'qi', 'pa', '$'),7,0,unif,0
++high :: -high :: +high,('$', 'qi', 'ta', 'qi', 'pa', '$'),7,0,unif,0
++high :: -high :: -low,('$', 'qi', 'ta', 'qi', 'pa', '$'),7,0,unif,0
++high :: -high :: +atr,('$', 'qi', 'ta', 'qi', 'pa', '$'),7,0,unif,0
++high :: +low :: +high,('$', 'qi', 'ta', 'qi', 'pa', '$'),7,0,unif,0
++high :: +low :: -low,('$', 'qi', 'ta', 'qi', 'pa', '$'),7,0,unif,0
++high :: +low :: +atr,('$', 'qi', 'ta', 'qi', 'pa', '$'),7,0,unif,0
+-low :: -high :: +high,('$', 'qi', 'ta', 'qi', 'pa', '$'),7,0,unif,0
+-low :: -high :: -low,('$', 'qi', 'ta', 'qi', 'pa', '$'),7,0,unif,0
+-low :: -high :: +atr,('$', 'qi', 'ta', 'qi', 'pa', '$'),7,0,unif,0
+-low :: +low :: +high,('$', 'qi', 'ta', 'qi', 'pa', '$'),7,0,unif,0
+-low :: +low :: -low,('$', 'qi', 'ta', 'qi', 'pa', '$'),7,0,unif,0
+-low :: +low :: +atr,('$', 'qi', 'ta', 'qi', 'pa', '$'),7,0,unif,0
++atr :: -high :: +high,('$', 'qi', 'ta', 'qi', 'pa', '$'),7,0,unif,0
++atr :: -high :: -low,('$', 'qi', 'ta', 'qi', 'pa', '$'),7,0,unif,0
++atr :: -high :: +atr,('$', 'qi', 'ta', 'qi', 'pa', '$'),7,0,unif,0
++atr :: +low :: +high,('$', 'qi', 'ta', 'qi', 'pa', '$'),7,0,unif,0
++atr :: +low :: -low,('$', 'qi', 'ta', 'qi', 'pa', '$'),7,0,unif,0
++atr :: +low :: +atr,('$', 'qi', 'ta', 'qi', 'pa', '$'),7,0,unif,0
+-high :: +high :: -high,('$', 'qi', 'ta', 'qi', 'pa', '$'),7,0,unif,0
+-high :: +high :: +low,('$', 'qi', 'ta', 'qi', 'pa', '$'),7,0,unif,0
+-high :: -low :: -high,('$', 'qi', 'ta', 'qi', 'pa', '$'),7,0,unif,0
+-high :: -low :: +low,('$', 'qi', 'ta', 'qi', 'pa', '$'),7,0,unif,0
+-high :: +atr :: -high,('$', 'qi', 'ta', 'qi', 'pa', '$'),7,0,unif,0
+-high :: +atr :: +low,('$', 'qi', 'ta', 'qi', 'pa', '$'),7,0,unif,0
++low :: +high :: -high,('$', 'qi', 'ta', 'qi', 'pa', '$'),7,0,unif,0
++low :: +high :: +low,('$', 'qi', 'ta', 'qi', 'pa', '$'),7,0,unif,0
++low :: -low :: -high,('$', 'qi', 'ta', 'qi', 'pa', '$'),7,0,unif,0
++low :: -low :: +low,('$', 'qi', 'ta', 'qi', 'pa', '$'),7,0,unif,0
++low :: +atr :: -high,('$', 'qi', 'ta', 'qi', 'pa', '$'),7,0,unif,0
++low :: +atr :: +low,('$', 'qi', 'ta', 'qi', 'pa', '$'),7,0,unif,0
++high :: -high :: +word_boundary,('$', 'qi', 'ta', 'qi', 'pa', '$'),7,0,unif,0
++high :: +low :: +word_boundary,('$', 'qi', 'ta', 'qi', 'pa', '$'),7,0,unif,0
+-low :: -high :: +word_boundary,('$', 'qi', 'ta', 'qi', 'pa', '$'),7,0,unif,0
+-low :: +low :: +word_boundary,('$', 'qi', 'ta', 'qi', 'pa', '$'),7,0,unif,0
++atr :: -high :: +word_boundary,('$', 'qi', 'ta', 'qi', 'pa', '$'),7,0,unif,0
++atr :: +low :: +word_boundary,('$', 'qi', 'ta', 'qi', 'pa', '$'),7,0,unif,0
++word_boundary :: -high :: -high,('$', 'pa', 'qE', 'qa', '$'),8,0,unif,0
++word_boundary :: -high :: -low,('$', 'pa', 'qE', 'qa', '$'),8,0,unif,0
++word_boundary :: -high :: -atr,('$', 'pa', 'qE', 'qa', '$'),8,0,unif,0
++word_boundary :: +low :: -high,('$', 'pa', 'qE', 'qa', '$'),8,0,unif,0
++word_boundary :: +low :: -low,('$', 'pa', 'qE', 'qa', '$'),8,0,unif,0
++word_boundary :: +low :: -atr,('$', 'pa', 'qE', 'qa', '$'),8,0,unif,0
+-high :: -high :: -high,('$', 'pa', 'qE', 'qa', '$'),8,0,unif,0
+-high :: -high :: +low,('$', 'pa', 'qE', 'qa', '$'),8,0,unif,0
+-high :: -low :: -high,('$', 'pa', 'qE', 'qa', '$'),8,0,unif,0
+-high :: -low :: +low,('$', 'pa', 'qE', 'qa', '$'),8,0,unif,0
+-high :: -atr :: -high,('$', 'pa', 'qE', 'qa', '$'),8,0,unif,0
+-high :: -atr :: +low,('$', 'pa', 'qE', 'qa', '$'),8,0,unif,0
++low :: -high :: -high,('$', 'pa', 'qE', 'qa', '$'),8,0,unif,0
++low :: -high :: +low,('$', 'pa', 'qE', 'qa', '$'),8,0,unif,0
++low :: -low :: -high,('$', 'pa', 'qE', 'qa', '$'),8,0,unif,0
++low :: -low :: +low,('$', 'pa', 'qE', 'qa', '$'),8,0,unif,0
++low :: -atr :: -high,('$', 'pa', 'qE', 'qa', '$'),8,0,unif,0
++low :: -atr :: +low,('$', 'pa', 'qE', 'qa', '$'),8,0,unif,0
+-high :: -high :: +word_boundary,('$', 'pa', 'qE', 'qa', '$'),8,0,unif,0
+-high :: +low :: +word_boundary,('$', 'pa', 'qE', 'qa', '$'),8,0,unif,0
+-low :: -high :: +word_boundary,('$', 'pa', 'qE', 'qa', '$'),8,0,unif,0
+-low :: +low :: +word_boundary,('$', 'pa', 'qE', 'qa', '$'),8,0,unif,0
+-atr :: -high :: +word_boundary,('$', 'pa', 'qE', 'qa', '$'),8,0,unif,0
+-atr :: +low :: +word_boundary,('$', 'pa', 'qE', 'qa', '$'),8,0,unif,0
++word_boundary :: -high :: -high,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
++word_boundary :: -high :: -low,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
++word_boundary :: -high :: +atr,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
++word_boundary :: -low :: -high,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
++word_boundary :: -low :: -low,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
++word_boundary :: -low :: +atr,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
++word_boundary :: +atr :: -high,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
++word_boundary :: +atr :: -low,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
++word_boundary :: +atr :: +atr,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
+-high :: -high :: -high,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
+-high :: -high :: -low,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
+-high :: -high :: -atr,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
+-high :: -low :: -high,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
+-high :: -low :: -low,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
+-high :: -low :: -atr,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
+-high :: +atr :: -high,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
+-high :: +atr :: -low,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
+-high :: +atr :: -atr,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
+-low :: -high :: -high,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
+-low :: -high :: -low,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
+-low :: -high :: -atr,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
+-low :: -low :: -high,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
+-low :: -low :: -low,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
+-low :: -low :: -atr,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
+-low :: +atr :: -high,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
+-low :: +atr :: -low,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
+-low :: +atr :: -atr,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
++atr :: -high :: -high,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
++atr :: -high :: -low,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
++atr :: -high :: -atr,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
++atr :: -low :: -high,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
++atr :: -low :: -low,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
++atr :: -low :: -atr,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
++atr :: +atr :: -high,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
++atr :: +atr :: -low,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
++atr :: +atr :: -atr,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
+-high :: -high :: -high,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
+-high :: -high :: -low,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
+-high :: -high :: +atr,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
+-high :: -low :: -high,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
+-high :: -low :: -low,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
+-high :: -low :: +atr,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
+-high :: -atr :: -high,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
+-high :: -atr :: -low,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
+-high :: -atr :: +atr,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
+-low :: -high :: -high,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
+-low :: -high :: -low,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
+-low :: -high :: +atr,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
+-low :: -low :: -high,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
+-low :: -low :: -low,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
+-low :: -low :: +atr,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
+-low :: -atr :: -high,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
+-low :: -atr :: -low,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
+-low :: -atr :: +atr,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
++atr :: -high :: -high,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
++atr :: -high :: -low,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
++atr :: -high :: +atr,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
++atr :: -low :: -high,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
++atr :: -low :: -low,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
++atr :: -low :: +atr,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
++atr :: -atr :: -high,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
++atr :: -atr :: -low,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
++atr :: -atr :: +atr,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
+-high :: -high :: +word_boundary,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
+-high :: -low :: +word_boundary,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
+-high :: +atr :: +word_boundary,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
+-low :: -high :: +word_boundary,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
+-low :: -low :: +word_boundary,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
+-low :: +atr :: +word_boundary,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
+-atr :: -high :: +word_boundary,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
+-atr :: -low :: +word_boundary,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
+-atr :: +atr :: +word_boundary,('$', 'ke', 'pe', 'tE', 'qe', '$'),9,0,unif,0
++word_boundary :: -high :: -high,('$', 'pE', 'pE', '$'),0,0,eig,0
++word_boundary :: -high :: -low,('$', 'pE', 'pE', '$'),0,0,eig,0
++word_boundary :: -high :: -atr,('$', 'pE', 'pE', '$'),0,0,eig,0
++word_boundary :: -low :: -high,('$', 'pE', 'pE', '$'),0,0,eig,0
++word_boundary :: -low :: -low,('$', 'pE', 'pE', '$'),0,0,eig,0
++word_boundary :: -low :: -atr,('$', 'pE', 'pE', '$'),0,0,eig,0
++word_boundary :: -atr :: -high,('$', 'pE', 'pE', '$'),0,0,eig,0
++word_boundary :: -atr :: -low,('$', 'pE', 'pE', '$'),0,0,eig,0
++word_boundary :: -atr :: -atr,('$', 'pE', 'pE', '$'),0,0,eig,0
+-high :: -high :: +word_boundary,('$', 'pE', 'pE', '$'),0,0,eig,0
+-high :: -low :: +word_boundary,('$', 'pE', 'pE', '$'),0,0,eig,0
+-high :: -atr :: +word_boundary,('$', 'pE', 'pE', '$'),0,0,eig,0
+-low :: -high :: +word_boundary,('$', 'pE', 'pE', '$'),0,0,eig,0
+-low :: -low :: +word_boundary,('$', 'pE', 'pE', '$'),0,0,eig,0
+-low :: -atr :: +word_boundary,('$', 'pE', 'pE', '$'),0,0,eig,0
+-atr :: -high :: +word_boundary,('$', 'pE', 'pE', '$'),0,0,eig,0
+-atr :: -low :: +word_boundary,('$', 'pE', 'pE', '$'),0,0,eig,0
+-atr :: -atr :: +word_boundary,('$', 'pE', 'pE', '$'),0,0,eig,0
++word_boundary :: -high :: -high,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
++word_boundary :: -high :: -low,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
++word_boundary :: -high :: +atr,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
++word_boundary :: -low :: -high,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
++word_boundary :: -low :: -low,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
++word_boundary :: -low :: +atr,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
++word_boundary :: +atr :: -high,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
++word_boundary :: +atr :: -low,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
++word_boundary :: +atr :: +atr,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
+-high :: -high :: -high,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
+-high :: -high :: -low,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
+-high :: -high :: -atr,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
+-high :: -low :: -high,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
+-high :: -low :: -low,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
+-high :: -low :: -atr,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
+-high :: +atr :: -high,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
+-high :: +atr :: -low,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
+-high :: +atr :: -atr,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
+-low :: -high :: -high,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
+-low :: -high :: -low,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
+-low :: -high :: -atr,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
+-low :: -low :: -high,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
+-low :: -low :: -low,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
+-low :: -low :: -atr,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
+-low :: +atr :: -high,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
+-low :: +atr :: -low,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
+-low :: +atr :: -atr,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
++atr :: -high :: -high,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
++atr :: -high :: -low,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
++atr :: -high :: -atr,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
++atr :: -low :: -high,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
++atr :: -low :: -low,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
++atr :: -low :: -atr,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
++atr :: +atr :: -high,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
++atr :: +atr :: -low,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
++atr :: +atr :: -atr,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
+-high :: -high :: -high,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
+-high :: -high :: -low,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
+-high :: -high :: +atr,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
+-high :: -low :: -high,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
+-high :: -low :: -low,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
+-high :: -low :: +atr,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
+-high :: -atr :: -high,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
+-high :: -atr :: -low,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
+-high :: -atr :: +atr,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
+-low :: -high :: -high,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
+-low :: -high :: -low,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
+-low :: -high :: +atr,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
+-low :: -low :: -high,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
+-low :: -low :: -low,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
+-low :: -low :: +atr,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
+-low :: -atr :: -high,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
+-low :: -atr :: -low,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
+-low :: -atr :: +atr,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
++atr :: -high :: -high,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
++atr :: -high :: -low,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
++atr :: -high :: +atr,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
++atr :: -low :: -high,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
++atr :: -low :: -low,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
++atr :: -low :: +atr,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
++atr :: -atr :: -high,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
++atr :: -atr :: -low,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
++atr :: -atr :: +atr,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
+-high :: -high :: +word_boundary,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
+-high :: -low :: +word_boundary,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
+-high :: +atr :: +word_boundary,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
+-low :: -high :: +word_boundary,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
+-low :: -low :: +word_boundary,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
+-low :: +atr :: +word_boundary,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
+-atr :: -high :: +word_boundary,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
+-atr :: -low :: +word_boundary,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
+-atr :: +atr :: +word_boundary,('$', 'ke', 'pe', 'tE', 'qe', '$'),1,0,eig,0
++word_boundary :: +high :: +high,('$', 'kI', 'qi', '$'),2,0,eig,0
++word_boundary :: +high :: -low,('$', 'kI', 'qi', '$'),2,0,eig,0
++word_boundary :: +high :: +atr,('$', 'kI', 'qi', '$'),2,0,eig,0
++word_boundary :: -low :: +high,('$', 'kI', 'qi', '$'),2,0,eig,0
++word_boundary :: -low :: -low,('$', 'kI', 'qi', '$'),2,0,eig,0
++word_boundary :: -low :: +atr,('$', 'kI', 'qi', '$'),2,0,eig,0
++word_boundary :: -atr :: +high,('$', 'kI', 'qi', '$'),2,0,eig,0
++word_boundary :: -atr :: -low,('$', 'kI', 'qi', '$'),2,0,eig,0
++word_boundary :: -atr :: +atr,('$', 'kI', 'qi', '$'),2,0,eig,0
++high :: +high :: +word_boundary,('$', 'kI', 'qi', '$'),2,0,eig,0
++high :: -low :: +word_boundary,('$', 'kI', 'qi', '$'),2,0,eig,0
++high :: +atr :: +word_boundary,('$', 'kI', 'qi', '$'),2,0,eig,0
+-low :: +high :: +word_boundary,('$', 'kI', 'qi', '$'),2,0,eig,0
+-low :: -low :: +word_boundary,('$', 'kI', 'qi', '$'),2,0,eig,0
+-low :: +atr :: +word_boundary,('$', 'kI', 'qi', '$'),2,0,eig,0
+-atr :: +high :: +word_boundary,('$', 'kI', 'qi', '$'),2,0,eig,0
+-atr :: -low :: +word_boundary,('$', 'kI', 'qi', '$'),2,0,eig,0
+-atr :: +atr :: +word_boundary,('$', 'kI', 'qi', '$'),2,0,eig,0
++word_boundary :: -high :: -high,('$', 'kE', 'ta', 'tI', 'pi', '$'),3,0,eig,0
++word_boundary :: -high :: +low,('$', 'kE', 'ta', 'tI', 'pi', '$'),3,0,eig,0
++word_boundary :: -low :: -high,('$', 'kE', 'ta', 'tI', 'pi', '$'),3,0,eig,0
++word_boundary :: -low :: +low,('$', 'kE', 'ta', 'tI', 'pi', '$'),3,0,eig,0
++word_boundary :: -atr :: -high,('$', 'kE', 'ta', 'tI', 'pi', '$'),3,0,eig,0
++word_boundary :: -atr :: +low,('$', 'kE', 'ta', 'tI', 'pi', '$'),3,0,eig,0
+-high :: -high :: +high,('$', 'kE', 'ta', 'tI', 'pi', '$'),3,0,eig,0
+-high :: -high :: -low,('$', 'kE', 'ta', 'tI', 'pi', '$'),3,0,eig,0
+-high :: -high :: -atr,('$', 'kE', 'ta', 'tI', 'pi', '$'),3,0,eig,0
+-high :: +low :: +high,('$', 'kE', 'ta', 'tI', 'pi', '$'),3,0,eig,0
+-high :: +low :: -low,('$', 'kE', 'ta', 'tI', 'pi', '$'),3,0,eig,0
+-high :: +low :: -atr,('$', 'kE', 'ta', 'tI', 'pi', '$'),3,0,eig,0
+-low :: -high :: +high,('$', 'kE', 'ta', 'tI', 'pi', '$'),3,0,eig,0
+-low :: -high :: -low,('$', 'kE', 'ta', 'tI', 'pi', '$'),3,0,eig,0
+-low :: -high :: -atr,('$', 'kE', 'ta', 'tI', 'pi', '$'),3,0,eig,0
+-low :: +low :: +high,('$', 'kE', 'ta', 'tI', 'pi', '$'),3,0,eig,0
+-low :: +low :: -low,('$', 'kE', 'ta', 'tI', 'pi', '$'),3,0,eig,0
+-low :: +low :: -atr,('$', 'kE', 'ta', 'tI', 'pi', '$'),3,0,eig,0
+-atr :: -high :: +high,('$', 'kE', 'ta', 'tI', 'pi', '$'),3,0,eig,0
+-atr :: -high :: -low,('$', 'kE', 'ta', 'tI', 'pi', '$'),3,0,eig,0
+-atr :: -high :: -atr,('$', 'kE', 'ta', 'tI', 'pi', '$'),3,0,eig,0
+-atr :: +low :: +high,('$', 'kE', 'ta', 'tI', 'pi', '$'),3,0,eig,0
+-atr :: +low :: -low,('$', 'kE', 'ta', 'tI', 'pi', '$'),3,0,eig,0
+-atr :: +low :: -atr,('$', 'kE', 'ta', 'tI', 'pi', '$'),3,0,eig,0
+-high :: +high :: +high,('$', 'kE', 'ta', 'tI', 'pi', '$'),3,0,eig,0
+-high :: +high :: -low,('$', 'kE', 'ta', 'tI', 'pi', '$'),3,0,eig,0
+-high :: +high :: +atr,('$', 'kE', 'ta', 'tI', 'pi', '$'),3,0,eig,0
+-high :: -low :: +high,('$', 'kE', 'ta', 'tI', 'pi', '$'),3,0,eig,0
+-high :: -low :: -low,('$', 'kE', 'ta', 'tI', 'pi', '$'),3,0,eig,0
+-high :: -low :: +atr,('$', 'kE', 'ta', 'tI', 'pi', '$'),3,0,eig,0
+-high :: -atr :: +high,('$', 'kE', 'ta', 'tI', 'pi', '$'),3,0,eig,0
+-high :: -atr :: -low,('$', 'kE', 'ta', 'tI', 'pi', '$'),3,0,eig,0
+-high :: -atr :: +atr,('$', 'kE', 'ta', 'tI', 'pi', '$'),3,0,eig,0
++low :: +high :: +high,('$', 'kE', 'ta', 'tI', 'pi', '$'),3,0,eig,0
++low :: +high :: -low,('$', 'kE', 'ta', 'tI', 'pi', '$'),3,0,eig,0
++low :: +high :: +atr,('$', 'kE', 'ta', 'tI', 'pi', '$'),3,0,eig,0
++low :: -low :: +high,('$', 'kE', 'ta', 'tI', 'pi', '$'),3,0,eig,0
++low :: -low :: -low,('$', 'kE', 'ta', 'tI', 'pi', '$'),3,0,eig,0
++low :: -low :: +atr,('$', 'kE', 'ta', 'tI', 'pi', '$'),3,0,eig,0
++low :: -atr :: +high,('$', 'kE', 'ta', 'tI', 'pi', '$'),3,0,eig,0
++low :: -atr :: -low,('$', 'kE', 'ta', 'tI', 'pi', '$'),3,0,eig,0
++low :: -atr :: +atr,('$', 'kE', 'ta', 'tI', 'pi', '$'),3,0,eig,0
++high :: +high :: +word_boundary,('$', 'kE', 'ta', 'tI', 'pi', '$'),3,0,eig,0
++high :: -low :: +word_boundary,('$', 'kE', 'ta', 'tI', 'pi', '$'),3,0,eig,0
++high :: +atr :: +word_boundary,('$', 'kE', 'ta', 'tI', 'pi', '$'),3,0,eig,0
+-low :: +high :: +word_boundary,('$', 'kE', 'ta', 'tI', 'pi', '$'),3,0,eig,0
+-low :: -low :: +word_boundary,('$', 'kE', 'ta', 'tI', 'pi', '$'),3,0,eig,0
+-low :: +atr :: +word_boundary,('$', 'kE', 'ta', 'tI', 'pi', '$'),3,0,eig,0
+-atr :: +high :: +word_boundary,('$', 'kE', 'ta', 'tI', 'pi', '$'),3,0,eig,0
+-atr :: -low :: +word_boundary,('$', 'kE', 'ta', 'tI', 'pi', '$'),3,0,eig,0
+-atr :: +atr :: +word_boundary,('$', 'kE', 'ta', 'tI', 'pi', '$'),3,0,eig,0
++word_boundary :: -high :: +high,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
++word_boundary :: -high :: -low,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
++word_boundary :: -high :: -atr,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
++word_boundary :: -low :: +high,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
++word_boundary :: -low :: -low,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
++word_boundary :: -low :: -atr,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
++word_boundary :: -atr :: +high,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
++word_boundary :: -atr :: -low,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
++word_boundary :: -atr :: -atr,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
+-high :: +high :: -high,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
+-high :: +high :: -low,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
+-high :: +high :: +atr,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
+-high :: -low :: -high,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
+-high :: -low :: -low,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
+-high :: -low :: +atr,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
+-high :: -atr :: -high,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
+-high :: -atr :: -low,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
+-high :: -atr :: +atr,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
+-low :: +high :: -high,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
+-low :: +high :: -low,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
+-low :: +high :: +atr,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
+-low :: -low :: -high,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
+-low :: -low :: -low,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
+-low :: -low :: +atr,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
+-low :: -atr :: -high,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
+-low :: -atr :: -low,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
+-low :: -atr :: +atr,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
+-atr :: +high :: -high,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
+-atr :: +high :: -low,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
+-atr :: +high :: +atr,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
+-atr :: -low :: -high,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
+-atr :: -low :: -low,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
+-atr :: -low :: +atr,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
+-atr :: -atr :: -high,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
+-atr :: -atr :: -low,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
+-atr :: -atr :: +atr,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
++high :: -high :: +high,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
++high :: -high :: -low,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
++high :: -high :: -atr,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
++high :: -low :: +high,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
++high :: -low :: -low,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
++high :: -low :: -atr,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
++high :: +atr :: +high,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
++high :: +atr :: -low,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
++high :: +atr :: -atr,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
+-low :: -high :: +high,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
+-low :: -high :: -low,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
+-low :: -high :: -atr,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
+-low :: -low :: +high,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
+-low :: -low :: -low,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
+-low :: -low :: -atr,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
+-low :: +atr :: +high,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
+-low :: +atr :: -low,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
+-low :: +atr :: -atr,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
+-atr :: -high :: +high,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
+-atr :: -high :: -low,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
+-atr :: -high :: -atr,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
+-atr :: -low :: +high,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
+-atr :: -low :: -low,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
+-atr :: -low :: -atr,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
+-atr :: +atr :: +high,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
+-atr :: +atr :: -low,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
+-atr :: +atr :: -atr,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
+-high :: +high :: +word_boundary,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
+-high :: -low :: +word_boundary,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
+-high :: -atr :: +word_boundary,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
+-low :: +high :: +word_boundary,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
+-low :: -low :: +word_boundary,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
+-low :: -atr :: +word_boundary,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
++atr :: +high :: +word_boundary,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
++atr :: -low :: +word_boundary,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
++atr :: -atr :: +word_boundary,('$', 'tE', 'kI', 'ke', 'tI', '$'),4,0,eig,0
++word_boundary :: +high :: +high,('$', 'pi', 'qi', 'tE', '$'),5,0,eig,0
++word_boundary :: +high :: -low,('$', 'pi', 'qi', 'tE', '$'),5,0,eig,0
++word_boundary :: +high :: +atr,('$', 'pi', 'qi', 'tE', '$'),5,0,eig,0
++word_boundary :: -low :: +high,('$', 'pi', 'qi', 'tE', '$'),5,0,eig,0
++word_boundary :: -low :: -low,('$', 'pi', 'qi', 'tE', '$'),5,0,eig,0
++word_boundary :: -low :: +atr,('$', 'pi', 'qi', 'tE', '$'),5,0,eig,0
++word_boundary :: +atr :: +high,('$', 'pi', 'qi', 'tE', '$'),5,0,eig,0
++word_boundary :: +atr :: -low,('$', 'pi', 'qi', 'tE', '$'),5,0,eig,0
++word_boundary :: +atr :: +atr,('$', 'pi', 'qi', 'tE', '$'),5,0,eig,0
++high :: +high :: -high,('$', 'pi', 'qi', 'tE', '$'),5,0,eig,0
++high :: +high :: -low,('$', 'pi', 'qi', 'tE', '$'),5,0,eig,0
++high :: +high :: -atr,('$', 'pi', 'qi', 'tE', '$'),5,0,eig,0
++high :: -low :: -high,('$', 'pi', 'qi', 'tE', '$'),5,0,eig,0
++high :: -low :: -low,('$', 'pi', 'qi', 'tE', '$'),5,0,eig,0
++high :: -low :: -atr,('$', 'pi', 'qi', 'tE', '$'),5,0,eig,0
++high :: +atr :: -high,('$', 'pi', 'qi', 'tE', '$'),5,0,eig,0
++high :: +atr :: -low,('$', 'pi', 'qi', 'tE', '$'),5,0,eig,0
++high :: +atr :: -atr,('$', 'pi', 'qi', 'tE', '$'),5,0,eig,0
+-low :: +high :: -high,('$', 'pi', 'qi', 'tE', '$'),5,0,eig,0
+-low :: +high :: -low,('$', 'pi', 'qi', 'tE', '$'),5,0,eig,0
+-low :: +high :: -atr,('$', 'pi', 'qi', 'tE', '$'),5,0,eig,0
+-low :: -low :: -high,('$', 'pi', 'qi', 'tE', '$'),5,0,eig,0
+-low :: -low :: -low,('$', 'pi', 'qi', 'tE', '$'),5,0,eig,0
+-low :: -low :: -atr,('$', 'pi', 'qi', 'tE', '$'),5,0,eig,0
+-low :: +atr :: -high,('$', 'pi', 'qi', 'tE', '$'),5,0,eig,0
+-low :: +atr :: -low,('$', 'pi', 'qi', 'tE', '$'),5,0,eig,0
+-low :: +atr :: -atr,('$', 'pi', 'qi', 'tE', '$'),5,0,eig,0
++atr :: +high :: -high,('$', 'pi', 'qi', 'tE', '$'),5,0,eig,0
++atr :: +high :: -low,('$', 'pi', 'qi', 'tE', '$'),5,0,eig,0
++atr :: +high :: -atr,('$', 'pi', 'qi', 'tE', '$'),5,0,eig,0
++atr :: -low :: -high,('$', 'pi', 'qi', 'tE', '$'),5,0,eig,0
++atr :: -low :: -low,('$', 'pi', 'qi', 'tE', '$'),5,0,eig,0
++atr :: -low :: -atr,('$', 'pi', 'qi', 'tE', '$'),5,0,eig,0
++atr :: +atr :: -high,('$', 'pi', 'qi', 'tE', '$'),5,0,eig,0
++atr :: +atr :: -low,('$', 'pi', 'qi', 'tE', '$'),5,0,eig,0
++atr :: +atr :: -atr,('$', 'pi', 'qi', 'tE', '$'),5,0,eig,0
++high :: -high :: +word_boundary,('$', 'pi', 'qi', 'tE', '$'),5,0,eig,0
++high :: -low :: +word_boundary,('$', 'pi', 'qi', 'tE', '$'),5,0,eig,0
++high :: -atr :: +word_boundary,('$', 'pi', 'qi', 'tE', '$'),5,0,eig,0
+-low :: -high :: +word_boundary,('$', 'pi', 'qi', 'tE', '$'),5,0,eig,0
+-low :: -low :: +word_boundary,('$', 'pi', 'qi', 'tE', '$'),5,0,eig,0
+-low :: -atr :: +word_boundary,('$', 'pi', 'qi', 'tE', '$'),5,0,eig,0
++atr :: -high :: +word_boundary,('$', 'pi', 'qi', 'tE', '$'),5,0,eig,0
++atr :: -low :: +word_boundary,('$', 'pi', 'qi', 'tE', '$'),5,0,eig,0
++atr :: -atr :: +word_boundary,('$', 'pi', 'qi', 'tE', '$'),5,0,eig,0
++word_boundary :: -high :: +high,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
++word_boundary :: -high :: -low,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
++word_boundary :: -high :: +atr,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
++word_boundary :: +low :: +high,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
++word_boundary :: +low :: -low,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
++word_boundary :: +low :: +atr,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
+-high :: +high :: +high,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
+-high :: +high :: -low,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
+-high :: +high :: +atr,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
+-high :: -low :: +high,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
+-high :: -low :: -low,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
+-high :: -low :: +atr,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
+-high :: +atr :: +high,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
+-high :: +atr :: -low,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
+-high :: +atr :: +atr,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
++low :: +high :: +high,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
++low :: +high :: -low,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
++low :: +high :: +atr,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
++low :: -low :: +high,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
++low :: -low :: -low,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
++low :: -low :: +atr,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
++low :: +atr :: +high,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
++low :: +atr :: -low,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
++low :: +atr :: +atr,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
++high :: +high :: -high,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
++high :: +high :: -low,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
++high :: +high :: +atr,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
++high :: -low :: -high,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
++high :: -low :: -low,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
++high :: -low :: +atr,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
++high :: +atr :: -high,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
++high :: +atr :: -low,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
++high :: +atr :: +atr,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
+-low :: +high :: -high,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
+-low :: +high :: -low,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
+-low :: +high :: +atr,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
+-low :: -low :: -high,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
+-low :: -low :: -low,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
+-low :: -low :: +atr,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
+-low :: +atr :: -high,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
+-low :: +atr :: -low,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
+-low :: +atr :: +atr,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
++atr :: +high :: -high,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
++atr :: +high :: -low,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
++atr :: +high :: +atr,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
++atr :: -low :: -high,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
++atr :: -low :: -low,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
++atr :: -low :: +atr,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
++atr :: +atr :: -high,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
++atr :: +atr :: -low,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
++atr :: +atr :: +atr,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
++high :: -high :: +word_boundary,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
++high :: -low :: +word_boundary,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
++high :: +atr :: +word_boundary,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
+-low :: -high :: +word_boundary,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
+-low :: -low :: +word_boundary,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
+-low :: +atr :: +word_boundary,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
++atr :: -high :: +word_boundary,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
++atr :: -low :: +word_boundary,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
++atr :: +atr :: +word_boundary,('$', 'pa', 'ti', 'pi', 'te', '$'),6,0,eig,0
++word_boundary :: +high :: -high,('$', 'pi', 'ka', 'ti', 'ki', '$'),7,0,eig,0
++word_boundary :: +high :: +low,('$', 'pi', 'ka', 'ti', 'ki', '$'),7,0,eig,0
++word_boundary :: -low :: -high,('$', 'pi', 'ka', 'ti', 'ki', '$'),7,0,eig,0
++word_boundary :: -low :: +low,('$', 'pi', 'ka', 'ti', 'ki', '$'),7,0,eig,0
++word_boundary :: +atr :: -high,('$', 'pi', 'ka', 'ti', 'ki', '$'),7,0,eig,0
++word_boundary :: +atr :: +low,('$', 'pi', 'ka', 'ti', 'ki', '$'),7,0,eig,0
++high :: -high :: +high,('$', 'pi', 'ka', 'ti', 'ki', '$'),7,0,eig,0
++high :: -high :: -low,('$', 'pi', 'ka', 'ti', 'ki', '$'),7,0,eig,0
++high :: -high :: +atr,('$', 'pi', 'ka', 'ti', 'ki', '$'),7,0,eig,0
++high :: +low :: +high,('$', 'pi', 'ka', 'ti', 'ki', '$'),7,0,eig,0
++high :: +low :: -low,('$', 'pi', 'ka', 'ti', 'ki', '$'),7,0,eig,0
++high :: +low :: +atr,('$', 'pi', 'ka', 'ti', 'ki', '$'),7,0,eig,0
+-low :: -high :: +high,('$', 'pi', 'ka', 'ti', 'ki', '$'),7,0,eig,0
+-low :: -high :: -low,('$', 'pi', 'ka', 'ti', 'ki', '$'),7,0,eig,0
+-low :: -high :: +atr,('$', 'pi', 'ka', 'ti', 'ki', '$'),7,0,eig,0
+-low :: +low :: +high,('$', 'pi', 'ka', 'ti', 'ki', '$'),7,0,eig,0
+-low :: +low :: -low,('$', 'pi', 'ka', 'ti', 'ki', '$'),7,0,eig,0
+-low :: +low :: +atr,('$', 'pi', 'ka', 'ti', 'ki', '$'),7,0,eig,0
++atr :: -high :: +high,('$', 'pi', 'ka', 'ti', 'ki', '$'),7,0,eig,0
++atr :: -high :: -low,('$', 'pi', 'ka', 'ti', 'ki', '$'),7,0,eig,0
++atr :: -high :: +atr,('$', 'pi', 'ka', 'ti', 'ki', '$'),7,0,eig,0
++atr :: +low :: +high,('$', 'pi', 'ka', 'ti', 'ki', '$'),7,0,eig,0
++atr :: +low :: -low,('$', 'pi', 'ka', 'ti', 'ki', '$'),7,0,eig,0
++atr :: +low :: +atr,('$', 'pi', 'ka', 'ti', 'ki', '$'),7,0,eig,0
+-high :: +high :: +high,('$', 'pi', 'ka', 'ti', 'ki', '$'),7,0,eig,0
+-high :: +high :: -low,('$', 'pi', 'ka', 'ti', 'ki', '$'),7,0,eig,0
+-high :: +high :: +atr,('$', 'pi', 'ka', 'ti', 'ki', '$'),7,0,eig,0
+-high :: -low :: +high,('$', 'pi', 'ka', 'ti', 'ki', '$'),7,0,eig,0
+-high :: -low :: -low,('$', 'pi', 'ka', 'ti', 'ki', '$'),7,0,eig,0
+-high :: -low :: +atr,('$', 'pi', 'ka', 'ti', 'ki', '$'),7,0,eig,0
+-high :: +atr :: +high,('$', 'pi', 'ka', 'ti', 'ki', '$'),7,0,eig,0
+-high :: +atr :: -low,('$', 'pi', 'ka', 'ti', 'ki', '$'),7,0,eig,0
+-high :: +atr :: +atr,('$', 'pi', 'ka', 'ti', 'ki', '$'),7,0,eig,0
++low :: +high :: +high,('$', 'pi', 'ka', 'ti', 'ki', '$'),7,0,eig,0
++low :: +high :: -low,('$', 'pi', 'ka', 'ti', 'ki', '$'),7,0,eig,0
++low :: +high :: +atr,('$', 'pi', 'ka', 'ti', 'ki', '$'),7,0,eig,0
++low :: -low :: +high,('$', 'pi', 'ka', 'ti', 'ki', '$'),7,0,eig,0
++low :: -low :: -low,('$', 'pi', 'ka', 'ti', 'ki', '$'),7,0,eig,0
++low :: -low :: +atr,('$', 'pi', 'ka', 'ti', 'ki', '$'),7,0,eig,0
++low :: +atr :: +high,('$', 'pi', 'ka', 'ti', 'ki', '$'),7,0,eig,0
++low :: +atr :: -low,('$', 'pi', 'ka', 'ti', 'ki', '$'),7,0,eig,0
++low :: +atr :: +atr,('$', 'pi', 'ka', 'ti', 'ki', '$'),7,0,eig,0
++high :: +high :: +word_boundary,('$', 'pi', 'ka', 'ti', 'ki', '$'),7,0,eig,0
++high :: -low :: +word_boundary,('$', 'pi', 'ka', 'ti', 'ki', '$'),7,0,eig,0
++high :: +atr :: +word_boundary,('$', 'pi', 'ka', 'ti', 'ki', '$'),7,0,eig,0
+-low :: +high :: +word_boundary,('$', 'pi', 'ka', 'ti', 'ki', '$'),7,0,eig,0
+-low :: -low :: +word_boundary,('$', 'pi', 'ka', 'ti', 'ki', '$'),7,0,eig,0
+-low :: +atr :: +word_boundary,('$', 'pi', 'ka', 'ti', 'ki', '$'),7,0,eig,0
++atr :: +high :: +word_boundary,('$', 'pi', 'ka', 'ti', 'ki', '$'),7,0,eig,0
++atr :: -low :: +word_boundary,('$', 'pi', 'ka', 'ti', 'ki', '$'),7,0,eig,0
++atr :: +atr :: +word_boundary,('$', 'pi', 'ka', 'ti', 'ki', '$'),7,0,eig,0
++word_boundary :: +high :: -high,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
++word_boundary :: +high :: -low,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
++word_boundary :: +high :: -atr,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
++word_boundary :: -low :: -high,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
++word_boundary :: -low :: -low,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
++word_boundary :: -low :: -atr,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
++word_boundary :: +atr :: -high,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
++word_boundary :: +atr :: -low,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
++word_boundary :: +atr :: -atr,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
++high :: -high :: -high,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
++high :: -high :: -low,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
++high :: -high :: -atr,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
++high :: -low :: -high,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
++high :: -low :: -low,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
++high :: -low :: -atr,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
++high :: -atr :: -high,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
++high :: -atr :: -low,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
++high :: -atr :: -atr,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
+-low :: -high :: -high,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
+-low :: -high :: -low,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
+-low :: -high :: -atr,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
+-low :: -low :: -high,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
+-low :: -low :: -low,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
+-low :: -low :: -atr,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
+-low :: -atr :: -high,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
+-low :: -atr :: -low,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
+-low :: -atr :: -atr,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
++atr :: -high :: -high,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
++atr :: -high :: -low,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
++atr :: -high :: -atr,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
++atr :: -low :: -high,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
++atr :: -low :: -low,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
++atr :: -low :: -atr,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
++atr :: -atr :: -high,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
++atr :: -atr :: -low,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
++atr :: -atr :: -atr,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
+-high :: -high :: -high,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
+-high :: -high :: -low,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
+-high :: -high :: -atr,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
+-high :: -low :: -high,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
+-high :: -low :: -low,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
+-high :: -low :: -atr,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
+-high :: -atr :: -high,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
+-high :: -atr :: -low,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
+-high :: -atr :: -atr,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
+-low :: -high :: -high,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
+-low :: -high :: -low,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
+-low :: -high :: -atr,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
+-low :: -low :: -high,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
+-low :: -low :: -low,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
+-low :: -low :: -atr,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
+-low :: -atr :: -high,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
+-low :: -atr :: -low,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
+-low :: -atr :: -atr,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
+-atr :: -high :: -high,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
+-atr :: -high :: -low,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
+-atr :: -high :: -atr,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
+-atr :: -low :: -high,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
+-atr :: -low :: -low,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
+-atr :: -low :: -atr,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
+-atr :: -atr :: -high,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
+-atr :: -atr :: -low,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
+-atr :: -atr :: -atr,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
+-high :: -high :: +word_boundary,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
+-high :: -low :: +word_boundary,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
+-high :: -atr :: +word_boundary,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
+-low :: -high :: +word_boundary,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
+-low :: -low :: +word_boundary,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
+-low :: -atr :: +word_boundary,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
+-atr :: -high :: +word_boundary,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
+-atr :: -low :: +word_boundary,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
+-atr :: -atr :: +word_boundary,('$', 'pi', 'kE', 'qE', 'kE', '$'),8,0,eig,0
++word_boundary :: +high :: -high,('$', 'ki', 'qe', 'ta', '$'),9,0,eig,0
++word_boundary :: +high :: -low,('$', 'ki', 'qe', 'ta', '$'),9,0,eig,0
++word_boundary :: +high :: +atr,('$', 'ki', 'qe', 'ta', '$'),9,0,eig,0
++word_boundary :: -low :: -high,('$', 'ki', 'qe', 'ta', '$'),9,0,eig,0
++word_boundary :: -low :: -low,('$', 'ki', 'qe', 'ta', '$'),9,0,eig,0
++word_boundary :: -low :: +atr,('$', 'ki', 'qe', 'ta', '$'),9,0,eig,0
++word_boundary :: +atr :: -high,('$', 'ki', 'qe', 'ta', '$'),9,0,eig,0
++word_boundary :: +atr :: -low,('$', 'ki', 'qe', 'ta', '$'),9,0,eig,0
++word_boundary :: +atr :: +atr,('$', 'ki', 'qe', 'ta', '$'),9,0,eig,0
++high :: -high :: -high,('$', 'ki', 'qe', 'ta', '$'),9,0,eig,0
++high :: -high :: +low,('$', 'ki', 'qe', 'ta', '$'),9,0,eig,0
++high :: -low :: -high,('$', 'ki', 'qe', 'ta', '$'),9,0,eig,0
++high :: -low :: +low,('$', 'ki', 'qe', 'ta', '$'),9,0,eig,0
++high :: +atr :: -high,('$', 'ki', 'qe', 'ta', '$'),9,0,eig,0
++high :: +atr :: +low,('$', 'ki', 'qe', 'ta', '$'),9,0,eig,0
+-low :: -high :: -high,('$', 'ki', 'qe', 'ta', '$'),9,0,eig,0
+-low :: -high :: +low,('$', 'ki', 'qe', 'ta', '$'),9,0,eig,0
+-low :: -low :: -high,('$', 'ki', 'qe', 'ta', '$'),9,0,eig,0
+-low :: -low :: +low,('$', 'ki', 'qe', 'ta', '$'),9,0,eig,0
+-low :: +atr :: -high,('$', 'ki', 'qe', 'ta', '$'),9,0,eig,0
+-low :: +atr :: +low,('$', 'ki', 'qe', 'ta', '$'),9,0,eig,0
++atr :: -high :: -high,('$', 'ki', 'qe', 'ta', '$'),9,0,eig,0
++atr :: -high :: +low,('$', 'ki', 'qe', 'ta', '$'),9,0,eig,0
++atr :: -low :: -high,('$', 'ki', 'qe', 'ta', '$'),9,0,eig,0
++atr :: -low :: +low,('$', 'ki', 'qe', 'ta', '$'),9,0,eig,0
++atr :: +atr :: -high,('$', 'ki', 'qe', 'ta', '$'),9,0,eig,0
++atr :: +atr :: +low,('$', 'ki', 'qe', 'ta', '$'),9,0,eig,0
+-high :: -high :: +word_boundary,('$', 'ki', 'qe', 'ta', '$'),9,0,eig,0
+-high :: +low :: +word_boundary,('$', 'ki', 'qe', 'ta', '$'),9,0,eig,0
+-low :: -high :: +word_boundary,('$', 'ki', 'qe', 'ta', '$'),9,0,eig,0
+-low :: +low :: +word_boundary,('$', 'ki', 'qe', 'ta', '$'),9,0,eig,0
++atr :: -high :: +word_boundary,('$', 'ki', 'qe', 'ta', '$'),9,0,eig,0
++atr :: +low :: +word_boundary,('$', 'ki', 'qe', 'ta', '$'),9,0,eig,0
++word_boundary :: -high :: +high,('$', 'qe', 'qI', 'pa', '$'),0,0,unif,1
++word_boundary :: -high :: -low,('$', 'qe', 'qI', 'pa', '$'),0,0,unif,1
++word_boundary :: -high :: -atr,('$', 'qe', 'qI', 'pa', '$'),0,0,unif,1
++word_boundary :: -low :: +high,('$', 'qe', 'qI', 'pa', '$'),0,0,unif,1
++word_boundary :: -low :: -low,('$', 'qe', 'qI', 'pa', '$'),0,0,unif,1
++word_boundary :: -low :: -atr,('$', 'qe', 'qI', 'pa', '$'),0,0,unif,1
++word_boundary :: +atr :: +high,('$', 'qe', 'qI', 'pa', '$'),0,0,unif,1
++word_boundary :: +atr :: -low,('$', 'qe', 'qI', 'pa', '$'),0,0,unif,1
++word_boundary :: +atr :: -atr,('$', 'qe', 'qI', 'pa', '$'),0,0,unif,1
+-high :: +high :: -high,('$', 'qe', 'qI', 'pa', '$'),0,0,unif,1
+-high :: +high :: +low,('$', 'qe', 'qI', 'pa', '$'),0,0,unif,1
+-high :: -low :: -high,('$', 'qe', 'qI', 'pa', '$'),0,0,unif,1
+-high :: -low :: +low,('$', 'qe', 'qI', 'pa', '$'),0,0,unif,1
+-high :: -atr :: -high,('$', 'qe', 'qI', 'pa', '$'),0,0,unif,1
+-high :: -atr :: +low,('$', 'qe', 'qI', 'pa', '$'),0,0,unif,1
+-low :: +high :: -high,('$', 'qe', 'qI', 'pa', '$'),0,0,unif,1
+-low :: +high :: +low,('$', 'qe', 'qI', 'pa', '$'),0,0,unif,1
+-low :: -low :: -high,('$', 'qe', 'qI', 'pa', '$'),0,0,unif,1
+-low :: -low :: +low,('$', 'qe', 'qI', 'pa', '$'),0,0,unif,1
+-low :: -atr :: -high,('$', 'qe', 'qI', 'pa', '$'),0,0,unif,1
+-low :: -atr :: +low,('$', 'qe', 'qI', 'pa', '$'),0,0,unif,1
++atr :: +high :: -high,('$', 'qe', 'qI', 'pa', '$'),0,0,unif,1
++atr :: +high :: +low,('$', 'qe', 'qI', 'pa', '$'),0,0,unif,1
++atr :: -low :: -high,('$', 'qe', 'qI', 'pa', '$'),0,0,unif,1
++atr :: -low :: +low,('$', 'qe', 'qI', 'pa', '$'),0,0,unif,1
++atr :: -atr :: -high,('$', 'qe', 'qI', 'pa', '$'),0,0,unif,1
++atr :: -atr :: +low,('$', 'qe', 'qI', 'pa', '$'),0,0,unif,1
++high :: -high :: +word_boundary,('$', 'qe', 'qI', 'pa', '$'),0,0,unif,1
++high :: +low :: +word_boundary,('$', 'qe', 'qI', 'pa', '$'),0,0,unif,1
+-low :: -high :: +word_boundary,('$', 'qe', 'qI', 'pa', '$'),0,0,unif,1
+-low :: +low :: +word_boundary,('$', 'qe', 'qI', 'pa', '$'),0,0,unif,1
+-atr :: -high :: +word_boundary,('$', 'qe', 'qI', 'pa', '$'),0,0,unif,1
+-atr :: +low :: +word_boundary,('$', 'qe', 'qI', 'pa', '$'),0,0,unif,1
++word_boundary :: -high :: +high,('$', 'pa', 'pi', 'ta', '$'),1,0,unif,1
++word_boundary :: -high :: -low,('$', 'pa', 'pi', 'ta', '$'),1,0,unif,1
++word_boundary :: -high :: +atr,('$', 'pa', 'pi', 'ta', '$'),1,0,unif,1
++word_boundary :: +low :: +high,('$', 'pa', 'pi', 'ta', '$'),1,0,unif,1
++word_boundary :: +low :: -low,('$', 'pa', 'pi', 'ta', '$'),1,0,unif,1
++word_boundary :: +low :: +atr,('$', 'pa', 'pi', 'ta', '$'),1,0,unif,1
+-high :: +high :: -high,('$', 'pa', 'pi', 'ta', '$'),1,0,unif,1
+-high :: +high :: +low,('$', 'pa', 'pi', 'ta', '$'),1,0,unif,1
+-high :: -low :: -high,('$', 'pa', 'pi', 'ta', '$'),1,0,unif,1
+-high :: -low :: +low,('$', 'pa', 'pi', 'ta', '$'),1,0,unif,1
+-high :: +atr :: -high,('$', 'pa', 'pi', 'ta', '$'),1,0,unif,1
+-high :: +atr :: +low,('$', 'pa', 'pi', 'ta', '$'),1,0,unif,1
++low :: +high :: -high,('$', 'pa', 'pi', 'ta', '$'),1,0,unif,1
++low :: +high :: +low,('$', 'pa', 'pi', 'ta', '$'),1,0,unif,1
++low :: -low :: -high,('$', 'pa', 'pi', 'ta', '$'),1,0,unif,1
++low :: -low :: +low,('$', 'pa', 'pi', 'ta', '$'),1,0,unif,1
++low :: +atr :: -high,('$', 'pa', 'pi', 'ta', '$'),1,0,unif,1
++low :: +atr :: +low,('$', 'pa', 'pi', 'ta', '$'),1,0,unif,1
++high :: -high :: +word_boundary,('$', 'pa', 'pi', 'ta', '$'),1,0,unif,1
++high :: +low :: +word_boundary,('$', 'pa', 'pi', 'ta', '$'),1,0,unif,1
+-low :: -high :: +word_boundary,('$', 'pa', 'pi', 'ta', '$'),1,0,unif,1
+-low :: +low :: +word_boundary,('$', 'pa', 'pi', 'ta', '$'),1,0,unif,1
++atr :: -high :: +word_boundary,('$', 'pa', 'pi', 'ta', '$'),1,0,unif,1
++atr :: +low :: +word_boundary,('$', 'pa', 'pi', 'ta', '$'),1,0,unif,1
++word_boundary :: +high :: -high,('$', 'ti', 'qe', 'qI', '$'),2,0,unif,1
++word_boundary :: +high :: -low,('$', 'ti', 'qe', 'qI', '$'),2,0,unif,1
++word_boundary :: +high :: +atr,('$', 'ti', 'qe', 'qI', '$'),2,0,unif,1
++word_boundary :: -low :: -high,('$', 'ti', 'qe', 'qI', '$'),2,0,unif,1
++word_boundary :: -low :: -low,('$', 'ti', 'qe', 'qI', '$'),2,0,unif,1
++word_boundary :: -low :: +atr,('$', 'ti', 'qe', 'qI', '$'),2,0,unif,1
++word_boundary :: +atr :: -high,('$', 'ti', 'qe', 'qI', '$'),2,0,unif,1
++word_boundary :: +atr :: -low,('$', 'ti', 'qe', 'qI', '$'),2,0,unif,1
++word_boundary :: +atr :: +atr,('$', 'ti', 'qe', 'qI', '$'),2,0,unif,1
++high :: -high :: +high,('$', 'ti', 'qe', 'qI', '$'),2,0,unif,1
++high :: -high :: -low,('$', 'ti', 'qe', 'qI', '$'),2,0,unif,1
++high :: -high :: -atr,('$', 'ti', 'qe', 'qI', '$'),2,0,unif,1
++high :: -low :: +high,('$', 'ti', 'qe', 'qI', '$'),2,0,unif,1
++high :: -low :: -low,('$', 'ti', 'qe', 'qI', '$'),2,0,unif,1
++high :: -low :: -atr,('$', 'ti', 'qe', 'qI', '$'),2,0,unif,1
++high :: +atr :: +high,('$', 'ti', 'qe', 'qI', '$'),2,0,unif,1
++high :: +atr :: -low,('$', 'ti', 'qe', 'qI', '$'),2,0,unif,1
++high :: +atr :: -atr,('$', 'ti', 'qe', 'qI', '$'),2,0,unif,1
+-low :: -high :: +high,('$', 'ti', 'qe', 'qI', '$'),2,0,unif,1
+-low :: -high :: -low,('$', 'ti', 'qe', 'qI', '$'),2,0,unif,1
+-low :: -high :: -atr,('$', 'ti', 'qe', 'qI', '$'),2,0,unif,1
+-low :: -low :: +high,('$', 'ti', 'qe', 'qI', '$'),2,0,unif,1
+-low :: -low :: -low,('$', 'ti', 'qe', 'qI', '$'),2,0,unif,1
+-low :: -low :: -atr,('$', 'ti', 'qe', 'qI', '$'),2,0,unif,1
+-low :: +atr :: +high,('$', 'ti', 'qe', 'qI', '$'),2,0,unif,1
+-low :: +atr :: -low,('$', 'ti', 'qe', 'qI', '$'),2,0,unif,1
+-low :: +atr :: -atr,('$', 'ti', 'qe', 'qI', '$'),2,0,unif,1
++atr :: -high :: +high,('$', 'ti', 'qe', 'qI', '$'),2,0,unif,1
++atr :: -high :: -low,('$', 'ti', 'qe', 'qI', '$'),2,0,unif,1
++atr :: -high :: -atr,('$', 'ti', 'qe', 'qI', '$'),2,0,unif,1
++atr :: -low :: +high,('$', 'ti', 'qe', 'qI', '$'),2,0,unif,1
++atr :: -low :: -low,('$', 'ti', 'qe', 'qI', '$'),2,0,unif,1
++atr :: -low :: -atr,('$', 'ti', 'qe', 'qI', '$'),2,0,unif,1
++atr :: +atr :: +high,('$', 'ti', 'qe', 'qI', '$'),2,0,unif,1
++atr :: +atr :: -low,('$', 'ti', 'qe', 'qI', '$'),2,0,unif,1
++atr :: +atr :: -atr,('$', 'ti', 'qe', 'qI', '$'),2,0,unif,1
+-high :: +high :: +word_boundary,('$', 'ti', 'qe', 'qI', '$'),2,0,unif,1
+-high :: -low :: +word_boundary,('$', 'ti', 'qe', 'qI', '$'),2,0,unif,1
+-high :: -atr :: +word_boundary,('$', 'ti', 'qe', 'qI', '$'),2,0,unif,1
+-low :: +high :: +word_boundary,('$', 'ti', 'qe', 'qI', '$'),2,0,unif,1
+-low :: -low :: +word_boundary,('$', 'ti', 'qe', 'qI', '$'),2,0,unif,1
+-low :: -atr :: +word_boundary,('$', 'ti', 'qe', 'qI', '$'),2,0,unif,1
++atr :: +high :: +word_boundary,('$', 'ti', 'qe', 'qI', '$'),2,0,unif,1
++atr :: -low :: +word_boundary,('$', 'ti', 'qe', 'qI', '$'),2,0,unif,1
++atr :: -atr :: +word_boundary,('$', 'ti', 'qe', 'qI', '$'),2,0,unif,1
